@@ -1,0 +1,77 @@
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+
+/* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
+
+:root {
+  color-scheme: light;
+}
+html {
+  scroll-behavior: smooth;
+  overflow-y: overlay; /* Allows scrollbar to float on top of content where supported */
+  background-color: #f8f9fa;
+}
+body {
+  background-color: transparent;
+  color: #17351b;
+  font-family: 'Cairo', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+html[dir='ltr'] body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+/* Agricultural pattern used sparingly as a subtle section texture */
+.pattern-field {
+  background-image: radial-gradient(rgba(27, 94, 32, 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid #f57c00;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.leaflet-container {
+  font-family: inherit;
+  background: #eef2ee;
+}
+/* Custom Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: linear-gradient(to bottom, #112815 0, #112815 100vh, #f8f9fa 100vh, #f8f9fa 100%);
+}
+::-webkit-scrollbar-thumb {
+  background: #f57c00; /* Brand Orange */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff9800; /* Lighter Orange on hover */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
