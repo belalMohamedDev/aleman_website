@@ -1,104 +1,324 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeftIcon, ArrowRightIcon, PhoneCallIcon } from 'lucide-react';
-import { getProduct, products } from '../data/products';
+import {
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  ShoppingBagIcon,
+  CheckIcon,
+  PlusIcon,
+  MinusIcon,
+  ShieldCheckIcon,
+  TruckIcon,
+  FlaskConicalIcon,
+} from 'lucide-react';
+import { productService } from '../features/products/productService';
+import type { Product, ProductPackage } from '../features/products/types';
+import { useCart } from '../features/cart/CartContext';
+import { useAuth } from '../features/auth/AuthContext';
+import { getProduct } from '../data/products';
 import { useLang } from '../i18n/LanguageContext';
-import { ui } from '../i18n/ui';
-import { Badge } from '../components/shared/Badge';
-import { Reveal } from '../components/shared/Reveal';
+import { CardSkeleton } from '../components/shared/Skeleton';
 import { EmptyState } from '../components/shared/EmptyState';
-import { ProductTabs } from '../components/products/ProductTabs';
-import { ProductCard } from '../components/products/ProductCard';
 
 export function ProductDetail() {
   const { slug = '' } = useParams();
-  const { t, dir } = useLang();
-  const product = getProduct(slug);
+  const { dir } = useLang();
+  const { addItem } = useCart();
+  const { isAuthenticated, openAuthModal } = useAuth();
   const Back = dir === 'rtl' ? ArrowRightIcon : ArrowLeftIcon;
 
-  if (!product) {
-    return (
-      <section className="mx-auto max-w-site px-4 py-20 md:px-6">
-        <EmptyState title={t(ui.products.notFound)} body={t(ui.common.noResultsBody)} />
-        <div className="mt-6 text-center">
-          <Link to="/products" className="focus-ring rounded-pill bg-brand-600 px-6 py-3 text-sm font-bold text-white">
-            {t(ui.products.backToProducts)}
-          </Link>
-        </div>
-      </section>);
+  const [liveProduct, setLiveProduct] = useState<Product | null>(null);
+  const [categoryName, setCategoryName] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedPackage, setSelectedPackage] = useState<ProductPackage | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [isAdded, setIsAdded] = useState(false);
 
+  const isNumericId = !isNaN(Number(slug));
+
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+
+    if (isNumericId) {
+      Promise.all([
+        productService.getProductById(Number(slug)),
+        productService.getCategories(),
+      ])
+        .then(([prod, cats]) => {
+          if (!mounted) return;
+          setLiveProduct(prod);
+          const activePkgs = prod.packages?.filter((p) => p.isActive) || [];
+          if (activePkgs.length > 0) {
+            setSelectedPackage(activePkgs[0]);
+          }
+          const cat = cats.find((c) => c.id === prod.categoryId);
+          if (cat) setCategoryName(cat.name);
+        })
+        .catch((e) => console.warn('Live product error:', e))
+        .finally(() => {
+          if (mounted) setIsLoading(false);
+        });
+    } else {
+      // Legacy slug lookup
+      setIsLoading(false);
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [slug, isNumericId]);
+
+  const legacyProduct = !isNumericId ? getProduct(slug) : null;
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-site px-4 py-28 md:px-6">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
+      </div>
+    );
   }
 
-  const related = products.filter((item) => item.category === product.category && item.slug !== product.slug).slice(0, 3);
+  if (!liveProduct && !legacyProduct) {
+    return (
+      <section className="mx-auto max-w-site px-4 py-32 md:px-6 text-center">
+        <EmptyState title="المنتج غير موجود" body="تعذر العثور على المنتج المطلوب." />
+        <div className="mt-6">
+          <Link
+            to="/products"
+            className="rounded-full bg-brand-500 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-brand-600 transition"
+          >
+            الرجوع إلى قائمة المنتجات
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  // Use live product if available
+  const name = liveProduct ? liveProduct.name : legacyProduct ? legacyProduct.name.ar : '';
+  const description = liveProduct
+    ? liveProduct.description
+    : legacyProduct
+    ? legacyProduct.description.ar
+    : '';
+  const imageUrl = liveProduct ? liveProduct.imageUrl : legacyProduct ? legacyProduct.image : '';
+  const protein = liveProduct ? liveProduct.proteinPercentage : legacyProduct ? legacyProduct.protein : null;
+  const packages = liveProduct ? liveProduct.packages?.filter((p) => p.isActive) || [] : [];
+
+  const handleAddToCart = () => {
+    if (!liveProduct || !selectedPackage) return;
+    addItem(liveProduct, selectedPackage, quantity);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 1500);
+  };
 
   return (
     <>
-      <div className="border-b border-brand-100 bg-white">
-        <div className="mx-auto max-w-site px-4 py-5 md:px-6">
-          <Link to="/products" className="focus-ring inline-flex items-center gap-2 text-sm font-bold text-ink-muted transition hover:text-brand-600">
-            <Back className="h-4 w-4" aria-hidden="true" />
-            {t(ui.products.backToProducts)}
+      {/* Top Breadcrumb Nav */}
+      <div className="border-b border-slate-200 bg-white pt-24 pb-4">
+        <div className="mx-auto max-w-site px-4 md:px-6 flex items-center justify-between">
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-brand-600 transition"
+          >
+            <Back className="h-4 w-4" />
+            <span>الرجوع إلى جميع المنتجات</span>
           </Link>
+
+          {categoryName && (
+            <span className="text-xs font-bold text-brand-600 bg-brand-50 px-3 py-1 rounded-full border border-brand-100">
+              {categoryName}
+            </span>
+          )}
         </div>
       </div>
 
       <section className="mx-auto max-w-site px-4 py-10 md:px-6 md:py-14">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
-          <Reveal delay={0.05} className="order-2 lg:order-1">
-            <Badge tone="green">{t(ui.categories[product.category])}</Badge>
-            <h1 className="mt-3 text-3xl font-extrabold leading-tight text-ink md:text-4xl">{t(product.name)}</h1>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              {product.protein ?
-              <Badge tone="gold">{t(ui.products.protein)}: {product.protein}</Badge> :
-
-              <Badge tone="outline">{t(ui.products.protein)}: {t(ui.common.dataSoon)}</Badge>
-              }
-              {product.stage ? <Badge tone="neutral">{t(ui.products.stage)}: {t(product.stage)}</Badge> : null}
-              {product.placeholder ? <Badge tone="gold">{t(ui.common.placeholderTag)}</Badge> : null}
+        <div className="grid gap-10 lg:grid-cols-12 items-start">
+          {/* Image Column */}
+          <div className="lg:col-span-5 sticky top-28">
+            <div className="overflow-hidden rounded-3xl border border-slate-100 bg-gradient-to-b from-brand-50/60 to-slate-50 p-8 shadow-card flex items-center justify-center min-h-[380px]">
+              <img
+                src={imageUrl || '/hero_farm_bg.png'}
+                alt={name}
+                className="max-h-80 w-auto object-contain filter drop-shadow-xl transition-transform duration-300 hover:scale-105"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/image.png';
+                }}
+              />
             </div>
 
-            <p className="mt-5 text-base leading-loose text-ink-muted">{t(product.description)}</p>
+            {/* Quick Guarantees */}
+            <div className="grid grid-cols-2 gap-3 mt-4 text-xs font-bold text-slate-600">
+              <div className="flex items-center gap-2 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm">
+                <ShieldCheckIcon className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+                <span>مطابق للمواصفات القياسية</span>
+              </div>
+              <div className="flex items-center gap-2 p-3 rounded-2xl bg-white border border-slate-100 shadow-sm">
+                <TruckIcon className="h-5 w-5 text-brand-600 flex-shrink-0" />
+                <span>شحن ونقل مباشر بالأطنان</span>
+              </div>
+            </div>
+          </div>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link
-                to="/contact"
-                className="focus-ring inline-flex items-center justify-center gap-2 rounded-pill bg-gold-500 px-7 py-3.5 text-sm font-extrabold text-white transition hover:bg-gold-600">
-                
-                <PhoneCallIcon className="h-4 w-4" aria-hidden="true" />
-                {t(ui.products.detailCta)}
-              </Link>
-              <Link
-                to="/distributors"
-                className="focus-ring inline-flex items-center justify-center rounded-pill border border-brand-200 px-7 py-3.5 text-sm font-extrabold text-brand-600 transition hover:border-brand-400 hover:bg-brand-50">
-                
-                {t(ui.distributors.pageTitle)}
-              </Link>
+          {/* Details & Purchase Column */}
+          <div className="lg:col-span-7 space-y-6">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-ink leading-tight">
+                {name}
+              </h1>
+
+              {/* Specification Chips */}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {protein ? (
+                  <span className="rounded-full bg-amber-500/15 border border-amber-500/20 px-3 py-1 text-xs font-black text-amber-800">
+                    نسبة البروتين: {protein}%
+                  </span>
+                ) : null}
+
+                {liveProduct?.sapProductId && (
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                    كود المنتج: {liveProduct.sapProductId}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <div className="mt-8">
-              <ProductTabs product={product} />
-            </div>
-          </Reveal>
+            <p className="text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
+              {description}
+            </p>
 
-          <Reveal className="order-1 lg:order-2">
-            <div className="sticky top-24 overflow-hidden rounded-card border border-brand-100 bg-brand-50/50 p-6 shadow-card">
-              <img src={product.image} alt={t(product.name)} className="mx-auto h-72 w-auto object-contain md:h-96" />
-            </div>
-          </Reveal>
+            {/* Packages Selection (Bags) */}
+            {packages.length > 0 && (
+              <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-3">
+                <span className="block text-xs font-extrabold text-ink">
+                  الأحجام والعبوات المتاحة:
+                </span>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {packages.map((pkg) => (
+                    <button
+                      key={pkg.id}
+                      type="button"
+                      onClick={() => setSelectedPackage(pkg)}
+                      className={`text-start p-3.5 rounded-xl border-2 transition ${
+                        selectedPackage?.id === pkg.id
+                          ? 'border-brand-500 bg-brand-50/30 shadow-sm'
+                          : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-black text-ink">شكارة {pkg.weightKg} كجم</span>
+                        <span className="text-base font-black text-brand-600">
+                          {pkg.price.toLocaleString()} ج.م
+                        </span>
+                      </div>
+                      {pkg.pricePerTon ? (
+                        <span className="text-xs text-slate-500 font-semibold">
+                          سعر الطن: {pkg.pricePerTon.toLocaleString()} ج.م/طن
+                        </span>
+                      ) : null}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Quantity and Direct Add to Cart */}
+                {selectedPackage && (
+                  <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                    {/* Quantity Counter */}
+                    <div className="flex items-center justify-between border border-slate-200 rounded-full px-3 py-1.5 bg-slate-50 sm:w-40">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="h-8 w-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-white transition"
+                      >
+                        <MinusIcon className="h-4 w-4" />
+                      </button>
+                      <div className="text-center">
+                        <span className="block text-sm font-black text-ink">{quantity}</span>
+                        <span className="block text-[10px] text-slate-500 font-bold">شكارة</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => q + 1)}
+                        className="h-8 w-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-white transition"
+                      >
+                        <PlusIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    {!isAuthenticated ? (
+                      <button
+                        type="button"
+                        onClick={openAuthModal}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-sm font-extrabold text-white shadow-md bg-brand-500 hover:bg-brand-600 transition-all hover:scale-[1.02] active:scale-95"
+                      >
+                        <ShoppingBagIcon className="h-5 w-5" />
+                        <span>تسجيل الدخول للشراء</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleAddToCart}
+                        className={`flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-sm font-extrabold text-white shadow-md transition-all ${
+                          isAdded
+                            ? 'bg-emerald-600'
+                            : 'bg-[#f97316] hover:bg-[#ea580c] hover:scale-[1.02] active:scale-95'
+                        }`}
+                      >
+                        {isAdded ? (
+                          <>
+                            <CheckIcon className="h-5 w-5" />
+                            <span>تمت الإضافة إلى السلة!</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingBagIcon className="h-5 w-5" />
+                            <span>إضافة {quantity} شكارة للسلة ({(quantity * selectedPackage.price).toLocaleString()} ج.م)</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Nutritional Components / Ingredients & Additives */}
+            {(liveProduct?.ingredients || liveProduct?.additives) && (
+              <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
+                <h3 className="text-sm font-extrabold text-ink flex items-center gap-2">
+                  <FlaskConicalIcon className="h-4 w-4 text-brand-600" />
+                  <span>التركيب والمكونات المعتمدة:</span>
+                </h3>
+
+                {liveProduct.ingredients && (
+                  <div>
+                    <span className="block text-xs font-bold text-slate-500 mb-1">المواد الخام الأساسية:</span>
+                    <p className="text-xs font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200">
+                      {liveProduct.ingredients}
+                    </p>
+                  </div>
+                )}
+
+                {liveProduct.additives && (
+                  <div>
+                    <span className="block text-xs font-bold text-slate-500 mb-1">الإضافات الغذائية والفيتامينات:</span>
+                    <p className="text-xs font-semibold text-slate-700 bg-white p-2.5 rounded-xl border border-slate-200">
+                      {liveProduct.additives}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </section>
-
-      {related.length > 0 ?
-      <section className="mx-auto max-w-site px-4 pb-16 md:px-6">
-          <h2 className="mb-6 text-2xl font-extrabold text-ink">{t(ui.categories[product.category])}</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((item, index) =>
-          <ProductCard key={item.slug} product={item} index={index} />
-          )}
-          </div>
-        </section> :
-      null}
-    </>);
-
+    </>
+  );
 }

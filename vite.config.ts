@@ -9,5 +9,17 @@ export default defineConfig({
       usePolling: true,
       interval: 1000,
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5094',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/images': {
+        target: 'http://localhost:5094',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 })
