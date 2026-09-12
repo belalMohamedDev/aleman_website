@@ -144,8 +144,13 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       )}
                       <div>
                         <p className="font-black text-ink">{item.productName || 'منتج علف'}</p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                          العبوة: {item.packageWeightKg} كجم • الكمية: {item.quantity} شيكارة
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          العبوة: {item.packageWeightKg} كجم • الكمية: {item.quantity} شيكارة • إجمالي الوزن:{' '}
+                          <strong className="text-slate-700">
+                            {item.quantity * item.packageWeightKg >= 1000
+                              ? `${Number(((item.quantity * item.packageWeightKg) / 1000).toFixed(2))} طن`
+                              : `${(item.quantity * item.packageWeightKg).toLocaleString()} كجم`}
+                          </strong>
                         </p>
                       </div>
                     </div>

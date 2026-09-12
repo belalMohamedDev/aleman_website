@@ -7,6 +7,16 @@ import { OrderType, PaymentMethod, TruckType } from './types';
 import type { UserAddress, CreateAddressDto } from './types';
 import { toast } from 'sonner';
 
+export function getRecommendedTruckType(weightTons: number): TruckType {
+  if (weightTons <= 6) {
+    return TruckType.MediumTruck;
+  }
+  if (weightTons <= 30) {
+    return TruckType.HeavyTruck;
+  }
+  return TruckType.LargeTrailer;
+}
+
 export function useCheckout() {
   const navigate = useNavigate();
   const { items, totalPrice, totalWeightTons, clearCart } = useCart();
@@ -26,12 +36,17 @@ export function useCheckout() {
     notes: '',
   });
 
-  // Shipping & Truck
-  const [truckType, setTruckType] = useState<TruckType>(
-    totalWeightTons > 15 ? TruckType.HeavyTruck : TruckType.MediumTruck
+  // Shipping & Truck (Auto-calculated based on payload weight)
+  const [truckType, setTruckType] = useState<TruckType>(() =>
+    getRecommendedTruckType(totalWeightTons)
   );
   const [shippingFee, setShippingFee] = useState<number>(0);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+
+  // Automatically update truckType when totalWeightTons changes
+  useEffect(() => {
+    setTruckType(getRecommendedTruckType(totalWeightTons));
+  }, [totalWeightTons]);
 
   // Pickup Details
   const [driverName, setDriverName] = useState('');

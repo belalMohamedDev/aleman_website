@@ -11,7 +11,7 @@ import {
   Loader2Icon,
 } from 'lucide-react';
 import { useCheckout } from '../features/orders/useCheckout';
-import { OrderType, PaymentMethod, TruckType } from '../features/orders/types';
+import { OrderType, PaymentMethod } from '../features/orders/types';
 import { useAuth } from '../features/auth/AuthContext';
 
 export function Checkout() {
@@ -27,8 +27,6 @@ export function Checkout() {
     setIsAddingNewAddress,
     newAddress,
     setNewAddress,
-    truckType,
-    setTruckType,
     shippingFee,
     isCalculatingShipping,
     driverName,
@@ -283,53 +281,81 @@ export function Checkout() {
                   </div>
                 )}
 
-                {/* Truck Selection */}
+                {/* Truck Selection - Auto-calculated in background, hidden from client UI */}
+                {/*
                 <div className="pt-2">
-                  <label className="block text-xs font-bold text-slate-700 mb-2">
-                    نوع الشاحنة المطلوبة (حمولة الطلب: {totalWeightTons} طن):
-                  </label>
+                  <div className="flex items-center justify-between flex-wrap gap-2 mb-2.5">
+                    <label className="text-xs font-bold text-slate-700">
+                      نوع الشاحنة (حمولة الطلب: <span className="text-brand-700 font-extrabold">{totalWeightTons} طن</span>):
+                    </label>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 border border-emerald-200">
+                      <SparklesIcon className="h-3 w-3 text-emerald-600" />
+                      <span>تحديد تلقائي حسب وزن الحمولة</span>
+                    </span>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <label
-                      className={`cursor-pointer rounded-xl border p-3 text-center transition ${
-                        truckType === TruckType.MediumTruck
-                          ? 'border-brand-500 bg-brand-50/20'
-                          : 'border-slate-200'
+                      className={`relative rounded-2xl border p-3.5 text-center transition ${
+                        totalWeightTons > 6
+                          ? 'opacity-40 bg-slate-50 border-slate-200 cursor-not-allowed'
+                          : truckType === TruckType.MediumTruck
+                          ? 'border-brand-600 bg-brand-50/40 shadow-sm cursor-pointer ring-1 ring-brand-500'
+                          : 'border-slate-200 hover:border-slate-300 bg-white cursor-pointer'
                       }`}
                     >
                       <input
                         type="radio"
                         name="truckType"
+                        disabled={totalWeightTons > 6}
                         checked={truckType === TruckType.MediumTruck}
                         onChange={() => setTruckType(TruckType.MediumTruck)}
                         className="sr-only"
                       />
+                      {getRecommendedTruckType(totalWeightTons) === TruckType.MediumTruck && (
+                        <span className="inline-block rounded-full bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 mb-1.5 shadow-sm">
+                          الأنسب لحمولتك تلقائياً
+                        </span>
+                      )}
                       <span className="block text-xs font-extrabold text-ink">شاحنة جامبو</span>
-                      <span className="block text-[11px] text-slate-500 mt-0.5">حمولة حتى 6 طن</span>
+                      <span className="block text-[11px] text-slate-500 mt-0.5">
+                        {totalWeightTons > 6 ? 'غير كافية (حد أقصى 6 طن)' : 'حمولة حتى 6 طن'}
+                      </span>
                     </label>
 
                     <label
-                      className={`cursor-pointer rounded-xl border p-3 text-center transition ${
-                        truckType === TruckType.HeavyTruck
-                          ? 'border-brand-500 bg-brand-50/20'
-                          : 'border-slate-200'
+                      className={`relative rounded-2xl border p-3.5 text-center transition ${
+                        totalWeightTons > 30
+                          ? 'opacity-40 bg-slate-50 border-slate-200 cursor-not-allowed'
+                          : truckType === TruckType.HeavyTruck
+                          ? 'border-brand-600 bg-brand-50/40 shadow-sm cursor-pointer ring-1 ring-brand-500'
+                          : 'border-slate-200 hover:border-slate-300 bg-white cursor-pointer'
                       }`}
                     >
                       <input
                         type="radio"
                         name="truckType"
+                        disabled={totalWeightTons > 30}
                         checked={truckType === TruckType.HeavyTruck}
                         onChange={() => setTruckType(TruckType.HeavyTruck)}
                         className="sr-only"
                       />
+                      {getRecommendedTruckType(totalWeightTons) === TruckType.HeavyTruck && (
+                        <span className="inline-block rounded-full bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 mb-1.5 shadow-sm">
+                          الأنسب لحمولتك تلقائياً
+                        </span>
+                      )}
                       <span className="block text-xs font-extrabold text-ink">تريلا نقل ثقيل</span>
-                      <span className="block text-[11px] text-slate-500 mt-0.5">حمولة حتى 30 طن</span>
+                      <span className="block text-[11px] text-slate-500 mt-0.5">
+                        {totalWeightTons > 30 ? 'غير كافية (حد أقصى 30 طن)' : 'حمولة حتى 30 طن'}
+                      </span>
                     </label>
 
                     <label
-                      className={`cursor-pointer rounded-xl border p-3 text-center transition ${
+                      className={`relative rounded-2xl border p-3.5 text-center transition ${
                         truckType === TruckType.LargeTrailer
-                          ? 'border-brand-500 bg-brand-50/20'
-                          : 'border-slate-200'
+                          ? 'border-brand-600 bg-brand-50/40 shadow-sm cursor-pointer ring-1 ring-brand-500'
+                          : 'border-slate-200 hover:border-slate-300 bg-white cursor-pointer'
                       }`}
                     >
                       <input
@@ -339,11 +365,17 @@ export function Checkout() {
                         onChange={() => setTruckType(TruckType.LargeTrailer)}
                         className="sr-only"
                       />
+                      {getRecommendedTruckType(totalWeightTons) === TruckType.LargeTrailer && (
+                        <span className="inline-block rounded-full bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 mb-1.5 shadow-sm">
+                          الأنسب لحمولتك تلقائياً
+                        </span>
+                      )}
                       <span className="block text-xs font-extrabold text-ink">مقطورة كاملة</span>
-                      <span className="block text-[11px] text-slate-500 mt-0.5">حمولات كبرى</span>
+                      <span className="block text-[11px] text-slate-500 mt-0.5">حمولات كبرى (+30 طن)</span>
                     </label>
                   </div>
                 </div>
+                */}
               </div>
             ) : (
               /* Factory Pickup Details */
@@ -487,18 +519,25 @@ export function Checkout() {
               </h3>
 
               {/* Items Mini List */}
-              <div className="max-h-56 overflow-y-auto space-y-3 mb-4 pr-1">
-                {items.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center text-xs">
-                    <div>
-                      <span className="font-bold text-ink line-clamp-1">{item.productName}</span>
-                      <span className="text-slate-500 text-[11px]">
-                        {item.quantity} شكارة ({item.packageWeightKg} كجم)
-                      </span>
+              <div className="space-y-3 mb-4 divide-y divide-slate-100/80">
+                {items.map((item) => {
+                  const itemWeightKg = item.quantity * item.packageWeightKg;
+                  const itemWeightFormatted = itemWeightKg >= 1000
+                    ? `${Number((itemWeightKg / 1000).toFixed(2))} طن (${itemWeightKg.toLocaleString()} كجم)`
+                    : `${itemWeightKg.toLocaleString()} كجم`;
+
+                  return (
+                    <div key={item.id} className="flex justify-between items-center text-xs pt-2.5 first:pt-0">
+                      <div>
+                        <span className="font-bold text-ink line-clamp-1">{item.productName}</span>
+                        <span className="text-slate-500 text-[11px] block">
+                          {item.quantity} شكارة ({item.packageWeightKg} كجم) • إجمالي الوزن: {itemWeightFormatted}
+                        </span>
+                      </div>
+                      <span className="font-extrabold text-ink">{item.subtotal.toLocaleString()} ج.م</span>
                     </div>
-                    <span className="font-extrabold text-ink">{item.subtotal.toLocaleString()} ج.م</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Breakdown */}

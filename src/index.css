@@ -48,19 +48,19 @@ html[dir='ltr'] body {
   background: #eef2ee;
 }
 /* Custom Modern Scrollbar */
-::-webkit-scrollbar {
+html::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-::-webkit-scrollbar-track {
-  background: linear-gradient(to bottom, #112815 0, #112815 100vh, #f8f9fa 100vh, #f8f9fa 100%);
+html::-webkit-scrollbar-track {
+  background: #f8f9fa;
 }
-::-webkit-scrollbar-thumb {
-  background: #f57c00; /* Brand Orange */
+html::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #ff9800; /* Lighter Orange on hover */
+html::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 @media (prefers-reduced-motion: reduce) {

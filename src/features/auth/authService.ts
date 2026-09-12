@@ -1,18 +1,24 @@
 import { apiClient } from '../../infrastructure/api/apiClient';
-import { tokenStorage } from '../../infrastructure/auth/tokenStorage';
 import type { User, LoginDto, RegisterDto, AuthResponse } from './types';
 
+const USER_STORAGE_KEY = 'aleman_cached_user';
+
 export const authService = {
-  getToken(): string | null {
-    return tokenStorage.getToken();
-  },
-
-  getRefreshToken(): string | null {
-    return tokenStorage.getRefreshToken();
-  },
-
   getUser(): User | null {
-    return tokenStorage.getUser();
+    try {
+      const u = localStorage.getItem(USER_STORAGE_KEY);
+      return u ? JSON.parse(u) : null;
+    } catch {
+      return null;
+    }
+  },
+
+  setUser(user: User | null): void {
+    if (user) {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(USER_STORAGE_KEY);
+    }
   },
 
   async login(credentials: LoginDto): Promise<AuthResponse> {
@@ -21,15 +27,8 @@ export const authService = {
       body: JSON.stringify(credentials),
     });
 
-    const token = res.accessToken || res.token;
-    if (token) {
-      tokenStorage.setToken(token);
-    }
-    if (res.refreshToken) {
-      tokenStorage.setRefreshToken(res.refreshToken);
-    }
     if (res.user) {
-      tokenStorage.setUser(res.user);
+      this.setUser(res.user);
     }
 
     return res;
@@ -41,40 +40,34 @@ export const authService = {
       body: JSON.stringify(data),
     });
 
-    const token = res.accessToken || res.token;
-    if (token) {
-      tokenStorage.setToken(token);
-    }
-    if (res.refreshToken) {
-      tokenStorage.setRefreshToken(res.refreshToken);
-    }
     if (res.user) {
-      tokenStorage.setUser(res.user);
+      this.setUser(res.user);
     }
 
     return res;
   },
 
   async getMe(): Promise<User | null> {
-    const token = this.getToken();
-    if (!token) return null;
     try {
       const user = await apiClient<User>('/api/Users/me');
-      tokenStorage.setUser(user);
+      this.setUser(user);
       return user;
     } catch {
-      return this.getUser();
+      this.setUser(null);
+      return null;
     }
   },
 
-  logout(): void {
-    const refreshToken = tokenStorage.getRefreshToken();
-    if (refreshToken) {
-      apiClient('/api/Auth/logout', {
+  async logout(): Promise<void> {
+    try {
+      await apiClient('/api/Auth/logout', {
         method: 'POST',
-        body: JSON.stringify({ refreshToken }),
-      }).catch(() => {});
+        body: JSON.stringify({}),
+      });
+    } catch {
+      // Ignore network errors during logout
+    } finally {
+      this.setUser(null);
     }
-    tokenStorage.clear();
   },
 };

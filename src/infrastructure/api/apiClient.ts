@@ -1,5 +1,3 @@
-import { tokenStorage } from '../auth/tokenStorage';
-
 const BASE_URL = ((import.meta as any).env?.VITE_API_URL as string) || '';
 
 export class ApiError extends Error {
@@ -9,61 +7,35 @@ export class ApiError extends Error {
   }
 }
 
-let activeRefreshPromise: Promise<string | null> | null = null;
+let activeRefreshPromise: Promise<boolean> | null = null;
 
-async function requestRefreshToken(): Promise<string | null> {
+export async function requestRefreshToken(): Promise<boolean> {
   if (activeRefreshPromise) {
     return activeRefreshPromise;
   }
 
   activeRefreshPromise = (async () => {
-    const accessToken = tokenStorage.getToken();
-    const refreshToken = tokenStorage.getRefreshToken();
-
-    if (!refreshToken) {
-      tokenStorage.clear();
-      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
-      return null;
-    }
-
     try {
       const url = `${BASE_URL}/api/Auth/refresh`;
       const response = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'X-Client-Type': 'web',
         },
-        body: JSON.stringify({
-          accessToken: accessToken || '',
-          refreshToken,
-        }),
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) {
-        tokenStorage.clear();
         window.dispatchEvent(new CustomEvent('auth:unauthorized'));
-        return null;
+        return false;
       }
 
-      const data = await response.json();
-      const newAccessToken = data.accessToken || data.token;
-      const newRefreshToken = data.refreshToken;
-
-      if (newAccessToken) {
-        tokenStorage.setToken(newAccessToken);
-      }
-      if (newRefreshToken) {
-        tokenStorage.setRefreshToken(newRefreshToken);
-      }
-      if (data.user) {
-        tokenStorage.setUser(data.user);
-      }
-
-      return newAccessToken || null;
+      return true;
     } catch {
-      tokenStorage.clear();
       window.dispatchEvent(new CustomEvent('auth:unauthorized'));
-      return null;
+      return false;
     } finally {
       activeRefreshPromise = null;
     }
@@ -76,20 +48,16 @@ export async function apiClient<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = tokenStorage.getToken();
-
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'X-Client-Type': 'web',
     ...(options.headers as Record<string, string>),
   };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
 
   const url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
   let response = await fetch(url, {
+    credentials: 'include',
     ...options,
     headers,
   });
@@ -97,19 +65,16 @@ export async function apiClient<T>(
   const isAuthEndpoint =
     endpoint.includes('/api/Auth/login') ||
     endpoint.includes('/api/Auth/refresh') ||
-    endpoint.includes('/api/Auth/logout');
+    endpoint.includes('/api/Auth/logout') ||
+    endpoint.includes('/api/Auth/register');
 
   if (response.status === 401 && !isAuthEndpoint) {
-    const newToken = await requestRefreshToken();
-    if (newToken) {
-      const retryHeaders: Record<string, string> = {
-        ...headers,
-        Authorization: `Bearer ${newToken}`,
-      };
-
+    const refreshed = await requestRefreshToken();
+    if (refreshed) {
       response = await fetch(url, {
+        credentials: 'include',
         ...options,
-        headers: retryHeaders,
+        headers,
       });
     }
   }

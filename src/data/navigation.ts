@@ -14,8 +14,7 @@ export const primaryNav: NavItem[] = [
 
 
 export const secondaryNav: NavItem[] = [
-{ to: '/quality', label: ui.nav.quality },
-{ to: '/tools', label: ui.nav.tools },
-{ to: '/prices', label: ui.nav.prices },
-{ to: '/distributors', label: ui.nav.distributors },
-{ to: '/careers', label: ui.nav.careers }];
+  { to: '/quality', label: ui.nav.quality },
+  { to: '/distributors', label: ui.nav.distributors },
+  { to: '/careers', label: ui.nav.careers }
+];

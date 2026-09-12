@@ -4,7 +4,7 @@ import { LiveProductCard } from '../components/products/LiveProductCard';
 import { CardSkeletonGrid } from '../components/shared/Skeleton';
 import { EmptyState } from '../components/shared/EmptyState';
 import { PageHeader } from '../components/shared/PageHeader';
-import { SearchIcon, SparklesIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 import { useLang } from '../i18n/LanguageContext';
 import { ui } from '../i18n/ui';
 
@@ -51,13 +51,9 @@ export function Products() {
               />
             </div>
 
-            {/* Results Count & Live Badge */}
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-emerald-800 border border-emerald-200/60">
-                <SparklesIcon className="h-3.5 w-3.5 text-emerald-600" />
-                <span>متجر مباشر مربوط بالإنتاج</span>
-              </span>
-              <span>• {products.length} من أصل {allProducts.length} منتج</span>
+            {/* Results Count */}
+            <div className="text-xs font-bold text-slate-500">
+              <span>{products.length} من أصل {allProducts.length} منتج</span>
             </div>
           </div>
 

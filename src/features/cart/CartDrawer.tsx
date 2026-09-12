@@ -86,92 +86,105 @@ export function CartDrawer() {
                     </Link>
                   </div>
                 ) : (
-                  items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex gap-4 p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition"
-                    >
-                      {/* Product Image */}
-                      <div className="h-20 w-20 rounded-xl bg-white p-1 border border-slate-200/80 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                        <img
-                          src={item.productImageUrl || '/hero_farm_bg.png'}
-                          alt={item.productName}
-                          className="h-full w-full object-contain"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/image.png';
-                          }}
-                        />
-                      </div>
+                  items.map((item) => {
+                    const itemWeightKg = item.quantity * item.packageWeightKg;
+                    const itemWeightTons = itemWeightKg / 1000;
 
-                      {/* Product Details */}
-                      <div className="flex-1 flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-start justify-between gap-2">
-                            <h4 className="text-sm font-extrabold text-ink line-clamp-1">
-                              {item.productName}
-                            </h4>
-                            <button
-                              type="button"
-                              onClick={() => removeItem(item.id)}
-                              className="text-slate-400 hover:text-red-500 transition p-1"
-                              title="حذف"
-                            >
-                              <Trash2Icon className="h-4 w-4" />
-                            </button>
-                          </div>
-
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="inline-block rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-extrabold text-amber-700">
-                              شكارة {item.packageWeightKg} كجم
-                            </span>
-                            <span className="text-xs font-semibold text-slate-500">
-                              {item.unitPrice} ج.م للشكارة
-                            </span>
-                          </div>
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex gap-4 p-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition"
+                      >
+                        {/* Product Image */}
+                        <div className="h-20 w-20 rounded-xl bg-white p-1 border border-slate-200/80 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                          <img
+                            src={item.productImageUrl || '/hero_farm_bg.png'}
+                            alt={item.productName}
+                            className="h-full w-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/image.png';
+                            }}
+                          />
                         </div>
 
-                        {/* Quantity and Subtotal */}
-                        <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-200/60">
-                          {/* Quantity Controls */}
-                          <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-2 py-1">
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="h-6 w-6 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 transition"
-                            >
-                              <MinusIcon className="h-3 w-3" />
-                            </button>
-                            <input
-                              type="number"
-                              min="1"
-                              value={item.quantity}
-                              onChange={(e) => {
-                                const val = parseInt(e.target.value, 10);
-                                if (!isNaN(val) && val > 0) {
-                                  updateQuantity(item.id, val);
-                                }
-                              }}
-                              className="w-12 text-center text-xs font-black text-ink bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="h-6 w-6 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 transition"
-                            >
-                              <PlusIcon className="h-3 w-3" />
-                            </button>
+                        {/* Product Details */}
+                        <div className="flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-start justify-between gap-2">
+                              <h4 className="text-sm font-extrabold text-ink line-clamp-1">
+                                {item.productName}
+                              </h4>
+                              <button
+                                type="button"
+                                onClick={() => removeItem(item.id)}
+                                className="text-slate-400 hover:text-red-500 transition p-1"
+                                title="حذف"
+                              >
+                                <Trash2Icon className="h-4 w-4" />
+                              </button>
+                            </div>
+
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="inline-block rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-extrabold text-amber-700">
+                                شكارة {item.packageWeightKg} كجم
+                              </span>
+                              <span className="text-xs font-semibold text-slate-500">
+                                {item.unitPrice} ج.م للشكارة
+                              </span>
+                            </div>
                           </div>
 
-                          {/* Subtotal */}
-                          <div className="text-end">
-                            <span className="text-sm font-black text-brand-600">
-                              {item.subtotal.toLocaleString()} ج.م
-                            </span>
+                          {/* Quantity, Total Weight and Subtotal */}
+                          <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-200/60">
+                            {/* Quantity Controls */}
+                            <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-2 py-1">
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                className="h-6 w-6 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 transition"
+                              >
+                                <MinusIcon className="h-3 w-3" />
+                              </button>
+                              <input
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                onChange={(e) => {
+                                  const val = parseInt(e.target.value, 10);
+                                  if (!isNaN(val) && val > 0) {
+                                    updateQuantity(item.id, val);
+                                  }
+                                }}
+                                className="w-12 text-center text-xs font-black text-ink bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="h-6 w-6 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 transition"
+                              >
+                                <PlusIcon className="h-3 w-3" />
+                              </button>
+                            </div>
+
+                            {/* Subtotal & Total Item Weight */}
+                            <div className="text-end">
+                              <span className="text-sm font-black text-brand-600 block">
+                                {item.subtotal.toLocaleString()} ج.م
+                              </span>
+                              <span className="block text-[11px] font-bold text-slate-500 mt-0.5">
+                                إجمالي الوزن:{' '}
+                                <strong className="text-slate-800 font-black">
+                                  {itemWeightKg >= 1000
+                                    ? `${Number(itemWeightTons.toFixed(2))} طن (${itemWeightKg.toLocaleString()} كجم)`
+                                    : `${itemWeightKg.toLocaleString()} كجم`}
+                                </strong>
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
 

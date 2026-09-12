@@ -44,14 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (authService.getToken()) {
-      authService.getMe()
-        .then((u) => setUser(u))
-        .catch(() => setUser(null))
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
+    authService.getMe()
+      .then((u) => setUser(u))
+      .catch(() => setUser(null))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const openAuthModal = useCallback(() => setIsAuthModalOpen(true), []);
@@ -93,8 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [closeAuthModal]);
 
-  const logout = useCallback(() => {
-    authService.logout();
+  const logout = useCallback(async () => {
+    await authService.logout();
     setUser(null);
     toast.info('تم تسجيل الخروج');
   }, []);
