@@ -68,7 +68,7 @@ export function Navbar() {
           : 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
       }`}
     >
-      <div className="mx-auto flex h-[72px] max-w-site items-center justify-between gap-3 px-4 md:px-6">
+      <div className="w-full max-w-[1700px] mx-auto flex h-[72px] items-center justify-between gap-3 px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28">
         {/* Brand Logo & Name */}
         <Link to="/" className="focus-ring flex shrink-0 items-center gap-2.5" aria-label={t(ui.brand.name)}>
           <img

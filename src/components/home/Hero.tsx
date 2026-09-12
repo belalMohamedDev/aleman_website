@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeftIcon, ArrowRightIcon, ChevronDownIcon, LeafIcon, PhoneCallIcon, ShieldCheckIcon, AwardIcon } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
-import { HeroLeafShadows } from './HeroLeafShadows';
+// import { HeroLeafShadows } from './HeroLeafShadows';
 
 const HERO_BG = "/hero_farm_bg.png";
 
@@ -42,7 +42,7 @@ export function Hero() {
       </div>
 
       {/* Decorative Botanical Leaf Shadows (Gobo / Bokeh Foliage Frame) */}
-      <HeroLeafShadows />
+      {/* <HeroLeafShadows /> */}
 
       {/* Hero Content positioned towards the right in RTL */}
       <div className="relative z-20 w-full max-w-[1700px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28 pt-28 pb-16 md:pt-36 md:pb-24 lg:pt-36 lg:pb-28 flex flex-col items-start">
@@ -53,8 +53,8 @@ export function Hero() {
           className="max-w-xl lg:max-w-2xl text-start"
         >
           {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-600/50 bg-[#06291b]/80 px-4 py-1.5 text-xs md:text-sm font-bold text-emerald-300 backdrop-blur-md shadow-sm">
-            <LeafIcon className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-600/50 bg-[#06291b]/80 px-4 py-1.5 text-xs md:text-sm font-bold text-white backdrop-blur-md shadow-sm">
+            <LeafIcon className="h-4 w-4 text-white" aria-hidden="true" />
             <span>{t(ui.home.heroEyebrow)}</span>
           </div>
 
