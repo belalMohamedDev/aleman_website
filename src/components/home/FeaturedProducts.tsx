@@ -20,7 +20,7 @@ export function FeaturedProducts() {
   }, [products, selectedCatId]);
 
   return (
-    <section className="mx-auto max-w-site px-4 py-16 md:px-6 md:py-20" aria-labelledby="featured-products-title">
+    <section className="relative z-10 mx-auto max-w-[1440px] px-4 py-16 md:px-8 md:py-20" aria-labelledby="featured-products-title">
       <SectionHeading
         eyebrow={t(ui.home.productsTitle)}
         title={t(ui.home.productsSubtitle)}

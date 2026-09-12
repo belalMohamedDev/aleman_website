@@ -6,6 +6,7 @@ import { PhoneCallIcon, XIcon, LanguagesIcon } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
 import { LOGO_URL, primaryNav, secondaryNav } from '../../data/navigation';
+import { useAuth } from '../../features/auth/AuthContext';
 
 type MobileMenuProps = {
   open: boolean;
@@ -14,6 +15,7 @@ type MobileMenuProps = {
 
 export function MobileMenu({ open, onClose }: MobileMenuProps) {
   const { t, lang, setLang, dir } = useLang();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -84,6 +86,21 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                     </NavLink>
                   </li>
               )}
+                {isAuthenticated && (
+                  <li>
+                    <NavLink
+                      to="/profile"
+                      onClick={onClose}
+                      className={({ isActive }) =>
+                        `focus-ring block rounded-xl px-4 py-3 text-base font-bold transition ${
+                          isActive ? 'bg-brand-50 text-brand-600' : 'text-ink-soft hover:bg-brand-50/60'
+                        }`
+                      }
+                    >
+                      {lang === 'ar' ? 'الملف الشخصي والطلبات' : 'Profile & Orders'}
+                    </NavLink>
+                  </li>
+                )}
               </ul>
 
               <p className="mt-6 px-4 text-xs font-bold uppercase tracking-wide text-ink-muted">

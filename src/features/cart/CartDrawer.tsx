@@ -141,9 +141,18 @@ export function CartDrawer() {
                             >
                               <MinusIcon className="h-3 w-3" />
                             </button>
-                            <span className="w-8 text-center text-xs font-black text-ink">
-                              {item.quantity}
-                            </span>
+                            <input
+                              type="number"
+                              min="1"
+                              value={item.quantity}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value, 10);
+                                if (!isNaN(val) && val > 0) {
+                                  updateQuantity(item.id, val);
+                                }
+                              }}
+                              className="w-12 text-center text-xs font-black text-ink bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            />
                             <button
                               type="button"
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}

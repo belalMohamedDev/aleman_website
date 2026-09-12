@@ -10,6 +10,8 @@ import {
   ShieldCheckIcon,
   TruckIcon,
   FlaskConicalIcon,
+  ScaleIcon,
+  PackageIcon,
 } from 'lucide-react';
 import { productService } from '../features/products/productService';
 import type { Product, ProductPackage } from '../features/products/types';
@@ -31,7 +33,8 @@ export function ProductDetail() {
   const [categoryName, setCategoryName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPackage, setSelectedPackage] = useState<ProductPackage | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [unitMode, setUnitMode] = useState<'bag' | 'ton'>('bag');
+  const [inputValue, setInputValue] = useState<number | string>(1);
   const [isAdded, setIsAdded] = useState(false);
 
   const isNumericId = !isNaN(Number(slug));
@@ -109,9 +112,25 @@ export function ProductDetail() {
   const protein = liveProduct ? liveProduct.proteinPercentage : legacyProduct ? legacyProduct.protein : null;
   const packages = liveProduct ? liveProduct.packages?.filter((p) => p.isActive) || [] : [];
 
+  const bagsPerTon = selectedPackage?.weightKg ? Math.round(1000 / selectedPackage.weightKg) : 40;
+
+  const totalBags = Math.max(
+    1,
+    unitMode === 'ton'
+      ? Math.round((Number(inputValue) || 1) * bagsPerTon)
+      : Math.round(Number(inputValue) || 1)
+  );
+
+  const totalTons =
+    unitMode === 'ton'
+      ? Number(inputValue) || 1
+      : (totalBags * (selectedPackage?.weightKg || 25)) / 1000;
+
+  const totalPrice = totalBags * (selectedPackage?.price || 0);
+
   const handleAddToCart = () => {
     if (!liveProduct || !selectedPackage) return;
-    addItem(liveProduct, selectedPackage, quantity);
+    addItem(liveProduct, selectedPackage, totalBags);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 1500);
   };
@@ -226,64 +245,149 @@ export function ProductDetail() {
                   ))}
                 </div>
 
-                {/* Quantity and Direct Add to Cart */}
+                {/* Quantity, Unit Mode (Bag/Ton), and Direct Add to Cart */}
                 {selectedPackage && (
-                  <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                    {/* Quantity Counter */}
-                    <div className="flex items-center justify-between border border-slate-200 rounded-full px-3 py-1.5 bg-slate-50 sm:w-40">
-                      <button
-                        type="button"
-                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        className="h-8 w-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-white transition"
-                      >
-                        <MinusIcon className="h-4 w-4" />
-                      </button>
-                      <div className="text-center">
-                        <span className="block text-sm font-black text-ink">{quantity}</span>
-                        <span className="block text-[10px] text-slate-500 font-bold">شكارة</span>
+                  <div className="pt-5 border-t border-slate-200/80 space-y-4">
+                    {/* Unit Mode Selector: شكارة / طن */}
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <span className="text-xs font-bold text-slate-500">وحدة الشراء:</span>
+                      <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200/80">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUnitMode('bag');
+                            setInputValue(totalBags);
+                          }}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all ${
+                            unitMode === 'bag'
+                              ? 'bg-brand-600 text-white shadow-sm'
+                              : 'text-slate-600 hover:text-ink'
+                          }`}
+                        >
+                          <PackageIcon className="h-3.5 w-3.5" />
+                          <span>بالشكارة</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUnitMode('ton');
+                            const calculatedTons = Math.max(1, Math.round(totalBags / bagsPerTon));
+                            setInputValue(calculatedTons);
+                          }}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all ${
+                            unitMode === 'ton'
+                              ? 'bg-brand-600 text-white shadow-sm'
+                              : 'text-slate-600 hover:text-ink'
+                          }`}
+                        >
+                          <ScaleIcon className="h-3.5 w-3.5" />
+                          <span>بالطن (شحنات الجملة)</span>
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setQuantity((q) => q + 1)}
-                        className="h-8 w-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-white transition"
-                      >
-                        <PlusIcon className="h-4 w-4" />
-                      </button>
                     </div>
 
-                    {/* Add to Cart Button */}
-                    {!isAuthenticated ? (
-                      <button
-                        type="button"
-                        onClick={openAuthModal}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-sm font-extrabold text-white shadow-md bg-brand-500 hover:bg-brand-600 transition-all hover:scale-[1.02] active:scale-95"
-                      >
-                        <ShoppingBagIcon className="h-5 w-5" />
-                        <span>تسجيل الدخول للشراء</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleAddToCart}
-                        className={`flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-sm font-extrabold text-white shadow-md transition-all ${
-                          isAdded
-                            ? 'bg-emerald-600'
-                            : 'bg-[#f97316] hover:bg-[#ea580c] hover:scale-[1.02] active:scale-95'
-                        }`}
-                      >
-                        {isAdded ? (
-                          <>
-                            <CheckIcon className="h-5 w-5" />
-                            <span>تمت الإضافة إلى السلة!</span>
-                          </>
-                        ) : (
-                          <>
-                            <ShoppingBagIcon className="h-5 w-5" />
-                            <span>إضافة {quantity} شكارة للسلة ({(quantity * selectedPackage.price).toLocaleString()} ج.م)</span>
-                          </>
-                        )}
-                      </button>
-                    )}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                      {/* Quantity Input with typing & +/- buttons */}
+                      <div className="flex items-center border-2 border-slate-200 focus-within:border-brand-500 rounded-full bg-slate-50 p-1 transition sm:w-48 shadow-sm">
+                        <button
+                          type="button"
+                          onClick={() => setInputValue((v) => Math.max(1, (Number(v) || 1) - 1))}
+                          className="h-9 w-9 rounded-full flex items-center justify-center text-slate-600 hover:bg-white transition active:scale-95"
+                          aria-label="تقليل الكمية"
+                        >
+                          <MinusIcon className="h-4 w-4" />
+                        </button>
+                        
+                        <div className="flex-1 flex flex-col items-center justify-center px-1">
+                          <input
+                            type="number"
+                            min="1"
+                            value={inputValue}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val === '') {
+                                setInputValue('' as any);
+                              } else {
+                                const num = Number(val);
+                                if (!isNaN(num) && num >= 0) {
+                                  setInputValue(num);
+                                }
+                              }
+                            }}
+                            onBlur={() => {
+                              if (!inputValue || Number(inputValue) < 1) {
+                                setInputValue(1);
+                              }
+                            }}
+                            className="w-full text-center text-base font-black text-ink bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          <span className="text-[10px] text-slate-500 font-bold -mt-0.5">
+                            {unitMode === 'ton' ? 'طن' : 'شكارة'}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setInputValue((v) => (Number(v) || 0) + 1)}
+                          className="h-9 w-9 rounded-full flex items-center justify-center text-slate-600 hover:bg-white transition active:scale-95"
+                          aria-label="زيادة الكمية"
+                        >
+                          <PlusIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      {/* Add to Cart Button */}
+                      {!isAuthenticated ? (
+                        <button
+                          type="button"
+                          onClick={openAuthModal}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-sm font-extrabold text-white shadow-md bg-brand-500 hover:bg-brand-600 transition-all hover:scale-[1.02] active:scale-95"
+                        >
+                          <ShoppingBagIcon className="h-5 w-5" />
+                          <span>تسجيل الدخول للشراء</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleAddToCart}
+                          className={`flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 px-6 text-sm font-extrabold text-white shadow-md transition-all ${
+                            isAdded
+                              ? 'bg-emerald-600'
+                              : 'bg-[#f97316] hover:bg-[#ea580c] hover:scale-[1.02] active:scale-95'
+                          }`}
+                        >
+                          {isAdded ? (
+                            <>
+                              <CheckIcon className="h-5 w-5" />
+                              <span>تمت الإضافة إلى السلة!</span>
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingBagIcon className="h-5 w-5" />
+                              <span>
+                                {unitMode === 'ton'
+                                  ? `إضافة ${inputValue || 1} طن (${totalBags} شكارة) للسلة (${totalPrice.toLocaleString()} ج.م)`
+                                  : `إضافة ${totalBags} شكارة للسلة (${totalPrice.toLocaleString()} ج.م)`}
+                              </span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Equivalent Bags / Tons Conversion helper */}
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2">
+                      <span className="text-slate-400">ملخص الكمية:</span>
+                      {unitMode === 'ton' ? (
+                        <span className="text-brand-700 font-extrabold">
+                          {inputValue || 1} طن = {totalBags} شكارة ({selectedPackage.weightKg} كجم للشكارة) ستُضاف للسلة
+                        </span>
+                      ) : (
+                        <span className="text-brand-700 font-extrabold">
+                          {totalBags} شكارة = {totalTons.toFixed(2)} طن ({(totalBags * selectedPackage.weightKg).toLocaleString()} كجم)
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

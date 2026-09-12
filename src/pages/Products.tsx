@@ -35,7 +35,7 @@ export function Products() {
         subtitle="تشكيلة متكاملة من أجود أنواع الأعلاف الحيوانية والداجنة المصنعة بأحدث المعايير العالمية مع إمكانية الشراء المباشر بالأطنان والشكائر."
       />
 
-      <section className="mx-auto max-w-site px-4 py-12 md:px-6 md:py-16">
+      <section className="mx-auto max-w-[1440px] px-4 py-12 md:px-8 md:py-16">
         {/* Filter and Search Bar */}
         <div className="mb-10 space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -112,7 +112,7 @@ export function Products() {
             }}
           />
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product, index) => (
               <LiveProductCard
                 key={product.id}

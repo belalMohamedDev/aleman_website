@@ -44,31 +44,7 @@ export function ParallaxAnimals() {
         </motion.div>
       </motion.div>
 
-      {/* Rabbits */}
-      <motion.div 
-        initial={{ opacity: 0, y: 150, scale: 0.8 }}
-        whileInView={{ opacity: 0.4, y: 0, scale: 1 }}
-        viewport={{ once: false, amount: 0.2 }}
-        transition={{ duration: 1.2, type: 'spring', bounce: 0.3 }}
-        className="absolute top-[420vh] right-[0%] md:right-[5%] w-[14rem] sm:w-[20rem] lg:w-[24rem] mix-blend-normal"
-      >
-        <motion.div animate={{ y: [0, -15, 0] }} transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: 1.5 }}>
-          <img src="/animal_rabbit.png" alt="" className="w-full h-auto object-contain filter drop-shadow-2xl" />
-        </motion.div>
-      </motion.div>
-
-      {/* Sheep */}
-      <motion.div 
-        initial={{ opacity: 0, x: -150, rotate: -5 }}
-        whileInView={{ opacity: 0.35, x: 0, rotate: 0 }}
-        viewport={{ once: false, amount: 0.2 }}
-        transition={{ duration: 1.2, type: 'spring', bounce: 0.3 }}
-        className="absolute top-[520vh] left-[-5%] md:left-[5%] w-[18rem] sm:w-[24rem] lg:w-[30rem] mix-blend-normal"
-      >
-        <motion.div animate={{ y: [0, -30, 0] }} transition={{ repeat: Infinity, duration: 5.5, ease: "easeInOut", delay: 0.2 }}>
-          <img src="/animal_sheep.png" alt="" className="w-full h-auto object-contain filter drop-shadow-2xl" />
-        </motion.div>
-      </motion.div>
+      {/* Rabbits & Sheep removed from under products as requested */}
 
       {/* Pigeons - Flying randomly */}
       <motion.div 

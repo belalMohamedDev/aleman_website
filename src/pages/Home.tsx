@@ -1,4 +1,4 @@
-import React from 'react';
+import { ParallaxAnimals } from '../components/shared/ParallaxAnimals';
 import { Hero } from '../components/home/Hero';
 import { ProductCategories } from '../components/home/ProductCategories';
 import { TrustMetrics } from '../components/home/TrustMetrics';
@@ -10,7 +10,8 @@ import { ContactCTA } from '../components/home/ContactCTA';
 
 export function Home() {
   return (
-    <>
+    <div className="relative overflow-hidden">
+      <ParallaxAnimals />
       <Hero />
       <div className="pt-10">
         <ProductCategories />
@@ -21,6 +22,6 @@ export function Home() {
       <FeaturedProducts />
       <ArticlesPreview />
       <ContactCTA />
-    </>);
-
+    </div>
+  );
 }

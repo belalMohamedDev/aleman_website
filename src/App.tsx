@@ -8,7 +8,6 @@ import { AuthModal } from './features/auth/AuthModal';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { FloatingContact } from './components/layout/FloatingContact';
-import { ParallaxAnimals } from './components/shared/ParallaxAnimals';
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Quality } from './pages/Quality';
@@ -23,13 +22,13 @@ import { Tools } from './pages/Tools';
 import { FeedPrices } from './pages/FeedPrices';
 import { Distributors } from './pages/Distributors';
 import { Contact } from './pages/Contact';
+import { Profile } from './pages/Profile';
 
 function Shell() {
   const { dir } = useLang();
 
   return (
     <div dir={dir} className="relative flex min-h-screen w-full flex-col bg-canvas overflow-x-hidden">
-      <ParallaxAnimals />
       <Navbar />
       <CartDrawer />
       <AuthModal />
@@ -49,6 +48,7 @@ function Shell() {
           <Route path="/distributors" element={<Distributors />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>

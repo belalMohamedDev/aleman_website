@@ -239,6 +239,15 @@ export function Navbar() {
                     </div>
 
                     <Link
+                      to="/profile"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+                    >
+                      <UserIcon className="h-3.5 w-3.5 text-brand-600" />
+                      <span>الملف الشخصي والبيانات</span>
+                    </Link>
+
+                    <Link
                       to="/checkout"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
