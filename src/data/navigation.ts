@@ -9,7 +9,7 @@ export const primaryNav: NavItem[] = [
   { to: '/', label: ui.nav.home },
   { to: '/about', label: ui.nav.about },
   { to: '/products', label: ui.nav.products },
-  { to: '/distributors', label: ui.nav.distributors },
+  // { to: '/distributors', label: ui.nav.distributors },
   { to: '/careers', label: ui.nav.careers },
   // { to: '/articles', label: ui.nav.articles },
   { to: '/contact', label: ui.nav.contact }

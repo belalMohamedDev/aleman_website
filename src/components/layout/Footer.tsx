@@ -26,7 +26,7 @@ export function Footer() {
       title: t(ui.footer.resources),
       links: [
         // { to: '/articles', label: t(ui.nav.articles) },
-        { to: '/distributors', label: t(ui.nav.distributors) }
+        // { to: '/distributors', label: t(ui.nav.distributors) }
       ]
     }
   ];

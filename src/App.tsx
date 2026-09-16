@@ -59,7 +59,7 @@ function Shell() {
           <Route path="/articles/:slug" element={<ArticleDetail />} />
           <Route path="/tools" element={<Tools />} />
           <Route path="/prices" element={<FeedPrices />} />
-          <Route path="/distributors" element={<Distributors />} />
+          {/* <Route path="/distributors" element={<Distributors />} /> */}
           <Route path="/careers" element={<Careers />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<Profile />} />
