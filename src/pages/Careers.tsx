@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Job } from '../types/content';
 import { jobs } from '../data/jobs';
 import { useLang } from '../i18n/LanguageContext';
@@ -8,9 +8,16 @@ import { PlaceholderNotice } from '../components/shared/PlaceholderNotice';
 import { JobCard } from '../components/careers/JobCard';
 import { ApplicationModal } from '../components/careers/ApplicationModal';
 
+const OFFICIAL_CAREERS_URL = 'https://www.alemanfeed.com/modules/recruitment/careers.php?lang=ar';
+
 export function Careers() {
   const { t } = useLang();
   const [activeJob, setActiveJob] = useState<Job | null>(null);
+
+  useEffect(() => {
+    // Automatically redirect to official careers portal
+    window.location.href = OFFICIAL_CAREERS_URL;
+  }, []);
 
   return (
     <>
@@ -23,7 +30,7 @@ export function Careers() {
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {jobs.map((job, index) =>
-          <JobCard key={job.id} job={job} index={index} onApply={setActiveJob} />
+            <JobCard key={job.id} job={job} index={index} onApply={setActiveJob} />
           )}
         </div>
       </section>

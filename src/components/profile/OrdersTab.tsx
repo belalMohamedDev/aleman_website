@@ -20,16 +20,21 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
   const [activeTab, setActiveTab] = useState<TabType>('current');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Sort orders descending so newest orders are always at top
+  const sortedOrders = useMemo(() => {
+    return [...orders].sort((a, b) => b.id - a.id);
+  }, [orders]);
+
   // Filter orders by search term first
   const searchedOrders = useMemo(() => {
-    if (!searchTerm.trim()) return orders;
+    if (!searchTerm.trim()) return sortedOrders;
     const term = searchTerm.trim().toLowerCase();
-    return orders.filter(
+    return sortedOrders.filter(
       (o) =>
         o.orderNumber.toLowerCase().includes(term) ||
         (o.notes && o.notes.toLowerCase().includes(term))
     );
-  }, [orders, searchTerm]);
+  }, [sortedOrders, searchTerm]);
 
   // Categorize orders using numeric comparison
   const currentOrders = useMemo(
@@ -37,17 +42,21 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
       searchedOrders.filter((o) => {
         const s = Number(o.status);
         return [
-          OrderStatus.Pending,
-          OrderStatus.Confirmed,
-          OrderStatus.Processing,
-          OrderStatus.Shipped,
+          OrderStatus.Pending, // 1
+          OrderStatus.PendingMerchantApproval, // 8
+          OrderStatus.PendingAdminApproval, // 9
+          OrderStatus.PendingPaymentApproval, // 12
+          OrderStatus.Confirmed, // 2
+          OrderStatus.Preparing, // 3
+          OrderStatus.OutForDelivery, // 4
+          OrderStatus.ReadyForPickup, // 5
         ].includes(s);
       }),
     [searchedOrders]
   );
 
   const deliveredOrders = useMemo(
-    () => searchedOrders.filter((o) => Number(o.status) === OrderStatus.Delivered),
+    () => searchedOrders.filter((o) => [OrderStatus.Completed, OrderStatus.Delivered, 6].includes(Number(o.status))),
     [searchedOrders]
   );
 
@@ -55,7 +64,12 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
     () =>
       searchedOrders.filter((o) => {
         const s = Number(o.status);
-        return [OrderStatus.Cancelled, OrderStatus.Refunded].includes(s);
+        return [
+          OrderStatus.Cancelled, // 7
+          OrderStatus.RejectedByMerchant, // 10
+          OrderStatus.RejectedByAdmin, // 11
+          OrderStatus.Refunded,
+        ].includes(s);
       }),
     [searchedOrders]
   );

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { authService } from './authService';
+import { notificationService } from '../notifications/notificationService';
 import type { User, LoginDto, RegisterDto } from './types';
 import { toast } from 'sonner';
 
@@ -90,6 +91,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [closeAuthModal]);
 
   const logout = useCallback(async () => {
+    try {
+      const storedToken = sessionStorage.getItem('fcm_web_token');
+      if (storedToken) {
+        await notificationService.removeDeviceToken({ fcmToken: storedToken }).catch(() => null);
+        sessionStorage.removeItem('fcm_web_token');
+      }
+    } catch {
+      // Ignore cleanup error
+    }
     await authService.logout();
     setUser(null);
     toast.info('تم تسجيل الخروج');

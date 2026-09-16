@@ -15,7 +15,7 @@ export function Footer() {
         { to: '/', label: t(ui.nav.home) },
         { to: '/about', label: t(ui.nav.about) },
         // { to: '/quality', label: t(ui.nav.quality) },
-        { to: '/careers', label: t(ui.nav.careers) }
+        { to: 'https://www.alemanfeed.com/modules/recruitment/careers.php?lang=ar', label: t(ui.nav.careers) }
       ]
     },
     {
@@ -61,12 +61,23 @@ export function Footer() {
               <ul className="mt-4 space-y-3">
                 {col.links.map((link) => (
                   <li key={link.to + link.label}>
-                    <Link
-                      to={link.to}
-                      className="focus-ring inline-block text-sm text-slate-300 transition-colors duration-200 hover:text-gold-400 hover:translate-x-1 rtl:hover:-translate-x-1"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.to.startsWith('http') ? (
+                      <a
+                        href={link.to}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="focus-ring inline-block text-sm text-slate-300 transition-colors duration-200 hover:text-gold-400 hover:translate-x-1 rtl:hover:-translate-x-1"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.to}
+                        className="focus-ring inline-block text-sm text-slate-300 transition-colors duration-200 hover:text-gold-400 hover:translate-x-1 rtl:hover:-translate-x-1"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

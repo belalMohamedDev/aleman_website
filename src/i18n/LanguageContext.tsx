@@ -20,6 +20,7 @@ export function LanguageProvider({ children }: {children: React.ReactNode;}) {
     const root = document.documentElement;
     root.setAttribute('lang', lang);
     root.setAttribute('dir', dir);
+    document.title = lang === 'ar' ? 'مجموعة شركات الإيمان للأعلاف' : 'Aleman Feed Group';
   }, [lang, dir]);
 
   const t = useCallback((value: Localized) => value[lang], [lang]);

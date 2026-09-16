@@ -1,6 +1,8 @@
-import { PackageIcon, TruckIcon, WarehouseIcon, ChevronLeftIcon, BanIcon } from 'lucide-react';
+import { PackageIcon, TruckIcon, WarehouseIcon, ChevronLeftIcon, BanIcon, LandmarkIcon, BanknoteIcon } from 'lucide-react';
 import type { OrderResponse } from '../../features/profile/types';
 import { OrderStatus, OrderType, PaymentMethod } from '../../features/profile/types';
+import { useAuth } from '../../features/auth/AuthContext';
+import { isSubCustomer as checkIsSubCustomer } from '../../features/auth/userUtils';
 
 interface OrderCardProps {
   order: OrderResponse;
@@ -10,46 +12,78 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onViewDetails, onCancelOrder, showCustomerName }: OrderCardProps) {
+  const { user } = useAuth();
   const isPending = order.status === OrderStatus.Pending;
-  const isBankTransfer = order.paymentMethod === PaymentMethod.BankTransferOrOnline;
-  const isSubCustomerOrder = Boolean(order.parentMerchantId);
+  const isSubCustomerOrder = Boolean(
+    order.parentMerchantId || 
+    (order.parentMerchantName && order.parentMerchantName.trim() !== '') || 
+    (user && checkIsSubCustomer(user))
+  );
 
-  // Status Badge Label & Colors (matching mobile screenshot)
+  // Status Badge Label & Colors (matching mobile screenshots)
   const getStatusDisplay = () => {
-    if (order.status === OrderStatus.Pending) {
-      if (isBankTransfer) {
-        if (isSubCustomerOrder && !order.merchantApprovedAt) {
+    const s = Number(order.status);
+    if (s === OrderStatus.PendingMerchantApproval || s === 8) {
+      return {
+        text: 'قيد موافقة التاجر الرئيسي',
+        bg: 'bg-amber-50 text-amber-800 border-amber-200',
+      };
+    }
+    if (s === OrderStatus.PendingAdminApproval || s === 9) {
+      return {
+        text: 'قيد موافقة الإدارة',
+        bg: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
+      };
+    }
+    if (s === OrderStatus.PendingPaymentApproval || s === 12) {
+      return {
+        text: 'تم رفع الإيصال - قيد تدقيق المالية',
+        bg: 'bg-blue-50 text-blue-700 border-blue-200',
+      };
+    }
+    if (s === OrderStatus.Pending || s === 1) {
+      if (isSubCustomerOrder) {
+        if (!order.merchantApprovedAt) {
           return {
-            text: 'قيد موافقة التاجر',
-            bg: 'bg-blue-50 text-blue-700 border-blue-200',
+            text: 'قيد موافقة التاجر الرئيسي',
+            bg: 'bg-amber-50 text-amber-800 border-amber-200',
           };
         }
         return {
           text: 'قيد موافقة الإدارة',
-          bg: 'bg-[#eaf4fe] text-[#1976d2] border-[#bbdefb]',
+          bg: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
         };
       }
       return {
-        text: 'قيد الانتظار',
-        bg: 'bg-amber-50 text-amber-700 border-amber-200',
+        text: 'قيد موافقة الإدارة',
+        bg: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
       };
     }
-    if (order.status === OrderStatus.Confirmed) {
+    if (s === OrderStatus.Confirmed || s === 2) {
       return { text: 'تم التأكيد', bg: 'bg-sky-50 text-sky-700 border-sky-200' };
     }
-    if (order.status === OrderStatus.Processing) {
+    if (s === OrderStatus.Preparing || s === 3) {
       return { text: 'قيد التجهيز', bg: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
     }
-    if (order.status === OrderStatus.Shipped) {
-      return { text: 'جاري التوصيل', bg: 'bg-purple-50 text-purple-700 border-purple-200' };
+    if (s === OrderStatus.OutForDelivery || s === 4) {
+      return { text: 'خرج للتوصيل', bg: 'bg-purple-50 text-purple-700 border-purple-200' };
     }
-    if (order.status === OrderStatus.Delivered) {
+    if (s === OrderStatus.ReadyForPickup || s === 5) {
+      return { text: 'جاهز للتحميل', bg: 'bg-sky-50 text-sky-700 border-sky-200' };
+    }
+    if (s === OrderStatus.Completed || s === OrderStatus.Delivered || s === 6) {
       return { text: 'تم التسليم بنجاح', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
     }
-    if (order.status === OrderStatus.Cancelled) {
+    if (s === OrderStatus.Cancelled || s === 7) {
       return { text: 'ملغي', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
     }
-    if (order.status === OrderStatus.Refunded) {
+    if (s === OrderStatus.RejectedByMerchant || s === 10) {
+      return { text: 'مرفوض من التاجر الرئيسي', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
+    }
+    if (s === OrderStatus.RejectedByAdmin || s === 11) {
+      return { text: 'مرفوض من الإدارة', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
+    }
+    if (s === OrderStatus.Refunded || s === 13) {
       return { text: 'مسترجع', bg: 'bg-slate-100 text-slate-700 border-slate-200' };
     }
     return {
@@ -82,12 +116,18 @@ export function OrderCard({ order, onViewDetails, onCancelOrder, showCustomerNam
     return '0 طن';
   };
 
+  const isBankTransfer = 
+    order.paymentMethod === PaymentMethod.BankTransfer ||
+    order.paymentMethod === 3 ||
+    order.paymentMethod === 2 ||
+    Boolean(order.paymentMethodName?.includes('تحويل'));
+
   const formattedTotal = `${Number(order.totalAmount || 0).toFixed(1)} ج.م`;
 
   return (
     <div className="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs transition hover:shadow-md hover:border-slate-300">
-      {/* Top Row: Package Icon + Order Number & Order Type Badge (وصال / استلام) */}
-      <div className="flex items-center justify-between gap-3">
+      {/* Top Row: Package Icon + Order Number & Badges */}
+      <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
             <PackageIcon className="h-5 w-5" />
@@ -97,15 +137,27 @@ export function OrderCard({ order, onViewDetails, onCancelOrder, showCustomerNam
           </span>
         </div>
 
-        {/* Order Type Pill (وصال / استلام من المصنع) */}
-        <div className="shrink-0">
+        {/* Badges: Payment Method & Order Type */}
+        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+          {isBankTransfer ? (
+            <span className="inline-flex items-center gap-1 rounded-xl bg-purple-50 text-purple-700 border border-purple-200/80 px-2.5 py-1 text-xs font-black">
+              <LandmarkIcon className="h-3 w-3" />
+              <span>تحويل بنكي</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 text-xs font-black">
+              <BanknoteIcon className="h-3 w-3" />
+              <span>عند الاستلام</span>
+            </span>
+          )}
+
           {order.orderType === OrderType.Delivery ? (
-            <span className="inline-flex items-center gap-1.5 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/80 px-3 py-1 text-xs font-black">
+            <span className="inline-flex items-center gap-1.5 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/80 px-2.5 py-1 text-xs font-black">
               <span>وصال</span>
               <TruckIcon className="h-3.5 w-3.5" />
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/80 px-3 py-1 text-xs font-black">
+            <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/80 px-2.5 py-1 text-xs font-black">
               <span>استلام من المصنع</span>
               <WarehouseIcon className="h-3.5 w-3.5" />
             </span>

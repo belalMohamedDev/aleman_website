@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   XIcon,
   PackageIcon,
-  MapPinIcon,
   TruckIcon,
   CreditCardIcon,
   ScaleIcon,
@@ -16,6 +15,8 @@ import {
 } from 'lucide-react';
 import type { OrderResponse } from '../../features/profile/types';
 import { ORDER_STATUS_META, OrderStatus, OrderType, PaymentMethod } from '../../features/profile/types';
+import { useAuth } from '../../features/auth/AuthContext';
+import { isSubCustomer as checkIsSubCustomer } from '../../features/auth/userUtils';
 import { toast } from 'sonner';
 
 interface OrderDetailModalProps {
@@ -30,10 +31,19 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
 
   if (!order) return null;
 
-  const isBankTransfer = order.paymentMethod === PaymentMethod.BankTransferOrOnline;
+  const { user } = useAuth();
+  const isBankTransfer = 
+    order.paymentMethod === PaymentMethod.BankTransfer ||
+    order.paymentMethod === 3 ||
+    order.paymentMethod === 2 ||
+    Boolean(order.paymentMethodName?.includes('تحويل'));
   
-  // Heuristic: check if this is a sub-customer order (e.g. from merchant orders tab or marked as sub-customer)
-  const isSubCustomer = Boolean(order.customerName && order.customerName.length > 0);
+  // Distinguish Sub-Customer vs Main Merchant
+  const isSub = Boolean(
+    order.parentMerchantId || 
+    (order.parentMerchantName && order.parentMerchantName.trim() !== '') || 
+    (user && checkIsSubCustomer(user))
+  );
   const driverPhone = order.driverPhone || order.vehicle?.driverPhone;
 
   const statusMeta = ORDER_STATUS_META[order.status as OrderStatus] || {
@@ -71,17 +81,61 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
     }
   };
 
-  // Determine current timeline step
-  // Step 1: تقديم الطلب (Done)
-  // Step 2: مراجعة واعتماد إدارة المصنع (أو التاجر الرئيسي)
-  // Step 3: سداد ورفع إيصال التحويل
-  // Step 4: مراجعة وتأكيد السداد من المالية
-  // Step 5: خرج للتوصيل / جاهز للتحميل
-  const isPendingApproval = order.status === OrderStatus.Pending;
-  const isApproved = order.status === OrderStatus.Confirmed;
-  const isProcessing = order.status === OrderStatus.Processing;
-  const isShipped = order.status === OrderStatus.Shipped;
-  const isDelivered = order.status === OrderStatus.Delivered;
+  // Status flags matching all backend status codes
+  const isPendingApproval = 
+    order.status === OrderStatus.Pending ||
+    order.status === OrderStatus.PendingMerchantApproval ||
+    order.status === OrderStatus.PendingAdminApproval ||
+    order.status === 1 || order.status === 8 || order.status === 9;
+
+  const isApproved = 
+    order.status === OrderStatus.Confirmed ||
+    order.status === OrderStatus.PendingPaymentApproval ||
+    order.status === 2 || order.status === 12;
+
+  const isProcessing = order.status === OrderStatus.Preparing || order.status === 3;
+  const isShipped = order.status === OrderStatus.OutForDelivery || order.status === OrderStatus.ReadyForPickup || order.status === 4 || order.status === 5;
+  const isDelivered = order.status === OrderStatus.Completed || order.status === 6;
+
+  // Sub-customer specific approvals
+  const isMerchantApproved = 
+    Boolean(order.merchantApprovedAt) || 
+    order.status === OrderStatus.PendingAdminApproval ||
+    order.status === 9 ||
+    [2, 3, 4, 5, 6, 9, 12].includes(Number(order.status));
+
+  const isFactoryApproved = 
+    Boolean(order.adminApprovedAt) || 
+    [2, 3, 4, 5, 6, 12].includes(Number(order.status));
+
+  // Timeline Badge Logic matching Screenshots 3 & 4
+  const getTimelineBadge = () => {
+    if (isPendingApproval) {
+      if (isSub) {
+        if (!isMerchantApproved) {
+          return {
+            text: 'قيد موافقة التاجر الرئيسي',
+            className: 'bg-amber-50 text-amber-800 border-amber-200/80',
+          };
+        }
+        return {
+          text: 'قيد موافقة الإدارة',
+          className: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
+        };
+      }
+      // Main merchant: direct factory approval
+      return {
+        text: 'قيد موافقة الإدارة',
+        className: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
+      };
+    }
+    return {
+      text: statusMeta.labelAr,
+      className: `${statusMeta.bg} ${statusMeta.color}`,
+    };
+  };
+
+  const timelineBadge = getTimelineBadge();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm animate-in fade-in duration-200">
@@ -121,10 +175,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   #{order.orderNumber}
                 </span>
               </div>
-              <p className="text-[11px] font-bold text-slate-400 mt-1 flex items-center gap-1.5">
-                <ClockIcon className="h-3 w-3 text-slate-400" />
-                <span>{formattedDate} - {formattedTime}</span>
-              </p>
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 mt-1.5">
+                <ClockIcon className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <span>
+                  {formattedDate} - {formattedTime}
+                </span>
+              </div>
             </div>
 
             <div className="h-14 w-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
@@ -132,146 +188,558 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
             </div>
           </div>
 
-          {/* Card 2: Order Path and Status Tracker matching Screenshot 3 */}
+          {/* Card 2: Order Path and Status Tracker matching Screenshot 3 & 4 */}
           <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-5">
             <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <h3 className="text-sm sm:text-base font-black text-ink">حالة ومسار الطلب</h3>
-              <span className="rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-3 py-1 text-xs font-black">
-                {isSubCustomer
-                  ? 'قيد موافقة التاجر الرئيسي'
-                  : isPendingApproval
-                    ? 'قيد موافقة الإدارة'
-                    : statusMeta.labelAr}
+              <span className={`rounded-xl border px-3 py-1 text-xs font-black ${timelineBadge.className}`}>
+                {timelineBadge.text}
               </span>
             </div>
 
             {/* Vertical Timeline Workflow */}
-            <div className="relative pr-2 space-y-6">
-              {/* Connecting line */}
-              <div className="absolute top-3 bottom-3 right-[15px] w-0.5 bg-slate-200" />
+            <div className="relative space-y-6">
+              {/* Connecting line perfectly centered with 32px circles */}
+              <div className="absolute top-4 bottom-4 right-[15px] w-[2px] bg-slate-200 pointer-events-none" />
 
-              {/* Step 1: تقديم الطلب للمصنع */}
-              <div className="relative flex items-start gap-4 z-10">
-                <div className="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
-                  <CheckIcon className="h-4 w-4 stroke-[3]" />
-                </div>
-                <div className="pt-0.5">
-                  <h4 className="text-xs sm:text-sm font-black text-ink">تقديم الطلب للمصنع</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">تم استلام طلبك بنجاح وتسجيله في النظام</p>
-                </div>
-              </div>
-
-              {/* Step 2: مراجعة واعتماد إدارة المصنع أو التاجر الرئيسي */}
-              <div className="relative flex items-start gap-4 z-10">
-                <div
-                  className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                    isApproved || isProcessing || isShipped || isDelivered
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : isPendingApproval
-                        ? 'border-2 border-brand-600 bg-brand-50/50 text-brand-600 ring-brand-100 animate-pulse'
-                        : 'bg-slate-100 border border-slate-300 text-slate-400'
-                  }`}
-                >
-                  {isApproved || isProcessing || isShipped || isDelivered ? (
-                    <CheckIcon className="h-4 w-4 stroke-[3]" />
-                  ) : (
-                    <div className="h-2.5 w-2.5 rounded-full bg-brand-600" />
-                  )}
-                </div>
-                <div className="pt-0.5">
-                  <h4 className="text-xs sm:text-sm font-black text-ink">
-                    {isSubCustomer
-                      ? 'مراجعة واعتماد التاجر الرئيسي وإدارة المصنع'
-                      : 'مراجعة واعتماد إدارة المصنع'}
-                  </h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    {isSubCustomer
-                      ? 'بانتظار موافقة التاجر الرئيسي ثم تأكيد إدارة المصنع'
-                      : 'بانتظار تأكيد الإدارة وتدقيق الكميات'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Step 3: سداد ورفع إيصال التحويل البنكي */}
               {isBankTransfer ? (
-                <div className="relative flex items-start gap-4 z-10">
-                  <div
-                    className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                      isReceiptUploaded || order.isPaid || isProcessing || isShipped || isDelivered
-                        ? 'bg-emerald-600 text-white shadow-xs'
-                        : isApproved
-                          ? 'border-2 border-brand-600 bg-brand-50/50 text-brand-600 animate-pulse'
-                          : 'bg-slate-100 border border-slate-200 text-slate-400'
-                    }`}
-                  >
-                    {isReceiptUploaded || order.isPaid || isProcessing || isShipped || isDelivered ? (
-                      <CheckIcon className="h-4 w-4 stroke-[3]" />
-                    ) : (
-                      <div className="h-2 w-2 rounded-full bg-slate-300" />
-                    )}
-                  </div>
-                  <div className="pt-0.5">
-                    <h4 className="text-xs sm:text-sm font-black text-ink">سداد ورفع إيصال التحويل البنكي</h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">بعد اعتماد المصنع للطلب</p>
-                  </div>
-                </div>
-              ) : null}
+                isSub ? (
+                  /* مسار التحويل البنكي للعميل الفرعي: 6 خطوات */
+                  <>
+                    {/* Step 1: تقديم طلب العميل الفرعي */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div className="h-8 w-8 rounded-full bg-[#00875a] text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
+                        <CheckIcon className="h-4 w-4 stroke-[3]" />
+                      </div>
+                      <div className="pt-0.5">
+                        <h4 className="text-xs sm:text-sm font-black text-ink">تقديم طلب العميل الفرعي</h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">تم استلام طلبك بنجاح وتسجيله في النظام</p>
+                      </div>
+                    </div>
 
-              {/* Step 4: مراجعة وتأكيد السداد من المالية */}
-              {isBankTransfer ? (
-                <div className="relative flex items-start gap-4 z-10">
-                  <div
-                    className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                      order.isPaid || isProcessing || isShipped || isDelivered
-                        ? 'bg-emerald-600 text-white shadow-xs'
-                        : 'bg-slate-100 border border-slate-200 text-slate-400'
-                    }`}
-                  >
-                    {order.isPaid || isProcessing || isShipped || isDelivered ? (
-                      <CheckIcon className="h-4 w-4 stroke-[3]" />
-                    ) : (
-                      <div className="h-2 w-2 rounded-full bg-slate-300" />
-                    )}
-                  </div>
-                  <div className="pt-0.5">
-                    <h4 className="text-xs sm:text-sm font-black text-ink">مراجعة وتأكيد السداد من المالية</h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">بعد رفع إيصال السداد</p>
-                  </div>
-                </div>
-              ) : null}
+                    {/* Step 2: موافقة واعتماد التاجر الرئيسي */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isMerchantApproved
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isPendingApproval
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isMerchantApproved ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isPendingApproval ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4 className="text-xs sm:text-sm font-black text-ink">موافقة واعتماد التاجر الرئيسي</h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isMerchantApproved ? 'تم الاعتماد بنجاح' : 'بانتظار موافقة التاجر الرئيسي'}
+                        </p>
+                      </div>
+                    </div>
 
-              {/* Step 5: خروج الشحنة أو الاستلام من المصنع */}
-              <div className="relative flex items-start gap-4 z-10">
-                <div
-                  className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                    isDelivered
-                      ? 'bg-emerald-600 text-white shadow-xs'
-                      : isShipped
-                        ? 'border-2 border-brand-600 bg-brand-50 text-brand-600 animate-pulse'
-                        : 'bg-slate-100 border border-slate-200 text-slate-400'
-                  }`}
-                >
-                  {isDelivered ? (
-                    <CheckIcon className="h-4 w-4 stroke-[3]" />
-                  ) : (
-                    <div className="h-2 w-2 rounded-full bg-slate-300" />
-                  )}
-                </div>
-                <div className="pt-0.5">
-                  <h4 className="text-xs sm:text-sm font-black text-ink">
-                    {order.orderType === OrderType.Delivery
-                      ? 'خرج للتوصيل بشاحنة المصنع'
-                      : 'جاهز للتحميل من صوامع المصنع'}
-                  </h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    {isBankTransfer ? 'بعد تأكيد السداد واعتماد الشحن' : 'تسليم وتحصيل الفاتورة نقداً'}
-                  </p>
-                </div>
-              </div>
+                    {/* Step 3: مراجعة واعتماد إدارة المصنع */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isFactoryApproved || isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isMerchantApproved && isPendingApproval
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isFactoryApproved || isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isMerchantApproved && isPendingApproval ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4 className="text-xs sm:text-sm font-black text-ink">مراجعة واعتماد إدارة المصنع</h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isFactoryApproved || isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'تم الاعتماد والتأكيد بنجاح'
+                            : 'بانتظار تأكيد الإدارة'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 4: سداد ورفع إيصال التحويل البنكي */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isApproved
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isApproved ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4
+                          className={`text-xs sm:text-sm ${
+                            isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered || isApproved
+                              ? 'font-black text-ink'
+                              : 'font-bold text-slate-400'
+                          }`}
+                        >
+                          سداد ورفع إيصال التحويل البنكي
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'تم رفع إيصال التحويل بنجاح'
+                            : isApproved
+                              ? 'متاح الآن للسداد ورفع الإيصال'
+                              : 'بعد اعتماد المصنع'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 5: مراجعة وتأكيد السداد من المالية */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isProcessing || isShipped || isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isReceiptUploaded || Number(order.status) === 12
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isProcessing || isShipped || isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isReceiptUploaded || Number(order.status) === 12 ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4
+                          className={`text-xs sm:text-sm ${
+                            isProcessing || isShipped || isDelivered || isReceiptUploaded || Number(order.status) === 12
+                              ? 'font-black text-ink'
+                              : 'font-bold text-slate-400'
+                          }`}
+                        >
+                          مراجعة وتأكيد السداد من المالية
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isProcessing || isShipped || isDelivered
+                            ? 'تم تأكيد واعتماد السداد بنجاح'
+                            : isReceiptUploaded || Number(order.status) === 12
+                              ? 'جاري تدقيق الإيصال من الإدارة المالية'
+                              : 'بعد رفع إيصال السداد'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 6: خرج للتوصيل أو جاهز للتحميل */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isShipped
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isShipped ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4
+                          className={`text-xs sm:text-sm ${
+                            isDelivered || isShipped ? 'font-black text-ink' : 'font-bold text-slate-400'
+                          }`}
+                        >
+                          {order.orderType === OrderType.Delivery
+                            ? 'خرج للتوصيل بشاحنة المصنع'
+                            : 'جاهز للتحميل من صوامع المصنع'}
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isDelivered
+                            ? 'تم التسليم بنجاح'
+                            : isShipped
+                              ? order.orderType === OrderType.Delivery
+                                ? 'الشحنة في الطريق للعنوان'
+                                : 'جاهز للتحميل من الصوامع'
+                              : 'بعد تأكيد السداد'}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  /* مسار التحويل البنكي للتاجر الرئيسي المباشر: 5 خطوات تماماً كما في التصميم */
+                  <>
+                    {/* Step 1: تقديم الطلب للمصنع */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div className="h-8 w-8 rounded-full bg-[#00875a] text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
+                        <CheckIcon className="h-4 w-4 stroke-[3]" />
+                      </div>
+                      <div className="pt-1">
+                        <h4 className="text-xs sm:text-sm font-black text-ink">تقديم الطلب للمصنع</h4>
+                      </div>
+                    </div>
+
+                    {/* Step 2: مراجعة واعتماد إدارة المصنع */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                        }`}
+                      >
+                        {isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4
+                          className={`text-xs sm:text-sm ${
+                            isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                              ? 'font-black text-ink'
+                              : 'font-bold text-slate-500'
+                          }`}
+                        >
+                          مراجعة واعتماد إدارة المصنع
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'تم اعتماد وتأكيد المصنع بنجاح'
+                            : 'بانتظار تأكيد الإدارة'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 3: سداد ورفع إيصال التحويل البنكي */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isApproved
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isApproved ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4
+                          className={`text-xs sm:text-sm ${
+                            isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered || isApproved
+                              ? 'font-black text-ink'
+                              : 'font-bold text-slate-400'
+                          }`}
+                        >
+                          سداد ورفع إيصال التحويل البنكي
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                            ? 'تم رفع إيصال التحويل بنجاح'
+                            : isApproved
+                              ? 'متاح الآن للسداد ورفع الإيصال'
+                              : 'بعد اعتماد المصنع'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 4: مراجعة وتأكيد السداد من المالية */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isProcessing || isShipped || isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isReceiptUploaded || Number(order.status) === 12
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isProcessing || isShipped || isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isReceiptUploaded || Number(order.status) === 12 ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4
+                          className={`text-xs sm:text-sm ${
+                            isProcessing || isShipped || isDelivered || isReceiptUploaded || Number(order.status) === 12
+                              ? 'font-black text-ink'
+                              : 'font-bold text-slate-400'
+                          }`}
+                        >
+                          مراجعة وتأكيد السداد من المالية
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isProcessing || isShipped || isDelivered
+                            ? 'تم تأكيد واعتماد السداد بنجاح'
+                            : isReceiptUploaded || Number(order.status) === 12
+                              ? 'جاري تدقيق الإيصال من الإدارة المالية'
+                              : 'بعد رفع إيصال السداد'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 5: خرج للتوصيل بشاحنة المصنع أو الاستلام من المصنع */}
+                    <div className="relative flex items-start gap-4 z-10">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                          isDelivered
+                            ? 'bg-[#00875a] text-white shadow-xs'
+                            : isShipped
+                              ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
+                              : 'bg-[#f8fafc] border border-[#e2e8f0]'
+                        }`}
+                      >
+                        {isDelivered ? (
+                          <CheckIcon className="h-4 w-4 stroke-[3]" />
+                        ) : isShipped ? (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#64748b]" />
+                        ) : (
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#94a3b8]" />
+                        )}
+                      </div>
+                      <div className="pt-0.5">
+                        <h4
+                          className={`text-xs sm:text-sm ${
+                            isDelivered || isShipped ? 'font-black text-ink' : 'font-bold text-slate-400'
+                          }`}
+                        >
+                          {order.orderType === OrderType.Delivery
+                            ? 'خرج للتوصيل بشاحنة المصنع'
+                            : 'جاهز للتحميل من صوامع المصنع'}
+                        </h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {isDelivered
+                            ? 'تم التسليم بنجاح'
+                            : isShipped
+                              ? order.orderType === OrderType.Delivery
+                                ? 'الشحنة في الطريق للعنوان'
+                                : 'جاهز للتحميل من صوامع المصنع'
+                              : 'بعد تأكيد السداد'}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )
+              ) : isSub ? (
+                /* مسار التاجر الفرعي الدفع عند الاستلام: 4 خطوات */
+                <>
+                  {/* Step 1: تقديم طلب العميل الفرعي */}
+                  <div className="relative flex items-start gap-4 z-10">
+                    <div className="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
+                      <CheckIcon className="h-4 w-4 stroke-[3]" />
+                    </div>
+                    <div className="pt-0.5">
+                      <h4 className="text-xs sm:text-sm font-black text-ink">تقديم طلب العميل الفرعي</h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">تم استلام طلبك بنجاح وتسجيله في النظام</p>
+                    </div>
+                  </div>
+
+                  {/* Step 2: موافقة واعتماد التاجر الرئيسي */}
+                  <div className="relative flex items-start gap-4 z-10">
+                    <div
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                        isMerchantApproved
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : isPendingApproval
+                            ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 ring-emerald-100 animate-pulse'
+                            : 'bg-slate-100 border border-slate-300 text-slate-400'
+                      }`}
+                    >
+                      {isMerchantApproved ? (
+                        <CheckIcon className="h-4 w-4 stroke-[3]" />
+                      ) : isPendingApproval ? (
+                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                      ) : (
+                        <div className="h-2 w-2 rounded-full bg-slate-300" />
+                      )}
+                    </div>
+                    <div className="pt-0.5">
+                      <h4 className="text-xs sm:text-sm font-black text-ink">موافقة واعتماد التاجر الرئيسي</h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        {isMerchantApproved ? 'تم الاعتماد بنجاح' : 'بانتظار موافقة التاجر الرئيسي'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 3: اعتماد وتأكيد إدارة المصنع */}
+                  <div className="relative flex items-start gap-4 z-10">
+                    <div
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                        isFactoryApproved
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : isMerchantApproved && isPendingApproval
+                            ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 ring-emerald-100 animate-pulse'
+                            : 'bg-slate-100 border border-slate-300 text-slate-400'
+                      }`}
+                    >
+                      {isFactoryApproved ? (
+                        <CheckIcon className="h-4 w-4 stroke-[3]" />
+                      ) : isMerchantApproved && isPendingApproval ? (
+                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                      ) : (
+                        <div className="h-2 w-2 rounded-full bg-slate-300" />
+                      )}
+                    </div>
+                    <div className="pt-0.5">
+                      <h4 className="text-xs sm:text-sm font-black text-ink">اعتماد وتأكيد إدارة المصنع</h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {isFactoryApproved ? 'تم الاعتماد والتأكيد بنجاح' : 'بانتظار تأكيد الإدارة'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 4: خروج الشحنة أو الاستلام من المصنع */}
+                  <div className="relative flex items-start gap-4 z-10">
+                    <div
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                        isDelivered
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : isShipped
+                            ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 animate-pulse ring-emerald-100'
+                            : 'bg-slate-100 border border-slate-300 text-slate-400'
+                      }`}
+                    >
+                      {isDelivered ? (
+                        <CheckIcon className="h-4 w-4 stroke-[3]" />
+                      ) : isShipped ? (
+                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                      ) : (
+                        <div className="h-2 w-2 rounded-full bg-slate-300" />
+                      )}
+                    </div>
+                    <div className="pt-0.5">
+                      <h4 className="text-xs sm:text-sm font-black text-ink">
+                        {order.orderType === OrderType.Delivery
+                          ? 'خرج للتوصيل بشاحنة المصنع'
+                          : 'جاهز للتحميل من صوامع المصنع'}
+                      </h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {order.orderType === OrderType.Delivery
+                          ? 'تسليم وتحصيل الفاتورة نقداً'
+                          : 'تسليم واستلام البضاعة من المصنع'}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* مسار التاجر الرئيسي الدفع عند الاستلام: 3 خطوات */
+                <>
+                  {/* Step 1: تقديم الطلب للمصنع */}
+                  <div className="relative flex items-start gap-4 z-10">
+                    <div className="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
+                      <CheckIcon className="h-4 w-4 stroke-[3]" />
+                    </div>
+                    <div className="pt-0.5">
+                      <h4 className="text-xs sm:text-sm font-black text-ink">تقديم الطلب للمصنع</h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">تم استلام طلبك وتسجيله في النظام</p>
+                    </div>
+                  </div>
+
+                  {/* Step 2: تم تأكيد واعتماد الطلب (موافقة المصنع فقط) */}
+                  <div className="relative flex items-start gap-4 z-10">
+                    <div
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                        isApproved || isProcessing || isShipped || isDelivered
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : isPendingApproval
+                            ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 ring-emerald-100 animate-pulse'
+                            : 'bg-slate-100 border border-slate-300 text-slate-400'
+                      }`}
+                    >
+                      {isApproved || isProcessing || isShipped || isDelivered ? (
+                        <CheckIcon className="h-4 w-4 stroke-[3]" />
+                      ) : isPendingApproval ? (
+                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                      ) : (
+                        <div className="h-2 w-2 rounded-full bg-slate-300" />
+                      )}
+                    </div>
+                    <div className="pt-0.5">
+                      <h4 className="text-xs sm:text-sm font-black text-ink">تم تأكيد واعتماد الطلب</h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {isApproved || isProcessing || isShipped || isDelivered
+                          ? 'تم اعتماد الطلب وتأكيد توفر الكميات من المصنع'
+                          : 'بانتظار تأكيد الإدارة وتدقيق الكميات'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 3: خروج الشحنة أو الاستلام من المصنع */}
+                  <div className="relative flex items-start gap-4 z-10">
+                    <div
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
+                        isDelivered
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : isShipped
+                            ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 animate-pulse ring-emerald-100'
+                            : 'bg-slate-100 border border-slate-300 text-slate-400'
+                      }`}
+                    >
+                      {isDelivered ? (
+                        <CheckIcon className="h-4 w-4 stroke-[3]" />
+                      ) : isShipped ? (
+                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                      ) : (
+                        <div className="h-2 w-2 rounded-full bg-slate-300" />
+                      )}
+                    </div>
+                    <div className="pt-0.5">
+                      <h4 className="text-xs sm:text-sm font-black text-ink">
+                        {order.orderType === OrderType.Delivery
+                          ? 'خرج للتوصيل بشاحنة المصنع'
+                          : 'جاهز للتحميل من صوامع المصنع'}
+                      </h4>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {order.orderType === OrderType.Delivery
+                          ? 'تسليم وتحصيل الفاتورة نقداً'
+                          : 'تسليم واستلام البضاعة من المصنع'}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Card 3: Current Step Action Card (Azure Box matching Screenshot 3) */}
+          {/* Card 3: Current Step Action Card (matching Screenshot 3 & 4) */}
           {isPendingApproval && (
             <div className="rounded-3xl bg-blue-50/70 border border-blue-200/80 p-5 space-y-3">
               <div className="flex items-start justify-between gap-3">
@@ -280,8 +748,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     قيد التدقيق
                   </span>
                   <h4 className="text-sm font-black text-blue-950">
-                    {isSubCustomer
-                      ? 'الخطوة 1: قيد مراجعة واعتماد التاجر الرئيسي'
+                    {isSub
+                      ? isMerchantApproved
+                        ? 'الخطوة 2: قيد مراجعة واعتماد إدارة المصنع'
+                        : 'الخطوة 1: قيد مراجعة واعتماد التاجر الرئيسي'
                       : 'الخطوة 1: قيد مراجعة واعتماد إدارة المصنع'}
                   </h4>
                 </div>
@@ -292,9 +762,15 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
               </div>
 
               <p className="text-xs text-blue-900 leading-relaxed font-medium">
-                {isSubCustomer
-                  ? 'طلبك قيد مراجعة واعتماد التاجر الرئيسي التابع له حسابك. بمجرد موافقته، سيتم تحويل الطلب لإدارة المصنع للاعتماد النهائي وتوفير بيانات التحويل.'
-                  : 'طلبك قيد المراجعة وتأكيد توفر الكميات لدى إدارة المصنع. بمجرد الاعتماد، ستظهر لك بيانات التحويل البنكي ورفع الإيصال لتجهيز الشحن.'}
+                {isSub
+                  ? isMerchantApproved
+                    ? isBankTransfer
+                      ? 'تم اعتماد طلبك من التاجر الرئيسي بنجاح، والطلب حالياً بانتظار مراجعة وتأكيد إدارة المصنع لتجهيز الكميات. بمجرد الاعتماد، ستظهر لك بيانات التحويل البنكي ورفع الإيصال.'
+                      : 'تم اعتماد طلبك من التاجر الرئيسي بنجاح، والطلب حالياً بانتظار مراجعة وتأكيد إدارة المصنع لتجهيز الكميات.'
+                    : 'طلبك قيد مراجعة واعتماد التاجر الرئيسي التابع له حسابك. بمجرد موافقته، سيتم تحويل الطلب لإدارة المصنع للاعتماد النهائي وتوفير بيانات التحويل.'
+                  : isBankTransfer
+                    ? 'طلبك قيد المراجعة وتأكيد توفر الكميات لدى إدارة المصنع. بمجرد الاعتماد، ستظهر لك بيانات التحويل البنكي ورفع الإيصال لتجهيز الشحن.'
+                    : 'طلبك قيد المراجعة وتأكيد توفر الكميات لدى إدارة المصنع. بمجرد الاعتماد، ستتم متابعة التجهيز والتحميل.'}
               </p>
             </div>
           )}
@@ -399,62 +875,71 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
             </div>
           )}
 
-          {/* Card 4: Delivery or Factory Pickup Details */}
+          {/* Card 4: Delivery or Factory Pickup Details (matching Screenshot 3 & 4) */}
           <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-4">
-            <h3 className="flex items-center gap-2 text-sm sm:text-base font-black text-ink border-b border-slate-100 pb-3">
-              {order.orderType === OrderType.Delivery ? (
-                <>
-                  <MapPinIcon className="h-5 w-5 text-brand-600" />
-                  <span>تفاصيل التوصيل والشحن</span>
-                </>
-              ) : (
-                <>
-                  <TruckIcon className="h-5 w-5 text-brand-600" />
-                  <span>تفاصيل الاستلام من المصنع</span>
-                </>
-              )}
-            </h3>
-
-            {order.orderType === OrderType.Delivery ? (
-              <div className="text-xs space-y-2 text-slate-700">
-                <div className="flex items-start gap-2">
-                  <span className="font-extrabold text-slate-400 shrink-0">العنوان:</span>
-                  <span className="font-bold text-ink">
-                    {order.deliveryAddress
-                      ? `${order.deliveryAddress.city} - ${order.deliveryAddress.street} ${
-                          order.deliveryAddress.district ? `(${order.deliveryAddress.district})` : ''
-                        }`
-                      : 'تم التسجيل في تفاصيل الطلب'}
-                  </span>
-                </div>
-                {order.truckName && (
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-slate-400 shrink-0">نوع الشاحنة:</span>
-                    <span className="font-black text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-lg border border-brand-100">
-                      {order.truckName}
-                    </span>
-                  </div>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm sm:text-base font-black text-ink">
+                {order.orderType === OrderType.Delivery ? 'تفاصيل توصيل وصال' : 'تفاصيل الاستلام من المصنع'}
+              </h3>
+              <div className="h-9 w-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
+                {order.orderType === OrderType.Delivery ? (
+                  <TruckIcon className="h-5 w-5 stroke-[1.8]" />
+                ) : (
+                  <Building2Icon className="h-5 w-5 stroke-[1.8]" />
                 )}
               </div>
+            </div>
+
+            {order.orderType === OrderType.Delivery ? (
+              <div className="space-y-2.5 text-xs text-slate-700 divide-y divide-slate-50">
+                <div className="flex items-center justify-between py-1">
+                  <span className="font-bold text-slate-400">طريقة الاستلام</span>
+                  <span className="font-black text-ink">وصال (المصنع يتولى الشحن والتوصيل)</span>
+                </div>
+                {order.truckName && (
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="font-bold text-slate-400">نوع الشاحنة المعينة</span>
+                    <span className="font-black text-ink">{order.truckName}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between pt-2">
+                  <span className="font-bold text-slate-400">عنوان التسليم</span>
+                  <span className="font-black text-ink text-left">
+                    {order.deliveryAddress
+                      ? `${order.deliveryAddress.city} - ${order.deliveryAddress.street}${
+                          order.deliveryAddress.district ? ` - ${order.deliveryAddress.district}` : ''
+                        }`
+                      : 'العنوان المسجل في حسابك'}
+                  </span>
+                </div>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="rounded-2xl bg-slate-50 p-3 border border-slate-100">
-                  <span className="text-slate-400 font-bold block mb-1">اسم السائق:</span>
-                  <span className="font-black text-ink">{order.driverName || 'سائق مفوض'}</span>
+              <div className="space-y-2.5 text-xs text-slate-700 divide-y divide-slate-50">
+                <div className="flex items-center justify-between py-1">
+                  <span className="font-bold text-slate-400">طريقة الاستلام</span>
+                  <span className="font-black text-ink">استلام مباشر من صوامع المصنع</span>
                 </div>
-                <div className="rounded-2xl bg-slate-50 p-3 border border-slate-100">
-                  <span className="text-slate-400 font-bold block mb-1">رقم لوحة السيارة:</span>
-                  <span className="font-black text-ink font-mono">{order.vehiclePlateNumber || 'غير محدد'}</span>
-                </div>
+                {order.driverName && (
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="font-bold text-slate-400">اسم السائق</span>
+                    <span className="font-black text-ink">{order.driverName}</span>
+                  </div>
+                )}
+                {order.vehiclePlateNumber && (
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="font-bold text-slate-400">رقم لوحة الشاحنة</span>
+                    <span className="font-black text-ink font-mono">{order.vehiclePlateNumber}</span>
+                  </div>
+                )}
                 {driverPhone && (
-                  <div className="rounded-2xl bg-slate-50 p-3 border border-slate-100">
-                    <span className="text-slate-400 font-bold block mb-1">هاتف السائق:</span>
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="font-bold text-slate-400">هاتف السائق</span>
                     <span className="font-bold text-ink" dir="ltr">{driverPhone}</span>
                   </div>
                 )}
                 {order.expectedPickupDate && (
-                  <div className="rounded-2xl bg-slate-50 p-3 border border-slate-100">
-                    <span className="text-slate-400 font-bold block mb-1">موعد الاستلام المتوقع:</span>
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="font-bold text-slate-400">موعد الاستلام المتوقع</span>
                     <span className="font-black text-ink">
                       {new Date(order.expectedPickupDate).toLocaleDateString('ar-EG')}
                     </span>
@@ -511,43 +996,53 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
             </div>
           </div>
 
-          {/* Card 6: Totals Summary */}
+          {/* Card 6: Invoice & Weights Summary (matching Screenshot 3 & 4) */}
           <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-3 text-xs">
-            <div className="flex justify-between text-slate-600 font-bold">
-              <span className="flex items-center gap-1.5">
-                <ScaleIcon className="h-4 w-4 text-slate-400" />
-                <span>إجمالي وزن الشحنة:</span>
-              </span>
-              <span className="font-black text-ink">
-                {order.totalWeightTons ? `${order.totalWeightTons} طن` : `${order.totalWeightKg || 0} كجم`}
-              </span>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm sm:text-base font-black text-ink">ملخص الفاتورة والأوزان</h3>
+              <div className="h-9 w-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
+                <ScaleIcon className="h-5 w-5 stroke-[1.8]" />
+              </div>
             </div>
 
-            <div className="flex justify-between text-slate-600 font-bold">
-              <span>سعر الطلبات (المجموع الفرعي):</span>
-              <span className="font-black text-ink">{order.subtotal.toLocaleString()} ج.م</span>
+            <div className="space-y-2.5 divide-y divide-slate-50">
+              <div className="flex justify-between text-slate-600 font-bold py-1">
+                <span className="text-slate-400">إجمالي وزن الطلب</span>
+                <span className="font-black text-ink">
+                  {order.totalWeightTons ? `${order.totalWeightTons} طن` : `${order.totalWeightKg || 0} كجم`}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-slate-600 font-bold pt-2">
+                <span className="text-slate-400">إجمالي سعر المنتجات</span>
+                <span className="font-black text-ink">{order.subtotal.toFixed(1)} ج.م</span>
+              </div>
+
+              <div className="flex justify-between text-slate-600 font-bold pt-2">
+                <span className="text-slate-400">تكلفة الشحن والتوصيل</span>
+                <span className="font-black text-ink">{order.shippingFee.toFixed(1)} ج.م</span>
+              </div>
+
+              <div className="flex justify-between text-slate-600 font-bold pt-2">
+                <span className="text-slate-400">طريقة السداد</span>
+                <span className="font-black text-ink">
+                  {isBankTransfer
+                    ? 'تحويل بنكي / إلكتروني'
+                    : 'الدفع عند الاستلام / التحميل'}
+                </span>
+              </div>
+
+              {order.discountAmount ? (
+                <div className="flex justify-between text-emerald-600 font-bold pt-2">
+                  <span>الخصم المطبق:</span>
+                  <span className="font-black">-{order.discountAmount.toFixed(1)} ج.م</span>
+                </div>
+              ) : null}
             </div>
-
-            {order.shippingFee > 0 && (
-              <div className="flex justify-between text-slate-600 font-bold">
-                <span>سعر الشحن والتوصيل:</span>
-                <span className="font-black text-ink">{order.shippingFee.toLocaleString()} ج.م</span>
-              </div>
-            )}
-
-            {order.discountAmount ? (
-              <div className="flex justify-between text-emerald-600 font-bold">
-                <span>الخصم المطبق:</span>
-                <span className="font-black">-{order.discountAmount.toLocaleString()} ج.م</span>
-              </div>
-            ) : null}
 
             <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-base font-black text-brand-700">
-              <span className="flex items-center gap-1.5">
-                <CreditCardIcon className="h-5 w-5" />
-                <span>الإجمالي النهائي:</span>
-              </span>
-              <span className="text-xl">{order.totalAmount.toLocaleString()} ج.م</span>
+              <span>الإجمالي النهائي للطلب</span>
+              <span className="text-xl">{order.totalAmount.toFixed(1)} ج.م</span>
             </div>
           </div>
         </div>

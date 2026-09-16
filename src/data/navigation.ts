@@ -1,7 +1,11 @@
 import { ui } from '../i18n/ui';
 import type { Localized } from '../types/content';
 
-export type NavItem = {to: string;label: Localized;};
+export type NavItem = {
+  to: string;
+  label: Localized;
+  isExternal?: boolean;
+};
 
 export const LOGO_URL = "/image.png";
 
@@ -10,7 +14,11 @@ export const primaryNav: NavItem[] = [
   { to: '/about', label: ui.nav.about },
   { to: '/products', label: ui.nav.products },
   // { to: '/distributors', label: ui.nav.distributors },
-  { to: '/careers', label: ui.nav.careers },
+  {
+    to: 'https://www.alemanfeed.com/modules/recruitment/careers.php?lang=ar',
+    label: ui.nav.careers,
+    isExternal: true,
+  },
   // { to: '/articles', label: ui.nav.articles },
   { to: '/contact', label: ui.nav.contact }
 ];

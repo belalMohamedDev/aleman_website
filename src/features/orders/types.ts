@@ -5,7 +5,8 @@ export enum OrderType {
 
 export enum PaymentMethod {
   CashOnDelivery = 1,
-  BankTransferOrOnline = 2,
+  Card = 2,
+  BankTransfer = 3,
 }
 
 export enum TruckType {

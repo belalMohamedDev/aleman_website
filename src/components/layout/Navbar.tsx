@@ -15,6 +15,7 @@ import { MobileMenu } from './MobileMenu';
 import { LOGO_URL, primaryNav, secondaryNav } from '../../data/navigation';
 import { useCart } from '../../features/cart/CartContext';
 import { useAuth } from '../../features/auth/AuthContext';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 export function Navbar() {
   const { t, lang, toggle } = useLang();
@@ -92,36 +93,54 @@ export function Navbar() {
 
         {/* Center Desktop Navigation Links */}
         <nav className="hidden items-center gap-1 xl:gap-1.5 lg:flex" aria-label={t(ui.nav.menu)}>
-          {desktopNav.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/'}
-              className={({ isActive }) =>
-                `focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${isActive
-                  ? isTransparent
-                    ? 'text-white'
-                    : 'text-brand-600'
-                  : isTransparent
+          {desktopNav.map((item) =>
+            item.isExternal || item.to.startsWith('http') ? (
+              <a
+                key={item.to}
+                href={item.to}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${
+                  isTransparent
                     ? 'text-white/80 hover:text-white hover:bg-white/10'
                     : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  {t(item.label)}
-                  {isActive && (
-                    <span
-                      className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full transition-colors ${isTransparent ? 'bg-gold-400' : 'bg-gold-500'
+                }`}
+              >
+                {t(item.label)}
+              </a>
+            ) : (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  `focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${
+                    isActive
+                      ? isTransparent
+                        ? 'text-white'
+                        : 'text-brand-600'
+                      : isTransparent
+                      ? 'text-white/80 hover:text-white hover:bg-white/10'
+                      : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {t(item.label)}
+                    {isActive && (
+                      <span
+                        className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full transition-colors ${
+                          isTransparent ? 'bg-gold-400' : 'bg-gold-500'
                         }`}
-                      aria-hidden="true"
-                    />
-                  )}
-                </>
-              )}
-            </NavLink>
-          ))}
+                        aria-hidden="true"
+                      />
+                    )}
+                  </>
+                )}
+              </NavLink>
+            )
+          )}
 
           {/* More Dropdown (only rendered if secondaryNav has items) */}
           {secondaryNav.length > 0 && (
@@ -187,6 +206,12 @@ export function Navbar() {
             <Globe className="h-3.5 w-3.5 opacity-80" />
             <span>{lang === 'ar' ? 'English' : 'عربي'}</span>
           </button>
+
+          {/* Notifications Bell */}
+          <NotificationBell
+            isAuthenticated={isAuthenticated}
+            isTransparent={isTransparent}
+          />
 
           {/* User Account / Auth Button */}
           {isAuthenticated ? (

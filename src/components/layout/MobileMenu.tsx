@@ -72,17 +72,30 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               <ul className="space-y-1">
                 {primaryNav.map((item) =>
                   <li key={item.to}>
-                    <NavLink
-                      to={item.to}
-                      end={item.to === '/'}
-                      onClick={onClose}
-                      className={({ isActive }) =>
-                        `focus-ring block rounded-xl px-4 py-3 text-base font-bold transition ${isActive ? 'bg-brand-50 text-brand-600' : 'text-ink-soft hover:bg-brand-50/60'}`
-
-                      }>
-
-                      {t(item.label)}
-                    </NavLink>
+                    {item.isExternal || item.to.startsWith('http') ? (
+                      <a
+                        href={item.to}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={onClose}
+                        className="focus-ring block rounded-xl px-4 py-3 text-base font-bold text-ink-soft hover:bg-brand-50/60 transition"
+                      >
+                        {t(item.label)}
+                      </a>
+                    ) : (
+                      <NavLink
+                        to={item.to}
+                        end={item.to === '/'}
+                        onClick={onClose}
+                        className={({ isActive }) =>
+                          `focus-ring block rounded-xl px-4 py-3 text-base font-bold transition ${
+                            isActive ? 'bg-brand-50 text-brand-600' : 'text-ink-soft hover:bg-brand-50/60'
+                          }`
+                        }
+                      >
+                        {t(item.label)}
+                      </NavLink>
+                    )}
                   </li>
                 )}
                 {isAuthenticated && (

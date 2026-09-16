@@ -1,20 +1,35 @@
 export enum OrderStatus {
   Pending = 1,
   Confirmed = 2,
+  Preparing = 3,
   Processing = 3,
+  OutForDelivery = 4,
   Shipped = 4,
-  Delivered = 5,
-  Cancelled = 6,
-  Refunded = 7,
+  ReadyForPickup = 5,
+  Completed = 6,
+  Delivered = 6,
+  Cancelled = 7,
+  PendingMerchantApproval = 8,
+  PendingAdminApproval = 9,
+  RejectedByMerchant = 10,
+  RejectedByAdmin = 11,
+  PendingPaymentApproval = 12,
+  Refunded = 13,
 }
 
-export const ORDER_STATUS_META: Record<OrderStatus, { labelAr: string; labelEn: string; color: string; bg: string }> = {
+export const ORDER_STATUS_META: Record<number, { labelAr: string; labelEn: string; color: string; bg: string }> = {
   [OrderStatus.Pending]: { labelAr: 'قيد الانتظار', labelEn: 'Pending', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
-  [OrderStatus.Confirmed]: { labelAr: 'تم التأكيد', labelEn: 'Confirmed', color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
-  [OrderStatus.Processing]: { labelAr: 'قيد التجهيز', labelEn: 'Processing', color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
-  [OrderStatus.Shipped]: { labelAr: 'جاري التوصيل / الشحن', labelEn: 'Shipped', color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
-  [OrderStatus.Delivered]: { labelAr: 'تم التسليم بنجاح', labelEn: 'Delivered', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
+  [OrderStatus.Confirmed]: { labelAr: 'تم التأكيد - بانتظار التحويل', labelEn: 'Confirmed', color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
+  [OrderStatus.Preparing]: { labelAr: 'قيد التجهيز والتعبئة', labelEn: 'Preparing', color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
+  [OrderStatus.OutForDelivery]: { labelAr: 'خرج للتوصيل', labelEn: 'Out for Delivery', color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
+  [OrderStatus.ReadyForPickup]: { labelAr: 'جاهز للتحميل', labelEn: 'Ready for Pickup', color: 'text-sky-700', bg: 'bg-sky-50 border-sky-200' },
+  [OrderStatus.Completed]: { labelAr: 'مكتمل', labelEn: 'Completed', color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
   [OrderStatus.Cancelled]: { labelAr: 'ملغي', labelEn: 'Cancelled', color: 'text-red-700', bg: 'bg-red-50 border-red-200' },
+  [OrderStatus.PendingMerchantApproval]: { labelAr: 'قيد موافقة التاجر الرئيسي', labelEn: 'Pending Merchant Approval', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+  [OrderStatus.PendingAdminApproval]: { labelAr: 'قيد موافقة الإدارة', labelEn: 'Pending Admin Approval', color: 'text-[#234c2e]', bg: 'bg-[#eef8f1] border-[#cce7d5]' },
+  [OrderStatus.RejectedByMerchant]: { labelAr: 'مرفوض من التاجر الرئيسي', labelEn: 'Rejected by Merchant', color: 'text-rose-700', bg: 'bg-rose-50 border-rose-200' },
+  [OrderStatus.RejectedByAdmin]: { labelAr: 'مرفوض من الإدارة', labelEn: 'Rejected by Admin', color: 'text-rose-700', bg: 'bg-rose-50 border-rose-200' },
+  [OrderStatus.PendingPaymentApproval]: { labelAr: 'تم رفع الإيصال - قيد تدقيق المالية', labelEn: 'Pending Payment Audit', color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
   [OrderStatus.Refunded]: { labelAr: 'مسترجع', labelEn: 'Refunded', color: 'text-slate-700', bg: 'bg-slate-100 border-slate-200' },
 };
 
@@ -25,7 +40,8 @@ export enum OrderType {
 
 export enum PaymentMethod {
   CashOnDelivery = 1,
-  BankTransferOrOnline = 2,
+  Card = 2,
+  BankTransfer = 3,
 }
 
 export interface UserAddress {

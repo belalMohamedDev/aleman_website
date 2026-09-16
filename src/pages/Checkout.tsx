@@ -803,6 +803,7 @@ export function Checkout() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label
+                  onClick={() => setPaymentMethod(PaymentMethod.CashOnDelivery)}
                   className={`cursor-pointer rounded-2xl border-2 p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.CashOnDelivery
                     ? 'border-brand-500 bg-brand-50/20'
                     : 'border-slate-200 hover:border-slate-300'
@@ -831,7 +832,8 @@ export function Checkout() {
                 </label>
 
                 <label
-                  className={`cursor-pointer rounded-2xl border-2 p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.BankTransferOrOnline
+                  onClick={() => setPaymentMethod(PaymentMethod.BankTransfer)}
+                  className={`cursor-pointer rounded-2xl border-2 p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.BankTransfer
                     ? 'border-brand-600 bg-brand-50/20 shadow-xs'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
@@ -839,8 +841,8 @@ export function Checkout() {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    checked={paymentMethod === PaymentMethod.BankTransferOrOnline}
-                    onChange={() => setPaymentMethod(PaymentMethod.BankTransferOrOnline)}
+                    checked={paymentMethod === PaymentMethod.BankTransfer}
+                    onChange={() => setPaymentMethod(PaymentMethod.BankTransfer)}
                     className="h-4 w-4 accent-brand-600"
                   />
                   <div className="flex items-center gap-2.5">
@@ -860,7 +862,7 @@ export function Checkout() {
               </div>
 
               {/* Bank Transfer Approval Workflow Notice matching Screenshot 1 */}
-              {paymentMethod === PaymentMethod.BankTransferOrOnline && (
+              {paymentMethod === PaymentMethod.BankTransfer && (
                 <div className="mt-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 p-4 space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-center gap-2">
                     <div className="h-6 w-6 rounded-full bg-emerald-500/15 text-emerald-700 flex items-center justify-center">
