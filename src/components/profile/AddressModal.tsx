@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { XIcon, MapPinIcon } from 'lucide-react';
+import { XIcon, MapPinIcon, HomeIcon, Building2Icon, FileTextIcon } from 'lucide-react';
 import type { CreateAddressDto } from '../../features/profile/types';
 
 interface AddressModalProps {
@@ -43,99 +43,111 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-slate-100">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-              <MapPinIcon className="h-5 w-5" />
-            </div>
-            <h3 className="text-base font-black text-ink">إضافة عنوان جديد</h3>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center sm:items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200" dir="rtl">
+      <div className="relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto text-right" dir="rtl">
+        {/* Top Drag Indicator */}
+        <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
+
+        {/* Modal Header */}
+        <div className="flex items-center justify-between pb-3 mb-2">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 transition"
+            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+            aria-label="إغلاق"
           >
             <XIcon className="h-5 w-5" />
           </button>
+          <h3 className="text-base sm:text-lg font-black text-ink">
+            إضافة عنوان توصيل جديد
+          </h3>
+          <div className="w-9" /> {/* Spacer to balance close button */}
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4 text-xs font-bold">
-          <div>
-            <label className="block text-slate-700 mb-1">
-              المدينة / المحافظة <span className="text-red-500">*</span>
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-3.5 text-right" dir="rtl">
+          {/* 1. المدينة / المحافظة */}
+          <div className="relative">
             <input
               type="text"
               required
+              dir="rtl"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="مثال: الشرقية، الدقهلية، القليوبية..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
+              placeholder="المدينة / المحافظة *"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
             />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <MapPinIcon className="h-5 w-5" />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-slate-700 mb-1">
-              الشارع / العنوان بالتفصيل <span className="text-red-500">*</span>
-            </label>
+          {/* 2. المركز / الحي */}
+          <div className="relative">
+            <input
+              type="text"
+              dir="rtl"
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              placeholder="المركز أو الحي (اختياري)"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+            />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <Building2Icon className="h-5 w-5" />
+            </div>
+          </div>
+
+          {/* 3. الشارع أو العنوان بالتفصيل */}
+          <div className="relative">
             <input
               type="text"
               required
+              dir="rtl"
               value={street}
               onChange={(e) => setStreet(e.target.value)}
-              placeholder="مثال: شارع المحطة، بجوار الموقف الرئيسي..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
+              placeholder="اسم الشارع، القرية أو أقرب علامة مميزة *"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
             />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <HomeIcon className="h-5 w-5" />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-slate-700 mb-1">المركز / الحي (اختياري)</label>
+          {/* 4. ملاحظات إضافية للتسليم */}
+          <div className="relative">
             <input
               type="text"
-              value={district}
-              onChange={(e) => setDistrict(e.target.value)}
-              placeholder="مثال: مركز الزقازيق، المنصورة..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-slate-700 mb-1">ملاحظات إضافية للتسليم (اختياري)</label>
-            <textarea
-              rows={2}
+              dir="rtl"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="علامة مميزة، وقت التسليم المفضل..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
+              placeholder="ملاحظات إضافية للتوصيل (اختياري)"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
             />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <FileTextIcon className="h-5 w-5" />
+            </div>
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer pt-1">
+          {/* 5. تعيين كافتراضي */}
+          <label className="flex items-center gap-2.5 cursor-pointer pt-1">
             <input
               type="checkbox"
               checked={isDefault}
               onChange={(e) => setIsDefault(e.target.checked)}
-              className="h-4 w-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300"
+              className="h-4 w-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300 accent-brand-600"
             />
-            <span className="text-slate-700">تعيين كعنوان افتراضي للشحن</span>
+            <span className="text-xs sm:text-sm font-bold text-slate-600">
+              تعيين كعنوان افتراضي للشحن والتوصيل
+            </span>
           </label>
 
-          <div className="mt-6 flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl bg-slate-100 hover:bg-slate-200 px-4 py-2.5 text-slate-600 transition"
-            >
-              إلغاء
-            </button>
+          {/* 6. زر الحفظ */}
+          <div className="pt-3">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 px-5 py-2.5 text-white shadow-sm transition"
+              className="w-full rounded-2xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 py-3.5 text-center text-sm font-black text-white shadow-md shadow-brand-600/20 transition hover:scale-[1.01]"
             >
-              {isSubmitting ? 'جاري الحفظ...' : 'حفظ العنوان'}
+              {isSubmitting ? 'جاري حفظ العنوان...' : 'حفظ العنوان'}
             </button>
           </div>
         </form>

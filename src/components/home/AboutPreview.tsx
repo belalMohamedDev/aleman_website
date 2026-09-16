@@ -23,7 +23,7 @@ export function AboutPreview() {
               src={LAB_IMAGE}
               alt={t(ui.about.labTitle)}
               loading="lazy"
-              className="h-56 w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-105 sm:h-72" 
+              className="h-56 w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-105 sm:h-72"
             />
           </div>
 
@@ -32,13 +32,13 @@ export function AboutPreview() {
               src={FACTORY_IMAGE}
               alt={t(ui.about.manufacturingTitle)}
               loading="lazy"
-              className="h-56 w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-105 sm:h-72" 
+              className="h-56 w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-105 sm:h-72"
             />
           </div>
 
           {/* Decorative Experience Badge Overlay */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/80 bg-brand-600 p-4 text-white shadow-lift text-center backdrop-blur-md">
-            <span className="block text-2xl md:text-3xl font-black text-gold-400">+25</span>
+            <span className="block text-2xl md:text-3xl font-black text-gold-400">+33</span>
             <span className="block text-xs font-bold text-white/90">عاماً من الخبرة</span>
           </div>
         </Reveal>

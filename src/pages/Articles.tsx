@@ -46,10 +46,6 @@ export function Articles() {
       <PageHeader eyebrow={t(ui.nav.articles)} title={t(ui.articles.pageTitle)} subtitle={t(ui.articles.pageSubtitle)} />
 
       <section className="mx-auto max-w-site px-4 py-12 md:px-6 md:py-16">
-        <div className="mb-8">
-          <PlaceholderNotice compact>{t(ui.articles.editorialNote)}</PlaceholderNotice>
-        </div>
-
         <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0" role="tablist" aria-label={t(ui.articles.pageTitle)}>
           {tabs.map((tab) => {
             const isActive = tab.id === active;

@@ -5,8 +5,8 @@ import { TrustMetrics } from '../components/home/TrustMetrics';
 import { AboutPreview } from '../components/home/AboutPreview';
 import { QualityProcess } from '../components/home/QualityProcess';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
-import { ArticlesPreview } from '../components/home/ArticlesPreview';
-import { ContactCTA } from '../components/home/ContactCTA';
+// import { ArticlesPreview } from '../components/home/ArticlesPreview';
+// import { ContactCTA } from '../components/home/ContactCTA';
 
 export function Home() {
   return (
@@ -20,8 +20,8 @@ export function Home() {
       <AboutPreview />
       <QualityProcess />
       <FeaturedProducts />
-      <ArticlesPreview />
-      <ContactCTA />
+      {/* <ArticlesPreview /> */}
+      {/* <ContactCTA /> */}
     </div>
   );
 }

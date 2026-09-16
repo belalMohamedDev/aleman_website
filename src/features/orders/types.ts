@@ -9,53 +9,69 @@ export enum PaymentMethod {
 }
 
 export enum TruckType {
-  MediumTruck = 1, // نص نقل / جامبو
-  HeavyTruck = 2,  // نقل ثقيل / تريلا
-  LargeTrailer = 3, // شاحنة مقطورة
+  Dababa = 1,
+  Jumbo = 2,
+  Trela = 3,
+  MediumTruck = 1,
+  HeavyTruck = 2,
+  LargeTrailer = 3,
 }
 
-export interface UserAddress {
-  id: string; // uuid from backend
-  label?: string;
-  city: string;
-  street: string;
-  district?: string;
-  notes?: string;
-  isDefault?: boolean;
-}
-
-export interface CreateAddressDto {
-  label?: string;
-  city: string;
-  street: string;
-  district?: string;
-  notes?: string;
-  isDefault?: boolean;
-}
+export type { UserAddress, CreateAddressDto } from '../profile/types';
 
 export interface CalculateShippingRequestDto {
   addressId: string; // uuid
   truckType: number;
 }
 
+export interface ShippingPromotionInfoDto {
+  id?: string | null;
+  title?: string | null;
+  discountPercentage?: number | null;
+  discountValue?: number | null;
+  endDateUtc?: string | null;
+}
+
+export interface ShippingRecommendationDto {
+  suggestedTruckType: number;
+  suggestedTruckName?: string | null;
+  suggestedTruckCount?: number;
+  suggestedTotalFee?: number;
+  potentialSavings?: number;
+  message?: string | null;
+}
+
 export interface CalculateShippingResponseDto {
   shippingFee: number;
-  estimatedDelivery?: string;
-  truckName?: string;
+  estimatedDelivery?: string | null;
+  truckName?: string | null;
   maxCapacityTons?: number;
   isWeightExceeded?: boolean;
   warningMessage?: string | null;
+  requiredTrucksCount?: number;
+  singleTruckBaseFee?: number;
+  singleTruckFeeAfterDiscount?: number;
+  totalOriginalShippingFee?: number;
+  totalDiscountAmount?: number;
+  promotion?: ShippingPromotionInfoDto | null;
+  recommendation?: ShippingRecommendationDto | null;
 }
 
 export interface CreateOrderRequestDto {
   orderType: number; // 1: Delivery, 2: Pickup
   addressId?: string | null; // uuid
   truckType?: number | null;
+  truckCount?: number | null;
+  vehicleId?: string | null; // uuid of saved vehicle
   driverName?: string | null;
   vehiclePlateNumber?: string | null;
   driverLicenseNumber?: string | null;
+  driverPhone?: string | null;
+  vehicleType?: string | null;
   expectedPickupDate?: string | null;
+  saveVehicle?: boolean;
   paymentMethod: number; // 1: Cash, 2: Online
+  paymentReceiptUrl?: string | null;
   couponCode?: string | null;
   notes?: string | null;
 }

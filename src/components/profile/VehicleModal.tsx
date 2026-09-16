@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { XIcon, TruckIcon } from 'lucide-react';
+import { XIcon, TruckIcon, UserIcon, PhoneIcon, CreditCardIcon } from 'lucide-react';
 import type { CreateVehicleDto } from '../../features/profile/types';
 
 interface VehicleModalProps {
@@ -8,12 +8,20 @@ interface VehicleModalProps {
   onSubmit: (data: CreateVehicleDto) => Promise<boolean>;
 }
 
+const VEHICLE_TYPE_CHIPS = [
+  'دبابة',
+  'جامبو',
+  'تريلا',
+  'نص نقل',
+  'أخرى',
+];
+
 export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
   const [driverName, setDriverName] = useState('');
   const [vehiclePlateNumber, setVehiclePlateNumber] = useState('');
   const [driverLicenseNumber, setDriverLicenseNumber] = useState('');
   const [driverPhone, setDriverPhone] = useState('');
-  const [vehicleType, setVehicleType] = useState('');
+  const [vehicleType, setVehicleType] = useState('دبابة (حتى 3 طن)');
   const [notes, setNotes] = useState('');
   const [isDefault, setIsDefault] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +49,7 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
       setVehiclePlateNumber('');
       setDriverLicenseNumber('');
       setDriverPhone('');
-      setVehicleType('');
+      setVehicleType('دبابة (حتى 3 طن)');
       setNotes('');
       setIsDefault(false);
       onClose();
@@ -49,126 +57,144 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-slate-100">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
-              <TruckIcon className="h-5 w-5" />
-            </div>
-            <h3 className="text-base font-black text-ink">إضافة سيارة وسائق</h3>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center sm:items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200" dir="rtl">
+      <div className="relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto text-right" dir="rtl">
+        {/* Top Drag Indicator */}
+        <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
+
+        {/* Modal Header */}
+        <div className="flex items-center justify-between pb-3 mb-2">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 transition"
+            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+            aria-label="إغلاق"
           >
             <XIcon className="h-5 w-5" />
           </button>
+          <h3 className="text-base sm:text-lg font-black text-ink">
+            إضافة سيارة وسائق جديد
+          </h3>
+          <div className="w-9" /> {/* Spacer to balance close button */}
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4 text-xs font-bold">
-          <div>
-            <label className="block text-slate-700 mb-1">
-              اسم السائق بالكامل <span className="text-red-500">*</span>
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-3.5 text-right" dir="rtl">
+          <div className="relative">
             <input
               type="text"
               required
+              dir="rtl"
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
-              placeholder="مثال: محمود أحمد حسن..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
+              placeholder="اسم السائق *"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-slate-700 mb-1">
-                رقم لوحة السيارة <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={vehiclePlateNumber}
-                onChange={(e) => setVehiclePlateNumber(e.target.value)}
-                placeholder="مثال: أ ب ج 1234"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-700 mb-1">نوع السيارة</label>
-              <input
-                type="text"
-                value={vehicleType}
-                onChange={(e) => setVehicleType(e.target.value)}
-                placeholder="جامبو، تريلا، دبابة..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
-              />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <UserIcon className="h-5 w-5" />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-slate-700 mb-1">رقم هاتف السائق</label>
-              <input
-                type="tel"
-                value={driverPhone}
-                onChange={(e) => setDriverPhone(e.target.value)}
-                placeholder="01xxxxxxxxx"
-                dir="ltr"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink text-right focus:border-brand-500 focus:bg-white focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-700 mb-1">رقم رخصة القيادة</label>
-              <input
-                type="text"
-                value={driverLicenseNumber}
-                onChange={(e) => setDriverLicenseNumber(e.target.value)}
-                placeholder="رقم الرخصة أو القومي"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
-              />
+          <div className="relative">
+            <input
+              type="text"
+              required
+              dir="rtl"
+              value={vehiclePlateNumber}
+              onChange={(e) => setVehiclePlateNumber(e.target.value)}
+              placeholder="رقم لوحة السيارة *"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+            />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <TruckIcon className="h-5 w-5" />
             </div>
           </div>
 
+          <div className="relative">
+            <input
+              type="text"
+              dir="rtl"
+              value={driverLicenseNumber}
+              onChange={(e) => setDriverLicenseNumber(e.target.value)}
+              placeholder="رقم الرخصة أو الرقم القومي (اختياري)"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+            />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <CreditCardIcon className="h-5 w-5" />
+            </div>
+          </div>
+
+          {/* 4. رقم هاتف السائق */}
+          <div className="relative">
+            <input
+              type="tel"
+              dir="rtl"
+              value={driverPhone}
+              onChange={(e) => setDriverPhone(e.target.value)}
+              placeholder="رقم هاتف السائق للتنسيق (اختياري)"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+            />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <PhoneIcon className="h-5 w-5" />
+            </div>
+          </div>
+
+          <div className="pt-1">
+            <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-2 text-right">
+              نوع الشاحنة / السيارة
+            </label>
+            <div className="flex flex-wrap gap-2 justify-start">
+              {VEHICLE_TYPE_CHIPS.map((type) => {
+                const isSelected = vehicleType === type;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setVehicleType(type)}
+                    className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${isSelected
+                        ? 'border-2 border-brand-600 bg-brand-50 text-brand-700 shadow-xs'
+                        : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                      }`}
+                  >
+                    {type}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 6. ملاحظات إضافية */}
           <div>
-            <label className="block text-slate-700 mb-1">ملاحظات (اختياري)</label>
-            <textarea
-              rows={2}
+            <input
+              type="text"
+              dir="rtl"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="حمولة السيارة، إمكانيات خاصة..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-ink focus:border-brand-500 focus:bg-white focus:outline-none"
+              placeholder="ملاحظات إضافية (اختياري)"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
             />
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer pt-1">
+          {/* 7. تعيين كافتراضي */}
+          <label className="flex items-center gap-2.5 cursor-pointer pt-1">
             <input
               type="checkbox"
               checked={isDefault}
               onChange={(e) => setIsDefault(e.target.checked)}
-              className="h-4 w-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300"
+              className="h-4 w-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300 accent-brand-600"
             />
-            <span className="text-slate-700">تعيين كسيارة وسائق افتراضي للاستلام من المصنع</span>
+            <span className="text-xs sm:text-sm font-bold text-slate-600">
+              تعيين كمركبة وسائق افتراضي لتحميل أرض المصنع
+            </span>
           </label>
 
-          <div className="mt-6 flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl bg-slate-100 hover:bg-slate-200 px-4 py-2.5 text-slate-600 transition"
-            >
-              إلغاء
-            </button>
+          {/* 8. زر الإضافة */}
+          <div className="pt-3">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 px-5 py-2.5 text-white shadow-sm transition"
+              className="w-full rounded-2xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 py-3.5 text-center text-sm font-black text-white shadow-md shadow-brand-600/20 transition hover:scale-[1.01]"
             >
-              {isSubmitting ? 'جاري الحفظ...' : 'حفظ البيانات'}
+              {isSubmitting ? 'جاري إضافة السيارة...' : 'إضافة السيارة'}
             </button>
           </div>
         </form>

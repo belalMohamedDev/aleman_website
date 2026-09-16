@@ -1,4 +1,5 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { LanguageProvider, useLang } from './i18n/LanguageContext';
 import { AuthProvider } from './features/auth/AuthContext';
@@ -26,6 +27,19 @@ import { Profile } from './pages/Profile';
 
 function Shell() {
   const { dir } = useLang();
+  const location = useLocation();
+  const hasDarkHero = location.pathname === '/' || location.pathname === '/about';
+
+  useEffect(() => {
+    if (hasDarkHero) {
+      document.documentElement.classList.add('is-home');
+    } else {
+      document.documentElement.classList.remove('is-home');
+    }
+    return () => {
+      document.documentElement.classList.remove('is-home');
+    };
+  }, [hasDarkHero]);
 
   return (
     <div dir={dir} className="relative flex min-h-screen w-full flex-col bg-canvas overflow-x-hidden">

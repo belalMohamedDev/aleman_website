@@ -5,6 +5,12 @@ export interface User {
   phoneNumber: string;
   role?: string;
   sapCustomerId?: string;
+  parentMerchantId?: string | null;
+  parentMerchantName?: string | null;
+  isSubCustomer?: boolean;
+  isMainCustomer?: boolean;
+  isMerchant?: boolean;
+  customerType?: string | number;
 }
 
 export interface AuthResponse {

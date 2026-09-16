@@ -17,23 +17,24 @@ export function ArticlesPreview() {
           eyebrow={t(ui.home.articlesTitle)}
           title={t(ui.home.articlesSubtitle)}
           action={
-          <Link
-            to="/articles"
-            className="focus-ring inline-flex rounded-pill border border-brand-200 px-5 py-2.5 text-sm font-bold text-brand-600 transition hover:border-brand-400 hover:bg-brand-50">
-            
+            <Link
+              to="/articles"
+              className="focus-ring inline-flex rounded-pill border border-brand-200 px-5 py-2.5 text-sm font-bold text-brand-600 transition hover:border-brand-400 hover:bg-brand-50">
+
               {t(ui.common.viewAll)}
             </Link>
           } />
-        
+
         <h2 id="articles-preview-title" className="sr-only">
           {t(ui.articles.pageTitle)}
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {latest.map((article, index) =>
-          <ArticleCard key={article.slug} article={article} index={index} />
+            <ArticleCard key={article.slug} article={article} index={index} />
           )}
         </div>
       </div>
-    </section>);
+    </section>
+  );
 
 }

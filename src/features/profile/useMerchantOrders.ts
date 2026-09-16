@@ -19,7 +19,7 @@ export function useMerchantOrders(isAuthenticated: boolean) {
       const res = await profileOrderService.getSmallMerchantOrders({
         status: statusFilter,
         page,
-        pageSize: 20,
+        pageSize: 100,
       });
       setOrders(res.orders);
       setTotalPages(res.totalPages || 1);

@@ -130,6 +130,7 @@ export interface OrderResponse {
   driverName?: string | null;
   vehiclePlateNumber?: string | null;
   driverLicenseNumber?: string | null;
+  driverPhone?: string | null;
   expectedPickupDate?: string | null;
   subtotal: number;
   shippingFee: number;
@@ -140,6 +141,13 @@ export interface OrderResponse {
   totalWeightTons: number;
   totalItemsCount?: number;
   notes?: string | null;
+  parentMerchantId?: string | null;
+  parentMerchantName?: string | null;
+  merchantApprovedAt?: string | null;
+  merchantRejectionReason?: string | null;
+  adminApprovedAt?: string | null;
+  adminRejectionReason?: string | null;
+  paymentReceiptUrl?: string | null;
   createdAt: string;
   items?: OrderItem[] | null;
 }

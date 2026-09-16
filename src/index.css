@@ -38,6 +38,8 @@ html[dir='ltr'] body {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+  width: 0 !important;
+  height: 0 !important;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
@@ -48,12 +50,16 @@ html[dir='ltr'] body {
   background: #eef2ee;
 }
 /* Custom Modern Scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
 html::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 html::-webkit-scrollbar-track {
-  background: #f8f9fa;
+  background: transparent;
 }
 html::-webkit-scrollbar-thumb {
   background: #cbd5e1;
@@ -61,6 +67,22 @@ html::-webkit-scrollbar-thumb {
 }
 html::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Home page scrollbar: seamlessly blends with the dark green hero image on first page */
+html.is-home {
+  background-color: #042013;
+  scrollbar-color: rgba(255, 255, 255, 0.25) #042013;
+}
+html.is-home::-webkit-scrollbar-track {
+  background: #042013;
+}
+html.is-home::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+html.is-home::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

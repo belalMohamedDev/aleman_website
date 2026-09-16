@@ -18,7 +18,7 @@ export function useMyOrders(isAuthenticated: boolean) {
       const res = await profileOrderService.getMyOrders({
         status: statusFilter,
         page,
-        pageSize: 10,
+        pageSize: 100,
       });
       setOrders(res.orders);
       setTotalPages(res.totalPages || 1);

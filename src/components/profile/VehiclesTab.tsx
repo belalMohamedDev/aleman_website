@@ -33,7 +33,7 @@ export function VehiclesTab({
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-700 px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:scale-105 active:scale-95"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:scale-105 active:scale-95 cursor-pointer"
         >
           <PlusIcon className="h-4 w-4" />
           <span>إضافة سيارة وسائق</span>
@@ -41,12 +41,12 @@ export function VehiclesTab({
       </div>
 
       {isLoading ? (
-        <div className="p-12 text-center text-sm font-bold text-slate-400 bg-white rounded-3xl border border-slate-100">
+        <div className="p-12 text-center text-sm font-bold text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-xs">
           جاري تحميل بيانات الأسطول والسائقين...
         </div>
       ) : vehicles.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 mb-3">
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center shadow-xs">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 mb-3">
             <TruckIcon className="h-8 w-8" />
           </div>
           <h3 className="text-base font-black text-ink">لا توجد سيارات أو سائقين مسجلين</h3>
@@ -56,7 +56,7 @@ export function VehiclesTab({
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 px-4 py-2 text-xs font-bold text-white transition"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-bold text-white transition cursor-pointer"
           >
             <PlusIcon className="h-3.5 w-3.5" />
             <span>إضافة أول سائق وسيارة</span>
@@ -69,15 +69,15 @@ export function VehiclesTab({
               key={vehicle.id}
               className={`relative flex flex-col justify-between rounded-2xl border p-5 transition ${
                 vehicle.isDefault
-                  ? 'border-purple-500/80 bg-purple-50/20 shadow-sm'
-                  : 'border-slate-200 bg-white hover:border-brand-200 hover:shadow-sm'
+                  ? 'border-emerald-500/80 bg-emerald-50/20 shadow-xs'
+                  : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-xs'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                      <TruckIcon className="h-4 w-4 text-purple-600" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                      <TruckIcon className="h-4 w-4 text-emerald-700" />
                     </div>
                     <div>
                       <span className="text-sm font-black text-ink">{vehicle.vehiclePlateNumber}</span>
@@ -88,8 +88,8 @@ export function VehiclesTab({
                   </div>
 
                   {vehicle.isDefault && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-0.5 text-[11px] font-black text-purple-800">
-                      <StarIcon className="h-3 w-3 fill-purple-700 text-purple-700" />
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-black text-emerald-800">
+                      <StarIcon className="h-3 w-3 fill-emerald-700 text-emerald-700" />
                       الافتراضي للاستلام
                     </span>
                   )}
@@ -131,7 +131,7 @@ export function VehiclesTab({
                   <button
                     type="button"
                     onClick={() => onMakeDefault(vehicle.id)}
-                    className="text-xs font-bold text-purple-700 hover:text-purple-900 transition underline"
+                    className="text-xs font-bold text-emerald-700 hover:text-emerald-900 transition underline cursor-pointer"
                   >
                     تعيين كافتراضي للاستلام
                   </button>
@@ -146,7 +146,7 @@ export function VehiclesTab({
                       onRemoveVehicle(vehicle.id);
                     }
                   }}
-                  className="flex items-center gap-1 text-xs font-bold text-red-500 hover:text-red-700 transition"
+                  className="flex items-center gap-1 text-xs font-bold text-red-500 hover:text-red-700 transition cursor-pointer"
                   title="حذف السيارة"
                 >
                   <Trash2Icon className="h-3.5 w-3.5" />

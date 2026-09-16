@@ -8,7 +8,6 @@ import {
   ShoppingBagIcon,
   UserIcon,
   LogOutIcon,
-  CheckCircleIcon,
 } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
@@ -19,7 +18,7 @@ import { useAuth } from '../../features/auth/AuthContext';
 
 export function Navbar() {
   const { t, lang, toggle } = useLang();
-  const { openCart, totalItemsCount } = useCart();
+  const { totalItemsCount } = useCart();
   const { user, isAuthenticated, openAuthModal, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,9 +26,9 @@ export function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
 
-  const isHome = location.pathname === '/';
-  const isTransparent = isHome && !scrolled;
-  const headerClass = isHome ? 'fixed' : 'sticky';
+  const isTransparentPage = location.pathname === '/' || location.pathname === '/about';
+  const isTransparent = isTransparentPage && !scrolled;
+  const headerClass = isTransparentPage ? 'fixed' : 'sticky';
 
   // Exclude /contact from desktop navbar links since there is a prominent CTA button
   const desktopNav = useMemo(
@@ -62,11 +61,10 @@ export function Navbar() {
 
   return (
     <header
-      className={`${headerClass} top-0 z-50 w-full transition-all duration-300 ${
-        isTransparent
-          ? 'border-b border-transparent bg-transparent'
-          : 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
-      }`}
+      className={`${headerClass} top-0 z-50 w-full transition-all duration-300 ${isTransparent
+        ? 'border-b border-transparent bg-transparent'
+        : 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
+        }`}
     >
       <div className="w-full max-w-[1700px] mx-auto flex h-[72px] items-center justify-between gap-3 px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28">
         {/* Brand Logo & Name */}
@@ -76,18 +74,16 @@ export function Navbar() {
             alt=""
             className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl object-contain bg-white p-1 shadow-sm transition-transform hover:scale-105"
           />
-          <span className="hidden flex-col leading-tight sm:flex">
+          <span className="hidden flex-col gap-1 sm:flex">
             <span
-              className={`text-sm sm:text-base font-black transition-colors ${
-                isTransparent ? 'text-white' : 'text-ink'
-              }`}
+              className={`text-sm sm:text-base font-black leading-none transition-colors ${isTransparent ? 'text-white' : 'text-ink'
+                }`}
             >
               {t(ui.brand.name)}
             </span>
             <span
-              className={`text-[10px] sm:text-[11px] font-semibold transition-colors ${
-                isTransparent ? 'text-white/80' : 'text-ink-muted'
-              }`}
+              className={`text-[10px] sm:text-[11px] font-semibold leading-none transition-colors ${isTransparent ? 'text-white/80' : 'text-ink-muted'
+                }`}
             >
               {t(ui.brand.tagline)}
             </span>
@@ -102,12 +98,11 @@ export function Navbar() {
               to={item.to}
               end={item.to === '/'}
               className={({ isActive }) =>
-                `focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${
-                  isActive
-                    ? isTransparent
-                      ? 'text-white'
-                      : 'text-brand-600'
-                    : isTransparent
+                `focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${isActive
+                  ? isTransparent
+                    ? 'text-white'
+                    : 'text-brand-600'
+                  : isTransparent
                     ? 'text-white/80 hover:text-white hover:bg-white/10'
                     : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
                 }`
@@ -118,9 +113,8 @@ export function Navbar() {
                   {t(item.label)}
                   {isActive && (
                     <span
-                      className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full transition-colors ${
-                        isTransparent ? 'bg-gold-400' : 'bg-gold-500'
-                      }`}
+                      className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full transition-colors ${isTransparent ? 'bg-gold-400' : 'bg-gold-500'
+                        }`}
                       aria-hidden="true"
                     />
                   )}
@@ -129,53 +123,53 @@ export function Navbar() {
             </NavLink>
           ))}
 
-          {/* More Dropdown */}
-          <div className="relative" onMouseLeave={() => setMoreOpen(false)}>
-            <button
-              type="button"
-              onClick={() => setMoreOpen((v) => !v)}
-              onMouseEnter={() => setMoreOpen(true)}
-              aria-expanded={moreOpen}
-              aria-haspopup="true"
-              className={`focus-ring flex items-center gap-1 rounded-pill px-3.5 py-2 text-sm font-bold transition ${
-                moreActive
+          {/* More Dropdown (only rendered if secondaryNav has items) */}
+          {secondaryNav.length > 0 && (
+            <div className="relative" onMouseLeave={() => setMoreOpen(false)}>
+              <button
+                type="button"
+                onClick={() => setMoreOpen((v) => !v)}
+                onMouseEnter={() => setMoreOpen(true)}
+                aria-expanded={moreOpen}
+                aria-haspopup="true"
+                className={`focus-ring flex items-center gap-1 rounded-pill px-3.5 py-2 text-sm font-bold transition ${moreActive
                   ? isTransparent
                     ? 'text-white'
                     : 'text-brand-600'
                   : isTransparent
-                  ? 'text-white/80 hover:text-white hover:bg-white/10'
-                  : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
-              }`}
-            >
-              <span>{lang === 'ar' ? 'المزيد' : 'More'}</span>
-              <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
-                aria-hidden="true"
-              />
-            </button>
+                    ? 'text-white/80 hover:text-white hover:bg-white/10'
+                    : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
+                  }`}
+              >
+                <span>{lang === 'ar' ? 'المزيد' : 'More'}</span>
+                <ChevronDownIcon
+                  className={`h-4 w-4 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
+              </button>
 
-            {moreOpen && (
-              <div className="absolute top-full z-50 pt-2 ltr:left-0 rtl:right-0">
-                <div className="w-56 overflow-hidden rounded-2xl border border-brand-100 bg-white p-2 shadow-lift">
-                  {secondaryNav.map((item) => (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      className={({ isActive }) =>
-                        `focus-ring block rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                          isActive
+              {moreOpen && (
+                <div className="absolute top-full z-50 pt-2 ltr:left-0 rtl:right-0">
+                  <div className="w-56 overflow-hidden rounded-2xl border border-brand-100 bg-white p-2 shadow-lift">
+                    {secondaryNav.map((item) => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        className={({ isActive }) =>
+                          `focus-ring block rounded-xl px-3 py-2.5 text-sm font-semibold transition ${isActive
                             ? 'bg-brand-50 text-brand-600'
                             : 'text-ink-soft hover:bg-brand-50/60 hover:text-brand-600'
-                        }`
-                      }
-                    >
-                      {t(item.label)}
-                    </NavLink>
-                  ))}
+                          }`
+                        }
+                      >
+                        {t(item.label)}
+                      </NavLink>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </nav>
 
         {/* Action Controls (Language, Auth, Cart, Contact CTA) */}
@@ -184,11 +178,10 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggle}
-            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${
-              isTransparent
-                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600'
-            }`}
+            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${isTransparent
+              ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+              : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600'
+              }`}
             aria-label={t(ui.nav.language)}
           >
             <Globe className="h-3.5 w-3.5 opacity-80" />
@@ -205,11 +198,10 @@ export function Navbar() {
                 type="button"
                 onClick={() => setUserMenuOpen((v) => !v)}
                 onMouseEnter={() => setUserMenuOpen(true)}
-                className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition ${
-                  isTransparent
-                    ? 'border-white/25 bg-white/15 text-white hover:bg-white/25 backdrop-blur-md'
-                    : 'border-brand-200 bg-brand-50/60 text-brand-800 hover:bg-brand-100/60'
-                }`}
+                className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition ${isTransparent
+                  ? 'border-white/25 bg-white/15 text-white hover:bg-white/25 backdrop-blur-md'
+                  : 'border-brand-200 bg-brand-50/60 text-brand-800 hover:bg-brand-100/60'
+                  }`}
               >
                 <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
                   <UserIcon className="h-3 w-3" />
@@ -218,9 +210,8 @@ export function Navbar() {
                   {userFirstName}
                 </span>
                 <ChevronDownIcon
-                  className={`h-3 w-3 opacity-60 transition-transform duration-200 ${
-                    userMenuOpen ? 'rotate-180' : ''
-                  }`}
+                  className={`h-3 w-3 opacity-60 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
@@ -232,10 +223,10 @@ export function Navbar() {
                       {user?.phoneNumber && (
                         <p className="text-[11px] font-medium text-slate-400 mt-0.5">{user.phoneNumber}</p>
                       )}
-                      <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                      {/* <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
                         <CheckCircleIcon className="h-3 w-3" />
                         حساب معتمد
-                      </span>
+                      </span> */}
                     </div>
 
                     <Link
@@ -245,17 +236,6 @@ export function Navbar() {
                     >
                       <UserIcon className="h-3.5 w-3.5 text-brand-600" />
                       <span>الملف الشخصي والبيانات</span>
-                    </Link>
-
-                    <Link
-                      to="/checkout"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
-                    >
-                      <span>إتمام الطلب</span>
-                      <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">
-                        {totalItemsCount} منتجات
-                      </span>
                     </Link>
 
                     <button
@@ -277,28 +257,25 @@ export function Navbar() {
             <button
               type="button"
               onClick={openAuthModal}
-              className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-extrabold transition ${
-                isTransparent
-                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                  : 'border-brand-200 bg-brand-50/50 text-brand-700 hover:border-brand-300'
-              }`}
+              className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-extrabold transition ${isTransparent
+                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                : 'border-brand-200 bg-brand-50/50 text-brand-700 hover:border-brand-300'
+                }`}
             >
               <UserIcon className="h-3.5 w-3.5 opacity-80" />
               <span>دخول / تسجيل</span>
             </button>
           )}
 
-          {/* Shopping Cart Button */}
+          {/* Shopping Cart Link -> Direct to Checkout */}
           {isAuthenticated && (
-            <button
-              type="button"
-              onClick={openCart}
-              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${
-                isTransparent
-                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-brand-300 hover:text-brand-600'
-              }`}
-              aria-label="سلة المشتريات"
+            <Link
+              to="/checkout"
+              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isTransparent
+                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-brand-300 hover:text-brand-600'
+                }`}
+              aria-label="إتمام الطلب"
             >
               <ShoppingBagIcon className="h-4 w-4" />
               {totalItemsCount > 0 && (
@@ -306,7 +283,7 @@ export function Navbar() {
                   {totalItemsCount}
                 </span>
               )}
-            </button>
+            </Link>
           )}
 
           {/* Contact CTA Button */}
@@ -322,11 +299,10 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className={`focus-ring inline-flex h-10 w-10 items-center justify-center rounded-full border transition lg:hidden ${
-              isTransparent
-                ? 'border-white/30 text-white hover:border-white bg-white/10 backdrop-blur-sm'
-                : 'border-slate-200 text-ink hover:border-brand-300'
-            }`}
+            className={`focus-ring inline-flex h-10 w-10 items-center justify-center rounded-full border transition lg:hidden ${isTransparent
+              ? 'border-white/30 text-white hover:border-white bg-white/10 backdrop-blur-sm'
+              : 'border-slate-200 text-ink hover:border-brand-300'
+              }`}
             aria-label={t(ui.nav.menu)}
           >
             <MenuIcon className="h-5 w-5" aria-hidden="true" />

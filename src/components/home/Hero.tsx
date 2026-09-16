@@ -29,10 +29,10 @@ export function Hero() {
           className="h-full w-full object-cover object-[center_right] lg:object-center"
           loading="eager"
         />
-        
+
         {/* Top & Bottom Ambient Vignette */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#02150d]/50 via-transparent to-black/40 pointer-events-none" />
-        
+
         {/* Mobile Backdrop Mask for full readability */}
         <div className="absolute inset-0 bg-[#031a10]/70 md:hidden pointer-events-none" />
 
@@ -52,15 +52,11 @@ export function Hero() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-xl lg:max-w-2xl text-start"
         >
-          {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-600/50 bg-[#06291b]/80 px-4 py-1.5 text-xs md:text-sm font-bold text-white backdrop-blur-md shadow-sm">
-            <LeafIcon className="h-4 w-4 text-white" aria-hidden="true" />
-            <span>{t(ui.home.heroEyebrow)}</span>
-          </div>
+
 
           {/* Main Title with Gold Accent Line */}
           {lang === 'ar' ? (
-            <h1 id="hero-title" className="mt-5 text-3xl font-black leading-[1.28] text-white sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.22] drop-shadow-md">
+            <h1 id="hero-title" className="text-3xl font-black leading-[1.35] text-white sm:text-4xl sm:leading-[1.32] md:text-5xl md:leading-[1.28] lg:text-[3.25rem] lg:leading-[1.26] drop-shadow-md">
               <span>خبرة صناعية راسخة في</span>
               <br />
               <span className="text-[#f59e0b] drop-shadow">تصنيع الأعلاف وتغذية</span>
@@ -68,7 +64,7 @@ export function Hero() {
               <span>الحيوان</span>
             </h1>
           ) : (
-            <h1 id="hero-title" className="mt-5 text-3xl font-black leading-[1.2] text-white sm:text-4xl md:text-5xl lg:text-[3.25rem] drop-shadow-md">
+            <h1 id="hero-title" className="text-3xl font-black leading-[1.25] text-white sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.22] drop-shadow-md">
               <span>Industrial Expertise in</span>
               <br />
               <span className="text-[#f59e0b] drop-shadow">Feed Manufacturing &</span>
@@ -78,24 +74,12 @@ export function Hero() {
           )}
 
           {/* Body Text */}
-          <p className="mt-5 max-w-xl text-sm sm:text-base lg:text-[1.05rem] leading-relaxed text-slate-100/90 font-medium drop-shadow">
+          <p className="mt-7 sm:mt-8 lg:mt-9 max-w-xl text-sm sm:text-base lg:text-[1.05rem] leading-relaxed text-slate-100/90 font-medium drop-shadow">
             {t(ui.home.heroBody)}
           </p>
 
-          {/* Key Feature Chips */}
-          <div className="mt-6 flex flex-wrap items-center gap-3 text-xs md:text-sm font-bold text-white">
-            <div className="flex items-center gap-2 rounded-xl border border-emerald-700/50 bg-[#05261a]/85 px-4 py-2.5 shadow-md backdrop-blur-md">
-              <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
-              <span>{lang === 'ar' ? 'خامات نقية 100%' : '100% Pure Materials'}</span>
-            </div>
-            <div className="flex items-center gap-2 rounded-xl border border-emerald-700/50 bg-[#05261a]/85 px-4 py-2.5 shadow-md backdrop-blur-md">
-              <AwardIcon className="h-4 w-4 text-amber-400" />
-              <span>{lang === 'ar' ? 'مطابقة للمواصفات الدولية' : 'ISO Certified Standard'}</span>
-            </div>
-          </div>
-
           {/* Call to Actions */}
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-9 sm:mt-11 lg:mt-12 flex flex-wrap items-center gap-4 sm:gap-5">
             <Link
               to="/products"
               className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#f97316] hover:bg-[#ea580c] px-8 py-3.5 text-base font-extrabold text-white shadow-lg shadow-orange-950/40 transition-all hover:scale-105 active:scale-95"

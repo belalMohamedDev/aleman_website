@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { FacebookIcon, YoutubeIcon } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';
@@ -15,7 +14,7 @@ export function Footer() {
       links: [
         { to: '/', label: t(ui.nav.home) },
         { to: '/about', label: t(ui.nav.about) },
-        { to: '/quality', label: t(ui.nav.quality) },
+        // { to: '/quality', label: t(ui.nav.quality) },
         { to: '/careers', label: t(ui.nav.careers) }
       ]
     },
@@ -26,7 +25,7 @@ export function Footer() {
     {
       title: t(ui.footer.resources),
       links: [
-        { to: '/articles', label: t(ui.nav.articles) },
+        // { to: '/articles', label: t(ui.nav.articles) },
         { to: '/distributors', label: t(ui.nav.distributors) }
       ]
     }
@@ -78,7 +77,9 @@ export function Footer() {
           <div>
             <h2 className="text-base font-black text-gold-300 tracking-wide">{t(ui.footer.contact)}</h2>
             <ul className="mt-4 space-y-3 text-sm text-slate-300 font-medium">
-              <li>{t(ui.contact.channels)}: {t(ui.common.dataSoon)}</li>
+              <li><a href="tel:16197" className="hover:text-gold-400 transition">الخط الساخن: 16197</a></li>
+              <li><a href="tel:01061832000" className="hover:text-gold-400 transition dir-ltr">01061832000</a></li>
+              <li><a href="mailto:info@alemanfoundation.com" className="hover:text-gold-400 transition dir-ltr">info@alemanfoundation.com</a></li>
               <li>
                 <Link to="/contact" className="focus-ring text-gold-400 underline underline-offset-4 transition hover:text-gold-300">
                   {t(ui.nav.contact)}
@@ -88,14 +89,25 @@ export function Footer() {
 
             <h3 className="mt-6 text-sm font-extrabold text-gold-300">{t(ui.footer.social)}</h3>
             <div className="mt-3 flex items-center gap-3">
-              <a href="#" className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-gold-500 hover:text-white" aria-label="Facebook">
+              <a
+                href="https://www.facebook.com/alemangroups/?locale=ar_AR"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-gold-500 hover:text-white"
+                aria-label="Facebook"
+              >
                 <FacebookIcon className="h-5 w-5" aria-hidden="true" />
               </a>
-              <a href="#" className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-gold-500 hover:text-white" aria-label="YouTube">
+              <a
+                href="https://www.youtube.com/channel/UCLz2menJ10Pi7OKYZqz2ehQ"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-gold-500 hover:text-white"
+                aria-label="YouTube"
+              >
                 <YoutubeIcon className="h-5 w-5" aria-hidden="true" />
               </a>
             </div>
-            <p className="mt-2.5 text-xs text-slate-400">{t(ui.footer.socialNotice)}</p>
 
             <div className="mt-6 flex items-center gap-2" role="group" aria-label={t(ui.nav.language)}>
               {(['ar', 'en'] as const).map((code) => (
@@ -103,9 +115,8 @@ export function Footer() {
                   key={code}
                   type="button"
                   onClick={() => setLang(code)}
-                  className={`focus-ring rounded-pill px-3.5 py-1.5 text-xs font-bold transition ${
-                    lang === code ? 'bg-gold-500 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'
-                  }`}
+                  className={`focus-ring rounded-pill px-3.5 py-1.5 text-xs font-bold transition ${lang === code ? 'bg-gold-500 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                    }`}
                 >
                   {code === 'ar' ? 'العربية' : 'English'}
                 </button>

@@ -76,10 +76,6 @@ export function ArticleDetail() {
             </p>
           )}
         </div>
-
-        <div className="mt-8">
-          <PlaceholderNotice compact>{t(ui.articles.editorialNote)}</PlaceholderNotice>
-        </div>
       </article>
 
       <section className="mx-auto max-w-site px-4 pb-16 md:px-6">
