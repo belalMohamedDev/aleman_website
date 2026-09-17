@@ -1,116 +1,169 @@
-import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeftIcon, ArrowRightIcon, ChevronDownIcon, LeafIcon, PhoneCallIcon, ShieldCheckIcon, AwardIcon } from 'lucide-react';
-import { useLang } from '../../i18n/LanguageContext';
-import { ui } from '../../i18n/ui';
-// import { HeroLeafShadows } from './HeroLeafShadows';
-
-const HERO_BG = "/hero_farm_bg.png";
+import { useRef, useEffect, useState, useCallback } from 'react';
+import {
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValue,
+  useReducedMotion,
+} from 'framer-motion';
+import { HeroBackgroundLayer } from './HeroBackgroundLayer';
+import { HeroGreeneryLayer } from './HeroGreeneryLayer';
+import { HeroShowcaseLayer } from './HeroShowcaseLayer';
+import { HeroContentLayer } from './HeroContentLayer';
+import './hero-parallax.css';
 
 export function Hero() {
-  const { t, dir, lang } = useLang();
-  const reduced = useReducedMotion();
-  const Arrow = dir === 'rtl' ? ArrowLeftIcon : ArrowRightIcon;
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const reducedMotion = useReducedMotion();
+  const [isTouch, setIsTouch] = useState(false);
+  const [isFallback, setIsFallback] = useState(false);
 
-  const scrollToNext = () => {
+  // Detect touch devices to strictly disable mouse parallax on mobile/touch screens
+  useEffect(() => {
+    const isTouchDevice =
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia('(pointer: coarse)').matches;
+    setIsTouch(isTouchDevice);
+  }, []);
+
+  // Pre-flight check: verify clean background image exists; fallback if unavailable
+  useEffect(() => {
+    const testImg = new Image();
+    testImg.src = '/aleman_parallax_assets/hero-background-clean.png';
+    testImg.onerror = () => {
+      console.warn('[Aleman Hero] Clean background asset missing, falling back to composite image.');
+      setIsFallback(true);
+    };
+  }, []);
+
+  // --------------------------------------------------------------------------
+  // 1. Scroll-Driven Parallax Tracking
+  // --------------------------------------------------------------------------
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Background: stays deep with subtle push
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '8%']);
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.03]);
+
+  // Greenery: framing hedges and leaves
+  const greenY = useTransform(scrollYProgress, [0, 1], ['0%', '11%']);
+
+  // Content (Right side in RTL): smooth upward exit and clean dissolve
+  const contentY = useTransform(scrollYProgress, [0, 0.85], ['0%', '-20%']);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.55, 0.85], [1, 0.7, 0]);
+
+  // --------------------------------------------------------------------------
+  // 2. Desktop Pointer-Driven Micro-Parallax
+  // --------------------------------------------------------------------------
+  const rawMouseX = useMotionValue(0);
+  const rawMouseY = useMotionValue(0);
+
+  const springConfig = { damping: 26, stiffness: 160, mass: 0.5 };
+  const smoothMouseX = useSpring(rawMouseX, springConfig);
+  const smoothMouseY = useSpring(rawMouseY, springConfig);
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLElement>) => {
+      if (isTouch || reducedMotion) return;
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+      // Normalize coordinate offset from center [-1, 1]
+      const nx = (clientX / innerWidth - 0.5) * 2;
+      const ny = (clientY / innerHeight - 0.5) * 2;
+      rawMouseX.set(nx);
+      rawMouseY.set(ny);
+    },
+    [isTouch, reducedMotion, rawMouseX, rawMouseY]
+  );
+
+  const handlePointerLeave = useCallback(() => {
+    rawMouseX.set(0);
+    rawMouseY.set(0);
+  }, [rawMouseX, rawMouseY]);
+
+  // Background pointer micro-parallax (±2-3px)
+  const bgPointerX = useTransform(smoothMouseX, [-1, 1], [-3, 3]);
+  const bgPointerY = useTransform(smoothMouseY, [-1, 1], [-2, 2]);
+
+  // Greenery pointer micro-parallax (±5px)
+  const greenPointerX = useTransform(smoothMouseX, [-1, 1], [-5, 5]);
+  const greenPointerY = useTransform(smoothMouseY, [-1, 1], [-3, 3]);
+
+  // Content pointer micro-parallax (±2px)
+  const contentPointerX = useTransform(smoothMouseX, [-1, 1], [-2, 2]);
+  const contentPointerY = useTransform(smoothMouseY, [-1, 1], [-2, 2]);
+
+  // --------------------------------------------------------------------------
+  // 3. Scroll Down Action
+  // --------------------------------------------------------------------------
+  const scrollToNext = useCallback(() => {
+    if (!sectionRef.current) {
+      window.scrollTo({ top: window.innerHeight - 80, behavior: 'smooth' });
+      return;
+    }
+    const rect = sectionRef.current.getBoundingClientRect();
+    const targetScroll = window.scrollY + rect.height - 20;
     window.scrollTo({
-      top: window.innerHeight - 80,
-      behavior: 'smooth'
+      top: targetScroll,
+      behavior: 'smooth',
     });
-  };
+  }, []);
+
+  const reduced = !!reducedMotion;
 
   return (
-    <section className="relative min-h-[90vh] lg:min-h-screen w-full overflow-hidden flex items-center text-white" aria-labelledby="hero-title">
-      {/* Background Image with Cinematic Overlays */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src={HERO_BG}
-          alt={t(ui.home.heroImageAlt)}
-          className="h-full w-full object-cover object-[center_right] lg:object-center"
-          loading="eager"
+    <section
+      ref={sectionRef}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      className="hero-parallax-section"
+      aria-labelledby="hero-title"
+    >
+      <div className="hero-parallax-sticky">
+        {/* Layer 1 & 2: Background Landscape & Reading Contrast Vignette */}
+        <HeroBackgroundLayer
+          y={bgY}
+          scale={bgScale}
+          pointerX={bgPointerX}
+          pointerY={bgPointerY}
+          isFallback={isFallback}
+          reduced={reduced}
         />
 
-        {/* Top & Bottom Ambient Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#02150d]/50 via-transparent to-black/40 pointer-events-none" />
+        {/* Layer 2.5: Greenery Hedges & Hanging Leaves Frame (green.png) */}
+        {!isFallback && (
+          <HeroGreeneryLayer
+            y={greenY}
+            pointerX={greenPointerX}
+            pointerY={greenPointerY}
+            reduced={reduced}
+          />
+        )}
 
-        {/* Mobile Backdrop Mask for full readability */}
-        <div className="absolute inset-0 bg-[#031a10]/70 md:hidden pointer-events-none" />
+        {/* Layer 3-6: Unified Product & Farm Showcase (Bags on Pallet, Cow, Duck, Chicken, Grains) */}
+        {!isFallback && (
+          <HeroShowcaseLayer
+            progress={scrollYProgress}
+            smoothMouseX={smoothMouseX}
+            smoothMouseY={smoothMouseY}
+            reduced={reduced}
+          />
+        )}
 
-        {/* Directional Mask for Text Side: Luminous rich forest green with smooth fade */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#042013]/90 via-[#042013]/65 via-45% to-transparent ltr:block hidden pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-l from-[#042013]/90 via-[#042013]/65 via-45% to-transparent rtl:block hidden pointer-events-none" />
+        {/* Layer 7 & 8: Arabic RTL Headline, Copy, CTAs, and Scroll Indicator */}
+        <HeroContentLayer
+          y={contentY}
+          opacity={contentOpacity}
+          pointerX={contentPointerX}
+          pointerY={contentPointerY}
+          onScrollClick={scrollToNext}
+          reduced={reduced}
+        />
       </div>
-
-      {/* Decorative Botanical Leaf Shadows (Gobo / Bokeh Foliage Frame) */}
-      {/* <HeroLeafShadows /> */}
-
-      {/* Hero Content positioned towards the right in RTL */}
-      <div className="relative z-20 w-full max-w-[1700px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28 pt-28 pb-16 md:pt-36 md:pb-24 lg:pt-36 lg:pb-28 flex flex-col items-start">
-        <motion.div
-          initial={reduced ? false : { opacity: 0, y: 28 }}
-          animate={reduced ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-xl lg:max-w-2xl text-start"
-        >
-
-
-          {/* Main Title with Gold Accent Line */}
-          {lang === 'ar' ? (
-            <h1 id="hero-title" className="text-3xl font-black leading-[1.35] text-white sm:text-4xl sm:leading-[1.32] md:text-5xl md:leading-[1.28] lg:text-[3.25rem] lg:leading-[1.26] drop-shadow-md">
-              <span>خبرة صناعية راسخة في</span>
-              <br />
-              <span className="text-[#f59e0b] drop-shadow">تصنيع الأعلاف وتغذية</span>
-              <br />
-              <span>الحيوان</span>
-            </h1>
-          ) : (
-            <h1 id="hero-title" className="text-3xl font-black leading-[1.25] text-white sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.22] drop-shadow-md">
-              <span>Industrial Expertise in</span>
-              <br />
-              <span className="text-[#f59e0b] drop-shadow">Feed Manufacturing &</span>
-              <br />
-              <span>Animal Nutrition</span>
-            </h1>
-          )}
-
-          {/* Body Text */}
-          <p className="mt-7 sm:mt-8 lg:mt-9 max-w-xl text-sm sm:text-base lg:text-[1.05rem] leading-relaxed text-slate-100/90 font-medium drop-shadow">
-            {t(ui.home.heroBody)}
-          </p>
-
-          {/* Call to Actions */}
-          <div className="mt-9 sm:mt-11 lg:mt-12 flex flex-wrap items-center gap-4 sm:gap-5">
-            <Link
-              to="/products"
-              className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#f97316] hover:bg-[#ea580c] px-8 py-3.5 text-base font-extrabold text-white shadow-lg shadow-orange-950/40 transition-all hover:scale-105 active:scale-95"
-            >
-              <span>{t(ui.home.ctaPrimary)}</span>
-              <Arrow className="h-5 w-5 transition-transform group-hover:-translate-x-1 rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1" aria-hidden="true" />
-            </Link>
-
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center gap-2.5 rounded-full border border-white/40 bg-white/5 hover:bg-white/15 px-7 py-3.5 text-base font-extrabold text-white backdrop-blur-md transition-all hover:border-white hover:scale-105 active:scale-95"
-            >
-              <PhoneCallIcon className="h-5 w-5 text-amber-400" aria-hidden="true" />
-              <span>{t(ui.home.ctaSecondary)}</span>
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Scroll Down Indicator */}
-      <motion.button
-        type="button"
-        onClick={scrollToNext}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 8, 0] }}
-        transition={{ opacity: { delay: 1 }, y: { repeat: Infinity, duration: 1.8, ease: "easeInOut" } }}
-        aria-label="Scroll down"
-        className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 text-white/70 transition hover:text-white"
-      >
-        <ChevronDownIcon className="h-5 w-5 text-amber-400" />
-      </motion.button>
     </section>
   );
 }
