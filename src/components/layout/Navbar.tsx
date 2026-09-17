@@ -226,13 +226,11 @@ export function Navbar() {
                 onClick={() => setUserMenuOpen((v) => !v)}
                 onMouseEnter={() => setUserMenuOpen(true)}
                 className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition ${isTransparent
-                  ? 'border-white/25 bg-white/15 text-white hover:bg-white/25 backdrop-blur-md'
-                  : 'border-brand-200 bg-brand-50/60 text-brand-800 hover:bg-brand-100/60'
+                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                  : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white'
                   }`}
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                  <UserIcon className="h-3 w-3" />
-                </div>
+                <UserIcon className="h-3.5 w-3.5 opacity-80" />
                 <span className="font-extrabold max-w-[90px] truncate" dir="auto">
                   {userFirstName}
                 </span>

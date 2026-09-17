@@ -22,26 +22,43 @@ export function Footer() {
       title: t(ui.footer.products),
       links: categories.map((c) => ({ to: `/products?category=${c.id}`, label: lang === 'ar' ? c.ar : c.en }))
     },
-    {
-      title: t(ui.footer.resources),
-      links: [
-        // { to: '/articles', label: t(ui.nav.articles) },
-        // { to: '/distributors', label: t(ui.nav.distributors) }
-      ]
-    }
+
   ];
 
   return (
     <footer className="relative mt-20 bg-[#111827] text-white overflow-hidden border-t border-slate-800">
-      {/* Background Watermark Animal Illustrations */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-5 select-none" aria-hidden="true">
-        <img src="/animal_cow.webp" alt="" loading="lazy" decoding="async" className="absolute -bottom-10 ltr:-right-10 rtl:-left-10 w-96 object-contain filter invert brightness-200" />
-        <img src="/animal_chicken.webp" alt="" loading="lazy" decoding="async" className="absolute top-4 ltr:left-10 rtl:right-10 w-64 object-contain filter invert brightness-200" />
-        <img src="/animal_duck.webp" alt="" loading="lazy" decoding="async" className="absolute bottom-20 ltr:left-1/3 rtl:right-1/3 w-60 object-contain filter invert brightness-200" />
+      {/* Natural Animal Watermark Showcase */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
+        {/* Cow - Bottom Left in RTL, raised higher */}
+        <img
+          src="/animal_cow.webp"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="absolute bottom-14 lg:bottom-18 ltr:-right-6 rtl:-left-6 w-80 lg:w-96 object-contain opacity-25 lg:opacity-30"
+        />
+
+        {/* Rooster & Hen - Top Right in RTL */}
+        <img
+          src="/animal_chicken.webp"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="absolute top-4 ltr:left-8 rtl:right-8 w-60 lg:w-72 object-contain opacity-25 lg:opacity-30"
+        />
+
+        {/* Ducks - Lowered below navigation links, above bottom border line */}
+        <img
+          src="/animal_duck.webp"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="absolute bottom-28 lg:bottom-32 ltr:left-[30%] rtl:right-[30%] w-44 lg:w-52 object-contain opacity-20 lg:opacity-25 hidden md:block"
+        />
       </div>
 
       <div className="relative z-10 mx-auto max-w-site px-4 py-16 md:px-6">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.2fr]">
           {/* Brand Info */}
           <div>
             <div className="flex items-center gap-3">
@@ -92,9 +109,9 @@ export function Footer() {
               <li><a href="tel:01061832000" className="hover:text-gold-400 transition dir-ltr">01061832000</a></li>
               <li><a href="mailto:info@alemanfoundation.com" className="hover:text-gold-400 transition dir-ltr">info@alemanfoundation.com</a></li>
               <li>
-                <Link to="/contact" className="focus-ring text-gold-400 underline underline-offset-4 transition hover:text-gold-300">
+                {/* <Link to="/contact" className="focus-ring text-gold-400 underline underline-offset-4 transition hover:text-gold-300">
                   {t(ui.nav.contact)}
-                </Link>
+                </Link> */}
               </li>
             </ul>
 
@@ -120,7 +137,7 @@ export function Footer() {
               </a>
             </div>
 
-            <div className="mt-6 flex items-center gap-2" role="group" aria-label={t(ui.nav.language)}>
+            {/* <div className="mt-6 flex items-center gap-2" role="group" aria-label={t(ui.nav.language)}>
               {(['ar', 'en'] as const).map((code) => (
                 <button
                   key={code}
@@ -132,7 +149,7 @@ export function Footer() {
                   {code === 'ar' ? 'العربية' : 'English'}
                 </button>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
 

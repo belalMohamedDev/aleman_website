@@ -1,0 +1,583 @@
+/* ==========================================================================
+   Aleman Feed - Trust Metrics Split Showcase Styles
+   Strictly adheres to Clean Architecture & Rule 2 (CSS separation)
+   ========================================================================== */
+
+.trust-section {
+  position: relative;
+  width: 100%;
+  padding-top: 4.5rem;
+  padding-bottom: 3.5rem;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .trust-section {
+    padding-top: 6rem;
+    padding-bottom: 4.5rem;
+  }
+}
+
+/* Atmospheric Ambient Background Glow */
+.trust-ambient-glow {
+  position: absolute;
+  top: 20%;
+  right: 5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.trust-ambient-glow-left {
+  position: absolute;
+  bottom: 10%;
+  left: 5%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(70px);
+  z-index: 0;
+}
+
+/* Grid layout */
+.trust-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+@media (min-width: 1024px) {
+  .trust-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 3.5rem;
+    align-items: flex-start;
+  }
+}
+
+/* Text Column (Right in RTL) */
+.trust-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .trust-text-col {
+    grid-column: span 7 / span 7;
+  }
+}
+
+/* ==========================================================================
+   Spiral Track & Point Nodes (الخط الحلزوني المتباعد ونقاط البوينت 3D)
+   ========================================================================== */
+.trust-editorial-split {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  margin-top: 3rem;
+}
+
+@media (min-width: 640px) {
+  .trust-editorial-split {
+    grid-template-columns: 1fr 90px 1fr;
+    gap: 3rem;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-editorial-split {
+    gap: 3.5rem;
+  }
+}
+
+/* Right Column (Starts at Top) */
+.trust-editorial-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .trust-editorial-col-right {
+    gap: 7.5rem;
+    padding-top: 0.5rem;
+  }
+}
+
+/* Left Column (Staggered Downwards for Perfect Alternating Spiral Flow) */
+.trust-editorial-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .trust-editorial-col-left {
+    gap: 7.5rem;
+    padding-top: 9rem; /* Staggers Item 02 to align with Point 02 */
+  }
+}
+
+/* Center Spiral Column */
+.trust-spiral-track {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .trust-spiral-track {
+    display: block;
+    position: relative;
+    width: 90px;
+    height: 560px;
+    flex-shrink: 0;
+  }
+}
+
+.trust-spiral-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Sleek, Minimalist Primary Spiral Stream (Solid Gray Track) */
+.trust-spiral-main-strand {
+  stroke-width: 3px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+/* Clean, Minimalist Point Nodes (Simple, Elegant & Matching App) */
+.trust-point-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #064024;
+  border: 2px solid #cbd5e1;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 5;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.trust-point-node:hover {
+  transform: scale(1.08);
+  border-color: #054e2b;
+  box-shadow: 0 4px 12px rgba(6, 64, 36, 0.2);
+}
+
+/* Harmonious Even Spacing for the 4 Points (Expanded ~145px) */
+.trust-point-1 {
+  top: 35px;
+  right: -8px;
+}
+
+.trust-point-2 {
+  top: 180px;
+  left: -8px;
+}
+
+.trust-point-3 {
+  top: 325px;
+  right: -8px;
+}
+
+.trust-point-4 {
+  top: 470px;
+  left: -8px;
+}
+
+/* Mobile inline point node */
+.trust-mobile-point {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #064024;
+  border: 2px solid #cbd5e1;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 640px) {
+  .trust-mobile-point {
+    display: none;
+  }
+}
+
+.trust-editorial-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Subtle swing on hover around the vertical axis */
+.trust-editorial-col-right .trust-editorial-item {
+  transform-origin: left center;
+}
+
+.trust-editorial-col-right .trust-editorial-item:hover {
+  transform: translateX(4px);
+}
+
+.trust-editorial-col-left .trust-editorial-item {
+  transform-origin: right center;
+}
+
+.trust-editorial-col-left .trust-editorial-item:hover {
+  transform: translateX(-4px);
+}
+
+.trust-editorial-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.trust-editorial-num {
+  font-size: 0.8125rem;
+  font-weight: 900;
+  color: #054e2b;
+  background: #edf7f1;
+  border: 1px solid rgba(5, 78, 43, 0.15);
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Solid, High-Readability Editorial Headline */
+.trust-editorial-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1.55;
+  margin: 0;
+  color: #0b1f14;
+}
+
+.trust-editorial-desc {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.85;
+  color: #475569;
+  margin: 0;
+}
+
+/* Visual Column (Left in RTL) */
+.trust-visual-col {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+}
+
+@media (min-width: 640px) {
+  .trust-visual-col {
+    min-height: 600px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-visual-col {
+    grid-column: span 5 / span 5;
+    min-height: 600px;
+    margin-top: 5rem;
+    align-self: flex-start;
+  }
+}
+
+/* 3D Stage / Pedestal */
+.trust-stage {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .trust-stage {
+    max-width: 520px;
+    height: 550px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-stage {
+    max-width: 580px;
+    height: 590px;
+  }
+}
+
+/* Soft Radial Backdrop Disk */
+.trust-stage-backdrop {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(245, 158, 11, 0.1) 45%, transparent 72%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .trust-stage-backdrop {
+    width: 460px;
+    height: 460px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-stage-backdrop {
+    width: 520px;
+    height: 520px;
+  }
+}
+
+/* Soft ground shadow ellipse anchoring all 3 sacks */
+.trust-ground-shadow {
+  position: absolute;
+  bottom: 16px;
+  width: 350px;
+  height: 36px;
+  background: radial-gradient(ellipse at center, rgba(3, 23, 14, 0.42) 0%, rgba(3, 23, 14, 0.16) 55%, transparent 75%);
+  border-radius: 50%;
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .trust-ground-shadow {
+    bottom: 22px;
+    width: 460px;
+    height: 44px;
+    filter: blur(12px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-ground-shadow {
+    bottom: 28px;
+    width: 520px;
+    height: 48px;
+    filter: blur(14px);
+  }
+}
+
+/* ==========================================================================
+   3-Sack Product Trio Showcase (التكوين الهرمي الفاخر لـ 3 شكاير)
+   ========================================================================== */
+
+/* Sack 1: Left Sack Wrapper (Cattle Feed - أحمر) */
+.trust-layer-left {
+  position: absolute;
+  bottom: 36px;
+  left: -8px;
+  z-index: 2;
+  transform-origin: bottom center;
+  pointer-events: auto;
+}
+
+@media (min-width: 640px) {
+  .trust-layer-left {
+    left: -4px;
+    bottom: 46px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-layer-left {
+    left: 2px;
+    bottom: 56px;
+  }
+}
+
+.trust-float-left {
+  width: 240px;
+  height: auto;
+  filter: drop-shadow(0 16px 26px rgba(2, 20, 12, 0.26)) brightness(0.96);
+  animation: trust-float-left-kf 5.4s ease-in-out infinite alternate;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .trust-float-left {
+    width: 295px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-float-left {
+    width: 335px;
+  }
+}
+
+.trust-float-left:hover {
+  transform: translateY(-8px) scale(1.03);
+  filter: drop-shadow(0 24px 34px rgba(2, 20, 12, 0.36)) brightness(1.02);
+}
+
+@keyframes trust-float-left-kf {
+  0% {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(-0.3deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0.4deg);
+  }
+}
+
+/* Sack 2: Right Sack Wrapper (Ducks Feed - أخضر/ذهبي) */
+.trust-layer-right {
+  position: absolute;
+  bottom: 36px;
+  right: -8px;
+  z-index: 2;
+  transform-origin: bottom center;
+  pointer-events: auto;
+}
+
+@media (min-width: 640px) {
+  .trust-layer-right {
+    right: -4px;
+    bottom: 46px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-layer-right {
+    right: 2px;
+    bottom: 56px;
+  }
+}
+
+.trust-float-right {
+  width: 240px;
+  height: auto;
+  filter: drop-shadow(0 16px 26px rgba(2, 20, 12, 0.26)) brightness(0.96);
+  animation: trust-float-right-kf 5.6s ease-in-out infinite alternate;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .trust-float-right {
+    width: 295px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-float-right {
+    width: 335px;
+  }
+}
+
+.trust-float-right:hover {
+  transform: translateY(-8px) scale(1.03);
+  filter: drop-shadow(0 24px 34px rgba(2, 20, 12, 0.36)) brightness(1.02);
+}
+
+@keyframes trust-float-right-kf {
+  0% {
+    transform: translateY(0px) rotate(0.4deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(-0.3deg);
+  }
+  100% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+
+/* Sack 3: Center Hero Foreground Sack (Broiler Feed - أصفر/أزرق) */
+.trust-layer-center {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 4;
+  transform-origin: bottom center;
+  pointer-events: auto;
+}
+
+@media (min-width: 640px) {
+  .trust-layer-center {
+    bottom: 22px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-layer-center {
+    bottom: 28px;
+  }
+}
+
+.trust-float-center {
+  width: 305px;
+  height: auto;
+  filter: drop-shadow(0 24px 38px rgba(2, 20, 12, 0.35));
+  animation: trust-float-center-kf 4.8s ease-in-out infinite alternate;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .trust-float-center {
+    width: 360px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trust-float-center {
+    width: 405px;
+  }
+}
+
+.trust-float-center:hover {
+  transform: translateY(-10px) scale(1.035);
+  filter: drop-shadow(0 32px 48px rgba(2, 20, 12, 0.44)) brightness(1.04);
+}
+
+@keyframes trust-float-center-kf {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.01);
+  }
+  100% {
+    transform: translateY(-8px) scale(1.015);
+  }
+}

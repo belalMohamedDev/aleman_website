@@ -6,7 +6,7 @@ export const ui = {
   brand: {
     name: L('مؤسسة الإيمان للأعلاف', 'Aleman Foundation for Feed'),
     short: L('الإيمان', 'Aleman'),
-    tagline: L('صناعة أعلاف مصرية بجودة شاملة', 'Egyptian feed manufacturing built on total quality')
+    tagline: L('رائدة صناعة الأعلاف في مصر', 'Egyptian feed manufacturing built on total quality')
   },
   nav: {
     home: L('الرئيسية', 'Home'),
@@ -62,7 +62,7 @@ export const ui = {
     ctaSecondary: L('تواصل معنا', 'Contact us'),
     heroImageAlt: L('مصنع أعلاف حديث ومزرعة دواجن ومواشي مع أكياس علف', 'Modern feed mill with poultry, cattle and stacked feed sacks'),
     trustTitle: L('لماذا الإيمان', 'Why Aleman'),
-    trustSubtitle: L('مؤسسة صناعية زراعية مصرية تبني ثقتها على الجودة في كل مرحلة.', 'An Egyptian agro-industrial company that builds trust through quality at every stage.'),
+    trustSubtitle: L('الإيمان مؤسسة صناعية زراعية مصرية تبني ثقتها على الجودة في كل مرحلة .', 'An Egyptian agro-industrial company that builds trust through quality at every stage.'),
     aboutTitle: L('من نحن', 'About us'),
     productsTitle: L('منتجاتنا', 'Our products'),
     productsSubtitle: L('تشكيلة أعلاف تغطي الدواجن والمواشي والأرانب والبط.', 'A feed range covering poultry, livestock, rabbits and ducks.'),

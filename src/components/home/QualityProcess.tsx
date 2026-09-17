@@ -1,33 +1,36 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
-import { SectionHeading } from '../shared/SectionHeading';
-import { QualityStepsFlow } from '../company/QualitySteps';
+import { Reveal } from '../shared/Reveal';
+import { QualityPipelineJourney } from './QualityPipelineJourney';
 
 export function QualityProcess() {
   const { t } = useLang();
 
   return (
-    <section className="border-y border-brand-100 bg-brand-50/40 py-16 md:py-20" aria-labelledby="quality-title">
+    <section className="quality-process-section relative pt-10 md:pt-16 pb-16 md:pb-24 overflow-hidden" aria-labelledby="quality-title">
       <div className="mx-auto max-w-site px-4 md:px-6">
-        <SectionHeading
-          eyebrow={t(ui.home.qualityTitle)}
-          title={t(ui.home.qualitySubtitle)}
-          action={
-          <Link
-            to="/quality"
-            className="focus-ring inline-flex rounded-pill border border-brand-200 bg-white px-5 py-2.5 text-sm font-bold text-brand-600 transition hover:border-brand-400">
-            
-              {t(ui.common.readMore)}
-            </Link>
-          } />
-        
+        <Reveal>
+          <div className="quality-header-wrap mb-10 md:mb-12 max-w-3xl">
+
+
+            {/* Balanced, high-readability Arabic headline */}
+            <h2
+              id="quality-section-heading"
+              className="mt-4 text-3xl font-black text-ink sm:text-4xl lg:text-[2.6rem] leading-[1.45] tracking-tight"
+            >
+              <span className="text-brand-700">رحلة الجودة الشاملة</span>
+              <span className="block mt-1 sm:mt-2 text-ink">من المادة الخام حتى المنتج النهائي.</span>
+            </h2>
+
+
+          </div>
+        </Reveal>
+
         <div id="quality-title" className="sr-only">
           {t(ui.quality.pageTitle)}
         </div>
-        <QualityStepsFlow />
+        <QualityPipelineJourney />
       </div>
-    </section>);
-
+    </section>
+  );
 }

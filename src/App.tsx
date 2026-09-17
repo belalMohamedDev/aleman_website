@@ -21,7 +21,6 @@ import { ArticleDetail } from './pages/ArticleDetail';
 import { Careers } from './pages/Careers';
 import { Tools } from './pages/Tools';
 import { FeedPrices } from './pages/FeedPrices';
-import { Distributors } from './pages/Distributors';
 import { Contact } from './pages/Contact';
 import { Profile } from './pages/Profile';
 

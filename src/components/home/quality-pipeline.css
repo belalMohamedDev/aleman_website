@@ -1,0 +1,497 @@
+/* Unified Section Container (No Hard Borders) */
+.quality-process-section {
+  position: relative;
+  background: #ffffff;
+}
+
+/* Seamless Connecting Bridge Line between Trust Section & Quality Section */
+.trust-quality-bridge-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+  overflow: visible;
+}
+
+.trust-quality-bridge-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.quality-spiral-section {
+  position: relative;
+  width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+/* Ambient Subtle Radial Glow */
+.quality-spiral-ambient-glow {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 800px;
+  height: 480px;
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.1) 0%, rgba(245, 158, 11, 0.04) 55%, transparent 75%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==========================================================================
+   2-Column Responsive Layout: Visual Column (Right in RTL) & Pipeline Column (Left in RTL)
+   ========================================================================== */
+.quality-journey-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: start;
+  z-index: 2;
+  margin-top: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .quality-journey-grid {
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 3.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .quality-journey-grid {
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 4.5rem;
+  }
+}
+
+/* Right Column (Visual Stage Showcase) */
+.quality-visual-col {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .quality-visual-col {
+    position: sticky;
+    top: 9rem;
+  }
+}
+
+.quality-visual-stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .quality-visual-stage {
+    padding-top: 6.5rem; /* تنزيل الصورة لتتوسط تماماً مع منتصف مراحل الجودة الستة */
+  }
+}
+
+/* Radiant Backlight Aura behind the 3D Shield */
+.quality-shield-aura {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 380px;
+  max-width: 85%;
+  background: radial-gradient(
+    circle at center,
+    rgba(245, 158, 11, 0.24) 0%,
+    rgba(45, 106, 63, 0.16) 42%,
+    transparent 70%
+  );
+  filter: blur(45px);
+  pointer-events: none;
+  z-index: 0;
+  animation: quality-aura-pulse 5.4s ease-in-out infinite alternate;
+}
+
+@keyframes quality-aura-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.96);
+    opacity: 0.55;
+  }
+}
+
+/* Dynamic Motion Container */
+.quality-showcase-motion-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+/* 3D Composition Image with Smooth Continuous Floating & Levitation */
+.quality-visual-standalone-img {
+  width: 100%;
+  max-width: 580px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 20px 38px rgba(2, 35, 19, 0.15));
+  animation: quality-showcase-float 5.2s ease-in-out infinite alternate;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.quality-visual-standalone-img:hover {
+  transform: translateY(-8px) scale(1.025);
+  filter: drop-shadow(0 28px 52px rgba(2, 35, 19, 0.22)) brightness(1.03);
+}
+
+@keyframes quality-showcase-float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  35% {
+    transform: translateY(-6px) rotate(-0.5deg) scale(1.008);
+  }
+  70% {
+    transform: translateY(-12px) rotate(0.6deg) scale(1.015);
+  }
+  100% {
+    transform: translateY(-16px) rotate(0deg) scale(1.02);
+  }
+}
+
+/* Dynamic Pedestal Ground Shadow */
+.quality-pedestal-shadow {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  max-width: 75%;
+  height: 36px;
+  background: radial-gradient(ellipse at center, rgba(17, 30, 22, 0.28) 0%, rgba(17, 30, 22, 0.08) 55%, transparent 75%);
+  filter: blur(10px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: quality-pedestal-shadow-pulse 5.2s ease-in-out infinite alternate;
+}
+
+@keyframes quality-pedestal-shadow-pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.36;
+  }
+  100% {
+    transform: translateX(-50%) scale(0.86);
+    opacity: 0.18;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quality-visual-standalone-img,
+  .quality-shield-aura,
+  .quality-pedestal-shadow {
+    animation: none !important;
+  }
+}
+
+/* Left Column (Pipeline) */
+.quality-pipeline-col {
+  position: relative;
+  width: 100%;
+}
+
+/* 3-Column Alternating Layout inside Pipeline Column */
+.quality-spiral-split {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+  margin: 0;
+  z-index: 2;
+}
+
+@media (min-width: 640px) {
+  .quality-spiral-split {
+    display: grid;
+    grid-template-columns: 1fr 90px 1fr;
+    gap: 1.5rem;
+    align-items: flex-start;
+    position: relative;
+    min-height: 870px;
+  }
+}
+
+/* Right Column (Odd Steps: 01, 03, 05) - Aligned directly with Points 01, 03, 05 */
+.quality-spiral-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .quality-spiral-col-right {
+    position: relative;
+    height: 850px;
+    display: block;
+    padding: 0;
+  }
+
+  .quality-step-1 {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    left: 0;
+  }
+
+  .quality-step-3 {
+    position: absolute;
+    top: 330px;
+    right: 0;
+    left: 0;
+  }
+
+  .quality-step-5 {
+    position: absolute;
+    top: 620px;
+    right: 0;
+    left: 0;
+  }
+}
+
+/* Left Column (Even Steps: 02, 04, 06) - Aligned directly with Points 02, 04, 06 */
+.quality-spiral-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .quality-spiral-col-left {
+    position: relative;
+    height: 850px;
+    display: block;
+    padding: 0;
+  }
+
+  .quality-step-2 {
+    position: absolute;
+    top: 185px;
+    right: 0;
+    left: 0;
+  }
+
+  .quality-step-4 {
+    position: absolute;
+    top: 475px;
+    right: 0;
+    left: 0;
+  }
+
+  .quality-step-6 {
+    position: absolute;
+    top: 765px;
+    right: 0;
+    left: 0;
+  }
+}
+
+/* Center Spiral Helix Column */
+.quality-spiral-track {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .quality-spiral-track {
+    display: block;
+    position: relative;
+    width: 90px;
+    height: 850px;
+    flex-shrink: 0;
+  }
+}
+
+.quality-spiral-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Sleek, Minimalist Primary Spiral Stream (Solid Gray Track) */
+.quality-spiral-main-strand {
+  stroke-width: 3px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+}
+
+/* Clean, Minimalist Point Nodes - Premium Gold / Bronze Theme */
+.quality-point-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: 2px solid #fef3c7;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 3px 10px rgba(217, 119, 6, 0.32);
+  z-index: 5;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  user-select: none;
+}
+
+.quality-point-node:hover {
+  transform: scale(1.08);
+  border-color: #fbbf24;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.48);
+}
+
+/* 6 Point Node Vertical Positions (Expanded ~145px) */
+.quality-point-1 {
+  top: 35px;
+  right: -8px;
+}
+
+.quality-point-2 {
+  top: 180px;
+  left: -8px;
+}
+
+.quality-point-3 {
+  top: 325px;
+  right: -8px;
+}
+
+.quality-point-4 {
+  top: 470px;
+  left: -8px;
+}
+
+.quality-point-5 {
+  top: 615px;
+  right: -8px;
+}
+
+.quality-point-6 {
+  top: 760px;
+  left: -8px;
+}
+
+/* Mobile inline point node - Gold Theme */
+.quality-mobile-point {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: 2px solid #fef3c7;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.28);
+}
+
+@media (min-width: 640px) {
+  .quality-mobile-point {
+    display: none;
+  }
+}
+
+/* Editorial Item (نصوص انسيابية راقية وثابتة) */
+.quality-editorial-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Subtle hover motion towards the central spiral */
+.quality-spiral-col-right .quality-editorial-item {
+  transform-origin: left center;
+}
+
+.quality-spiral-col-right .quality-editorial-item:hover {
+  transform: translateX(4px);
+}
+
+.quality-spiral-col-left .quality-editorial-item {
+  transform-origin: right center;
+}
+
+.quality-spiral-col-left .quality-editorial-item:hover {
+  transform: translateX(-4px);
+}
+
+.quality-editorial-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.quality-editorial-tag {
+  font-size: 0.8125rem;
+  font-weight: 900;
+  color: #054e2b;
+  background: #edf7f1;
+  border: 1px solid rgba(5, 78, 43, 0.15);
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Solid, High-Readability Headline */
+.quality-editorial-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1.55;
+  margin: 0;
+  color: #0b1f14;
+}
+
+.quality-editorial-desc {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.85;
+  color: #475569;
+  margin: 0;
+}

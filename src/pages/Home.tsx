@@ -1,9 +1,8 @@
-import { ParallaxAnimals } from '../components/shared/ParallaxAnimals';
 import { Hero } from '../components/home/Hero';
 import { ProductCategories } from '../components/home/ProductCategories';
 import { TrustMetrics } from '../components/home/TrustMetrics';
-import { AboutPreview } from '../components/home/AboutPreview';
 import { QualityProcess } from '../components/home/QualityProcess';
+import { TrustQualityBridge } from '../components/home/TrustQualityBridge';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 // import { ArticlesPreview } from '../components/home/ArticlesPreview';
 // import { ContactCTA } from '../components/home/ContactCTA';
@@ -11,15 +10,18 @@ import { FeaturedProducts } from '../components/home/FeaturedProducts';
 export function Home() {
   return (
     <div className="relative overflow-hidden">
-      <ParallaxAnimals />
       <Hero />
-      <div className="pt-10">
+      <div className="relative z-10 -mt-4 sm:-mt-6">
         <ProductCategories />
       </div>
-      <TrustMetrics />
-      <AboutPreview />
-      <QualityProcess />
-      <FeaturedProducts />
+      {/* Connected Continuous Trust & Quality Journey */}
+      <div className="relative">
+        <TrustMetrics />
+        {/* <AboutPreview /> */}
+        <QualityProcess />
+        <TrustQualityBridge />
+      </div>
+      {/* <FeaturedProducts /> */}
       {/* <ArticlesPreview /> */}
       {/* <ContactCTA /> */}
     </div>
