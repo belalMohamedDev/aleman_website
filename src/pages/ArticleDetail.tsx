@@ -65,6 +65,8 @@ export function ArticleDetail() {
         <img
           src={article.image}
           alt=""
+          loading="eager"
+          decoding="async"
           className="mt-7 h-64 w-full rounded-card border border-brand-100 object-cover shadow-card md:h-96" />
         
 

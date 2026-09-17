@@ -123,11 +123,10 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
             loadNotifications(1);
           }
         }}
-        className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${
-          isTransparent
-            ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-            : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white'
-        }`}
+        className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isTransparent
+          ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+          : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white'
+          }`}
         aria-label="الإشعارات"
         aria-expanded={isOpen}
       >
@@ -182,29 +181,27 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
             <button
               type="button"
               onClick={() => setActiveFilter('all')}
-              className={`flex-1 rounded-xl py-1.5 text-xs font-bold transition ${
-                activeFilter === 'all'
-                  ? 'bg-brand-600 text-white shadow-xs'
-                  : 'text-slate-500 hover:bg-slate-50'
-              }`}
+              className={`flex-1 rounded-xl py-1.5 text-xs font-bold transition ${activeFilter === 'all'
+                ? 'bg-brand-600 text-white shadow-xs'
+                : 'text-slate-500 hover:bg-slate-50'
+                }`}
             >
               الكل ({notifications.length})
             </button>
             <button
               type="button"
               onClick={() => setActiveFilter('unread')}
-              className={`flex-1 rounded-xl py-1.5 text-xs font-bold transition ${
-                activeFilter === 'unread'
-                  ? 'bg-brand-600 text-white shadow-xs'
-                  : 'text-slate-500 hover:bg-slate-50'
-              }`}
+              className={`flex-1 rounded-xl py-1.5 text-xs font-bold transition ${activeFilter === 'unread'
+                ? 'bg-brand-600 text-white shadow-xs'
+                : 'text-slate-500 hover:bg-slate-50'
+                }`}
             >
               غير المقروءة ({unreadCount})
             </button>
           </div>
 
           {/* Notifications List */}
-          <div className="max-h-[380px] overflow-y-auto divide-y divide-slate-50 pr-0.5 mt-1 -mx-2 px-2">
+          <div className="max-h-[380px] overflow-y-auto no-scrollbar divide-y divide-slate-50 pr-0.5 mt-1 -mx-2 px-2">
             {isLoading && notifications.length === 0 ? (
               <div className="py-8 text-center text-xs font-semibold text-slate-400">
                 جاري تحميل الإشعارات...
@@ -228,9 +225,8 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
                   <div
                     key={item.id}
                     onClick={() => handleItemClick(item)}
-                    className={`group relative flex items-start gap-3 rounded-2xl p-3 text-start transition cursor-pointer ${
-                      item.isRead ? 'hover:bg-slate-50/80' : 'bg-brand-50/20 hover:bg-brand-50/40'
-                    }`}
+                    className={`group relative flex items-start gap-3 rounded-2xl p-3 text-start transition cursor-pointer ${item.isRead ? 'hover:bg-slate-50/80' : 'bg-brand-50/20 hover:bg-brand-50/40'
+                      }`}
                   >
                     {/* Icon */}
                     <div
@@ -243,9 +239,8 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <h4
-                          className={`text-xs truncate ${
-                            item.isRead ? 'font-bold text-slate-700' : 'font-black text-ink'
-                          }`}
+                          className={`text-xs truncate ${item.isRead ? 'font-bold text-slate-700' : 'font-black text-ink'
+                            }`}
                         >
                           {item.title}
                         </h4>
@@ -270,23 +265,8 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
             )}
           </div>
 
-          {/* Footer */}
-          <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
-            <button
-              type="button"
-              onClick={() => {
-                setIsOpen(false);
-                navigate('/profile');
-              }}
-              className="text-brand-700 hover:text-brand-800 font-bold hover:underline"
-            >
-              عرض سجل الطلبات
-            </button>
-            <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-              <SparklesIcon className="h-3 w-3 text-emerald-600" />
-              <span>إشعارات فورية</span>
-            </span>
-          </div>
+
+
         </div>
       )}
     </div>

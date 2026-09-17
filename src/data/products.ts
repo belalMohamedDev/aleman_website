@@ -3,10 +3,10 @@ import type { CategoryId, Localized, Product } from '../types/content';
 const L = (ar: string, en: string): Localized => ({ ar, en });
 
 const IMAGES: Record<CategoryId, string> = {
-  poultry: "/ec19b15b-d33a-417e-9df0-27351dda81e3.png",
-  livestock: "/469182bf-bcbc-425b-b977-2c1639d97ad0.png",
-  rabbit: "/d7c7b761-3c29-4810-b3ae-0073c520ff28.png",
-  duck: "/1ada25e8-7e5e-45f1-9155-e3b351204b22.png"
+  poultry: "/ec19b15b-d33a-417e-9df0-27351dda81e3.webp",
+  livestock: "/469182bf-bcbc-425b-b977-2c1639d97ad0.webp",
+  rabbit: "/d7c7b761-3c29-4810-b3ae-0073c520ff28.webp",
+  duck: "/1ada25e8-7e5e-45f1-9155-e3b351204b22.webp"
 };
 
 export const categories: {id: CategoryId;ar: string;en: string;}[] = [

@@ -102,11 +102,13 @@ export function CartDrawer() {
                           {/* Product Image */}
                           <div className="h-20 w-20 rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0 overflow-hidden flex items-center justify-center p-1.5">
                             <img
-                              src={item.productImageUrl || '/hero_farm_bg.png'}
+                              src={item.productImageUrl || '/hero_farm_bg.webp'}
                               alt={item.productName}
+                              loading="lazy"
+                              decoding="async"
                               className="h-full w-full object-contain filter drop-shadow-xs"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/image.png';
+                                (e.target as HTMLImageElement).src = '/image.webp';
                               }}
                             />
                           </div>

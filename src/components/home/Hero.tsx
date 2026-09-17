@@ -30,7 +30,7 @@ export function Hero() {
   // Pre-flight check: verify clean background image exists; fallback if unavailable
   useEffect(() => {
     const testImg = new Image();
-    testImg.src = '/aleman_parallax_assets/hero-background-clean.png';
+    testImg.src = '/aleman_parallax_assets/hero-background-clean.webp';
     testImg.onerror = () => {
       console.warn('[Aleman Hero] Clean background asset missing, falling back to composite image.');
       setIsFallback(true);

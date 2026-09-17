@@ -35,9 +35,9 @@ export function Footer() {
     <footer className="relative mt-20 bg-[#111827] text-white overflow-hidden border-t border-slate-800">
       {/* Background Watermark Animal Illustrations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-5 select-none" aria-hidden="true">
-        <img src="/animal_cow.png" alt="" className="absolute -bottom-10 ltr:-right-10 rtl:-left-10 w-96 object-contain filter invert brightness-200" />
-        <img src="/animal_chicken.png" alt="" className="absolute top-4 ltr:left-10 rtl:right-10 w-64 object-contain filter invert brightness-200" />
-        <img src="/animal_duck.png" alt="" className="absolute bottom-20 ltr:left-1/3 rtl:right-1/3 w-60 object-contain filter invert brightness-200" />
+        <img src="/animal_cow.webp" alt="" loading="lazy" decoding="async" className="absolute -bottom-10 ltr:-right-10 rtl:-left-10 w-96 object-contain filter invert brightness-200" />
+        <img src="/animal_chicken.webp" alt="" loading="lazy" decoding="async" className="absolute top-4 ltr:left-10 rtl:right-10 w-64 object-contain filter invert brightness-200" />
+        <img src="/animal_duck.webp" alt="" loading="lazy" decoding="async" className="absolute bottom-20 ltr:left-1/3 rtl:right-1/3 w-60 object-contain filter invert brightness-200" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-site px-4 py-16 md:px-6">
@@ -45,7 +45,7 @@ export function Footer() {
           {/* Brand Info */}
           <div>
             <div className="flex items-center gap-3">
-              <img src={LOGO_URL} alt="" className="h-12 w-12 rounded-xl bg-white p-1 object-contain shadow-md" />
+              <img src={LOGO_URL} alt="" loading="lazy" decoding="async" className="h-12 w-12 rounded-xl bg-white p-1 object-contain shadow-md" />
               <div>
                 <span className="text-xl font-black block text-white">{t(ui.brand.name)}</span>
                 <span className="text-xs text-gold-400 font-bold block">{t(ui.brand.tagline)}</span>

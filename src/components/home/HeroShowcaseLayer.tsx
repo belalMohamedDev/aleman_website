@@ -11,35 +11,35 @@ const BAGS = [
   {
     id: 'bag-1',
     name: 'علف دواجن منزلي 25 كجم',
-    src: '/aleman_parallax_assets/bag-01-ducks.png',
+    src: '/aleman_parallax_assets/bag-01-ducks.webp',
     className: 'hero-bag-slot-1',
     delay: 0.55,
   },
   {
     id: 'bag-2',
     name: 'علف تسمين ماشية 50 كجم',
-    src: '/aleman_parallax_assets/bag-02-cattle.png',
+    src: '/aleman_parallax_assets/bag-02-cattle.webp',
     className: 'hero-bag-slot-2',
     delay: 0.72,
   },
   {
     id: 'bag-3',
     name: 'علف بط بياض 50 كجم',
-    src: '/aleman_parallax_assets/bag-03-ducks.png',
+    src: '/aleman_parallax_assets/bag-03-ducks.webp',
     className: 'hero-bag-slot-3',
     delay: 0.89,
   },
   {
     id: 'bag-4',
     name: 'علف أرانب مرضعات 50 كجم',
-    src: '/aleman_parallax_assets/bag-04-rabbits.png',
+    src: '/aleman_parallax_assets/bag-04-rabbits.webp',
     className: 'hero-bag-slot-4',
     delay: 1.06,
   },
   {
     id: 'bag-5',
     name: 'علف دواجن بادي نامي سوبر 50 كجم',
-    src: '/aleman_parallax_assets/bag-05-broiler.png',
+    src: '/aleman_parallax_assets/bag-05-broiler.webp',
     className: 'hero-bag-slot-5',
     delay: 1.23,
   },
@@ -102,10 +102,11 @@ export function HeroShowcaseLayer({
           initial={reduced ? false : { opacity: 0, x: -70 }}
           animate={reduced ? undefined : { opacity: 1, x: 0 }}
           transition={{ duration: 1.15, delay: 1.38, ease: [0.16, 1, 0.3, 1] }}
-          src="/aleman_parallax_assets/cow.png"
+          src="/aleman_parallax_assets/cow.webp"
           alt="أبقار الإيمان"
           className="hero-cow-img"
           loading="eager"
+          decoding="async"
         />
       </motion.div>
 
@@ -182,6 +183,7 @@ export function HeroShowcaseLayer({
                 alt={bag.name}
                 className="hero-bag-img"
                 loading="eager"
+                decoding="async"
               />
             </motion.div>
           ))}
@@ -207,10 +209,11 @@ export function HeroShowcaseLayer({
           initial={reduced ? false : { opacity: 0, scale: 0.8, y: 25 }}
           animate={reduced ? undefined : { opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 1.58, ease: [0.16, 1, 0.3, 1] }}
-          src="/aleman_parallax_assets/duck.png"
+          src="/aleman_parallax_assets/duck.webp"
           alt="بط الإيمان"
           className="hero-duck-img"
           loading="eager"
+          decoding="async"
         />
       </motion.div>
 
@@ -233,10 +236,11 @@ export function HeroShowcaseLayer({
           initial={reduced ? false : { opacity: 0, y: 35 }}
           animate={reduced ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 1.0, delay: 1.48, ease: [0.16, 1, 0.3, 1] }}
-          src="/aleman_parallax_assets/foreground-grains-plants.png"
+          src="/aleman_parallax_assets/foreground-grains-plants.webp"
           alt="حبوب وأعلاف الإيمان"
           className="hero-grains-img"
           loading="eager"
+          decoding="async"
         />
       </motion.div>
 
@@ -259,10 +263,11 @@ export function HeroShowcaseLayer({
           initial={reduced ? false : { opacity: 0, scale: 0.8, y: 20 }}
           animate={reduced ? undefined : { opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 1.65, ease: [0.16, 1, 0.3, 1] }}
-          src="/aleman_parallax_assets/chicken.png"
+          src="/aleman_parallax_assets/chicken.webp"
           alt="دواجن الإيمان"
           className="hero-chicken-img"
           loading="eager"
+          decoding="async"
         />
       </motion.div>
     </div>

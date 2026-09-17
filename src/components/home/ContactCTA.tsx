@@ -14,7 +14,7 @@ export function ContactCTA() {
         {/* Background Decorative Pattern & Animal Graphic */}
         <div className="pattern-field pointer-events-none absolute inset-0 opacity-20" aria-hidden="true" />
         <div className="absolute top-1/2 ltr:-right-10 rtl:-left-10 -translate-y-1/2 w-80 h-80 opacity-15 pointer-events-none hidden md:block">
-          <img src="/animal_cow.png" alt="" className="w-full h-full object-contain mix-blend-overlay filter brightness-200" />
+          <img src="/animal_cow.webp" alt="" loading="lazy" decoding="async" className="w-full h-full object-contain mix-blend-overlay filter brightness-200" />
         </div>
 
         <div className="relative z-10 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">

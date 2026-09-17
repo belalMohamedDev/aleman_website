@@ -6,7 +6,7 @@ import { PageHeader } from '../components/shared/PageHeader';
 import { Reveal } from '../components/shared/Reveal';
 import { QualityStepsFlow } from '../components/company/QualitySteps';
 
-const LAB_IMAGE = "/e89e15e1-9e1a-4084-9beb-18bbd3298ea5.jpg";
+const LAB_IMAGE = "/e89e15e1-9e1a-4084-9beb-18bbd3298ea5.webp";
 
 export function Quality() {
   const { t } = useLang();
@@ -22,6 +22,7 @@ export function Quality() {
               src={LAB_IMAGE}
               alt={t(ui.about.labTitle)}
               loading="lazy"
+              decoding="async"
               className="h-64 w-full rounded-card border border-brand-100 object-cover shadow-card md:h-80" />
             
           </Reveal>

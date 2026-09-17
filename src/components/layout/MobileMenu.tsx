@@ -55,7 +55,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
             <div className="flex items-center justify-between border-b border-brand-100 px-5 py-4">
               <div className="flex items-center gap-3">
-                <img src={LOGO_URL} alt="" className="h-10 w-10 rounded-lg object-contain" />
+                <img src={LOGO_URL} alt="" loading="lazy" decoding="async" className="h-10 w-10 rounded-lg object-contain" />
                 {/* <span className="text-sm font-extrabold text-ink">{t(ui.brand.name)}</span> */}
               </div>
               <button

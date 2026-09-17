@@ -58,7 +58,7 @@ export function ContactInfo() {
               rel="noopener noreferrer"
               className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50"
             >
-              <img src="/whatsapp.png" alt="واتساب" className="h-6 w-6" />
+              <img src="/whatsapp.png" alt="واتساب" loading="lazy" decoding="async" className="h-6 w-6" />
             </a>
             <span className="flex flex-col">
               <span className="text-sm font-bold text-ink">واتساب</span>

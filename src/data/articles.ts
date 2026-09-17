@@ -11,11 +11,11 @@ export const articleCategories: ArticleCategoryId[] = [
 'company-news'];
 
 
-const POULTRY_IMG = "/dd2a3da5-18fc-4b1f-8baf-a9936255e9be.jpg";
-const CATTLE_IMG = "/d7c5c45b-0184-4140-8538-27140639e15c.jpg";
-const RAW_IMG = "/cfe458d9-a06e-424e-9089-dbe2d0612755.jpg";
-const LAB_IMG = "/e89e15e1-9e1a-4084-9beb-18bbd3298ea5.jpg";
-const FACTORY_IMG = "/3e951125-4919-4762-a40a-229dd36ecc10.jpg";
+const POULTRY_IMG = "/dd2a3da5-18fc-4b1f-8baf-a9936255e9be.webp";
+const CATTLE_IMG = "/d7c5c45b-0184-4140-8538-27140639e15c.webp";
+const RAW_IMG = "/cfe458d9-a06e-424e-9089-dbe2d0612755.webp";
+const LAB_IMG = "/e89e15e1-9e1a-4084-9beb-18bbd3298ea5.webp";
+const FACTORY_IMG = "/3e951125-4919-4762-a40a-229dd36ecc10.webp";
 
 /**
  * General agricultural guidance content. It is editorial in nature and is not

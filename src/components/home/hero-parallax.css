@@ -11,7 +11,7 @@
   min-height: 640px;
   max-height: 1080px;
   overflow: hidden;
-  background-color: transparent;
+  background: radial-gradient(circle at 60% 40%, #0e3d25 0%, #062314 55%, #03140b 100%);
 }
 
 /* Viewport container */
@@ -24,6 +24,7 @@
   align-items: center;
   justify-content: center;
   contain: layout paint;
+  background: radial-gradient(circle at 60% 40%, #0e3d25 0%, #062314 55%, #03140b 100%);
 }
 
 /* Base layer container */

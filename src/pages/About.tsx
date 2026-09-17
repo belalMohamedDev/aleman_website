@@ -151,8 +151,10 @@ export function About() {
         {/* Background Image of Factory with High Visibility & Cinematic Overlays */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/hero_farm_bg.png"
+            src="/hero_farm_bg.webp"
             alt="صروح ومصانع مؤسسة الإيمان للأعلاف"
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover object-[center_right] lg:object-center opacity-90 filter brightness-105 contrast-105 scale-100 transition-transform duration-1000"
           />
           {/* Top Vignette behind Transparent Navbar */}
@@ -324,8 +326,10 @@ export function About() {
               className="relative z-10 cursor-pointer"
             >
               <img
-                src="/image.png"
+                src="/image.webp"
                 alt="شعار مؤسسة الإيمان للأعلاف"
+                loading="lazy"
+                decoding="async"
                 className="h-64 sm:h-80 md:h-96 w-auto object-contain filter drop-shadow-[0_25px_35px_rgba(0,0,0,0.12)] select-none transition-transform duration-300"
               />
             </motion.div>
@@ -428,11 +432,13 @@ export function About() {
                   className="relative z-10 cursor-pointer transition-transform duration-300 hover:scale-105"
                 >
                   <img
-                    src="/chicken_archer.png"
+                    src="/chicken_archer.webp"
                     alt="رمز مناعة وقوة أعلاف الإيمان"
+                    loading="lazy"
+                    decoding="async"
                     className="h-[24rem] sm:h-[30rem] md:h-[34rem] lg:h-[38rem] w-auto max-w-full object-contain filter drop-shadow-[0_25px_35px_rgba(0,0,0,0.25)] select-none"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/hero_farm_bg.png';
+                      (e.target as HTMLImageElement).src = '/hero_farm_bg.webp';
                     }}
                   />
                 </motion.div>

@@ -73,6 +73,8 @@ export function Navbar() {
           <img
             src={LOGO_URL}
             alt=""
+            loading="eager"
+            decoding="async"
             className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl object-contain bg-white p-1 shadow-sm transition-transform hover:scale-105"
           />
           <span className="hidden flex-col gap-1 sm:flex">

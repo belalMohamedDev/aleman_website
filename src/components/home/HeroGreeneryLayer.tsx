@@ -7,7 +7,7 @@ interface HeroGreeneryLayerProps {
   reduced: boolean;
 }
 
-const GREEN_ASSET = '/aleman_parallax_assets/green.png';
+const GREEN_ASSET = '/aleman_parallax_assets/green.webp';
 
 export function HeroGreeneryLayer({
   y,
@@ -34,6 +34,7 @@ export function HeroGreeneryLayer({
         alt=""
         className="hero-greenery-img"
         loading="eager"
+        decoding="async"
       />
     </motion.div>
   );

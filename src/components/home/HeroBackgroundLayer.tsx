@@ -11,7 +11,7 @@ interface HeroBackgroundLayerProps {
   reduced: boolean;
 }
 
-const CLEAN_BG = '/aleman_parallax_assets/hero-background-clean.png';
+const CLEAN_BG = '/aleman_parallax_assets/hero-background-clean.webp';
 const FALLBACK_BG = '/hero_farm_bg.png';
 
 export function HeroBackgroundLayer({
@@ -48,6 +48,7 @@ export function HeroBackgroundLayer({
           alt={t(ui.home.heroImageAlt)}
           className="hero-bg-img"
           loading="eager"
+          decoding="async"
         />
       </motion.div>
 

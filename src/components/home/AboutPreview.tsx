@@ -5,8 +5,8 @@ import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
 import { Reveal } from '../shared/Reveal';
 
-const LAB_IMAGE = "/e89e15e1-9e1a-4084-9beb-18bbd3298ea5.jpg";
-const FACTORY_IMAGE = "/3e951125-4919-4762-a40a-229dd36ecc10.jpg";
+const LAB_IMAGE = "/e89e15e1-9e1a-4084-9beb-18bbd3298ea5.webp";
+const FACTORY_IMAGE = "/3e951125-4919-4762-a40a-229dd36ecc10.webp";
 
 export function AboutPreview() {
   const { t, dir } = useLang();
@@ -23,6 +23,7 @@ export function AboutPreview() {
               src={LAB_IMAGE}
               alt={t(ui.about.labTitle)}
               loading="lazy"
+              decoding="async"
               className="h-56 w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-105 sm:h-72"
             />
           </div>
@@ -32,6 +33,7 @@ export function AboutPreview() {
               src={FACTORY_IMAGE}
               alt={t(ui.about.manufacturingTitle)}
               loading="lazy"
+              decoding="async"
               className="h-56 w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-105 sm:h-72"
             />
           </div>

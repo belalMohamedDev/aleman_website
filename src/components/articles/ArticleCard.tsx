@@ -30,6 +30,7 @@ export function ArticleCard({ article, index = 0 }: {article: Article;index?: nu
           src={article.image}
           alt=""
           loading="lazy"
+          decoding="async"
           className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
         
       </Link>

@@ -14,7 +14,7 @@ export function ParallaxAnimals() {
         className="absolute top-[120vh] left-[-10%] md:left-[-2%] w-[18rem] sm:w-[24rem] lg:w-[32rem] mix-blend-normal"
       >
         <motion.div animate={{ y: [0, -25, 0] }} transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}>
-          <img src="/animal_cow.png" alt="" className="w-full h-auto object-contain filter drop-shadow-2xl" />
+          <img src="/animal_cow.webp" alt="" loading="lazy" decoding="async" className="w-full h-auto object-contain filter drop-shadow-2xl" />
         </motion.div>
       </motion.div>
 
@@ -27,7 +27,7 @@ export function ParallaxAnimals() {
         className="absolute top-[220vh] right-[-5%] md:right-[2%] w-[16rem] sm:w-[22rem] lg:w-[28rem] mix-blend-normal"
       >
         <motion.div animate={{ y: [0, -20, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 1 }}>
-          <img src="/animal_duck.png" alt="" className="w-full h-auto object-contain filter drop-shadow-2xl" />
+          <img src="/animal_duck.webp" alt="" loading="lazy" decoding="async" className="w-full h-auto object-contain filter drop-shadow-2xl" />
         </motion.div>
       </motion.div>
 
@@ -40,7 +40,7 @@ export function ParallaxAnimals() {
         className="absolute top-[320vh] left-[-5%] md:left-[2%] w-[16rem] sm:w-[22rem] lg:w-[28rem] mix-blend-normal"
       >
         <motion.div animate={{ y: [0, -25, 0] }} transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.5 }}>
-          <img src="/animal_chicken.png" alt="" className="w-full h-auto object-contain filter drop-shadow-2xl" />
+          <img src="/animal_chicken.webp" alt="" loading="lazy" decoding="async" className="w-full h-auto object-contain filter drop-shadow-2xl" />
         </motion.div>
       </motion.div>
 
@@ -55,7 +55,7 @@ export function ParallaxAnimals() {
         className="absolute top-[160vh] right-[10%] w-[12rem] sm:w-[16rem] lg:w-[20rem] mix-blend-normal"
       >
         <motion.div animate={{ y: [0, -40, 0], x: [0, -20, 0] }} transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}>
-          <img src="/animal_pigeon.png" alt="" className="w-full h-auto object-contain filter drop-shadow-xl" />
+          <img src="/animal_pigeon.webp" alt="" loading="lazy" decoding="async" className="w-full h-auto object-contain filter drop-shadow-xl" />
         </motion.div>
       </motion.div>
     </div>

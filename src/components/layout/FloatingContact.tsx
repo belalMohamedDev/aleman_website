@@ -38,6 +38,8 @@ export function FloatingContact() {
         <img
           src="/whatsapp.png"
           alt="واتساب"
+          loading="lazy"
+          decoding="async"
           className="h-6 w-6"
           style={{ filter: 'brightness(0) invert(1)' }}
         />

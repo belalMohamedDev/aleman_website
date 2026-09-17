@@ -25,6 +25,7 @@ export function ProductCard({ product, index = 0 }: {product: Product;index?: nu
           src={product.image}
           alt={t(product.name)}
           loading="lazy"
+          decoding="async"
           className="mx-auto h-44 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.04]" />
         
         <div className="absolute top-3 flex flex-col gap-1.5 ltr:left-3 rtl:right-3">

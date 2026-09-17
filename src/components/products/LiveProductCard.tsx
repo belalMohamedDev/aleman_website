@@ -65,12 +65,13 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
         className="block relative bg-gradient-to-b from-brand-50/70 to-slate-50 p-6 flex items-center justify-center min-h-[200px]"
       >
         <img
-          src={product.imageUrl || '/hero_farm_bg.png'}
+          src={product.imageUrl || '/hero_farm_bg.webp'}
           alt={product.name}
           loading="lazy"
+          decoding="async"
           className="h-44 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = '/image.png';
+            (e.target as HTMLImageElement).src = '/image.webp';
           }}
         />
 

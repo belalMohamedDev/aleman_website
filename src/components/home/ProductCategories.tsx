@@ -14,10 +14,10 @@ const ICONS: Record<CategoryId, React.ElementType> = {
 };
 
 const ANIMAL_IMAGES: Record<CategoryId, string> = {
-  poultry: '/animal_chicken.png',
-  livestock: '/animal_cow.png',
-  rabbit: '/animal_rabbit.png',
-  duck: '/animal_duck.png'
+  poultry: '/animal_chicken.webp',
+  livestock: '/animal_cow.webp',
+  rabbit: '/animal_rabbit.webp',
+  duck: '/animal_duck.webp'
 };
 
 const CATEGORY_DESCS: Record<CategoryId, { ar: string; en: string }> = {
@@ -47,7 +47,7 @@ export function ProductCategories() {
               >
                 {/* Background Subtle Gradient & Animal Illustration */}
                 <div className="absolute top-0 ltr:right-0 rtl:left-0 -mt-2 -me-2 h-28 w-28 opacity-15 transition-all duration-300 group-hover:scale-110 group-hover:opacity-30 pointer-events-none">
-                  <img src={animalImg} alt="" className="h-full w-full object-contain mix-blend-multiply" />
+                  <img src={animalImg} alt="" loading="lazy" decoding="async" className="h-full w-full object-contain mix-blend-multiply" />
                 </div>
 
                 <div>

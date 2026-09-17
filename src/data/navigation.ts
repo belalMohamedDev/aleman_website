@@ -7,7 +7,7 @@ export type NavItem = {
   isExternal?: boolean;
 };
 
-export const LOGO_URL = "/image.png";
+export const LOGO_URL = "/image.webp";
 
 export const primaryNav: NavItem[] = [
   { to: '/', label: ui.nav.home },

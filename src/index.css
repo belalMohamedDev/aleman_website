@@ -49,40 +49,30 @@ html[dir='ltr'] body {
   font-family: inherit;
   background: #eef2ee;
 }
-/* Custom Modern Scrollbar */
+/* Completely hide scrollbars across all browsers while maintaining full scrolling functionality */
 html {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
 }
 html::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-html::-webkit-scrollbar-track {
-  background: transparent;
-}
-html::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-html::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
-/* Home page scrollbar: seamlessly blends with the dark green hero image on first page */
+body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
+}
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Maintain dark brand background on home page */
 html.is-home {
   background-color: #042013;
-  scrollbar-color: rgba(255, 255, 255, 0.25) #042013;
-}
-html.is-home::-webkit-scrollbar-track {
-  background: #042013;
-}
-html.is-home::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 4px;
-}
-html.is-home::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

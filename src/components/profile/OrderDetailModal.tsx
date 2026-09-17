@@ -965,6 +965,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                         <img
                           src={item.productImageUrl}
                           alt=""
+                          loading="lazy"
+                          decoding="async"
                           className="h-11 w-11 rounded-xl object-contain bg-slate-50 p-1 border border-slate-100"
                         />
                       ) : (

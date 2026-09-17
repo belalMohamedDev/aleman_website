@@ -212,11 +212,13 @@ export function ProductDetail() {
             </div>
 
             <img
-              src={imageUrl || '/hero_farm_bg.png'}
+              src={imageUrl || '/hero_farm_bg.webp'}
               alt={name}
+              loading="lazy"
+              decoding="async"
               className="max-h-80 sm:max-h-96 w-auto object-contain filter drop-shadow-xl transition-transform duration-300 hover:scale-105"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = '/image.png';
+                (e.target as HTMLImageElement).src = '/image.webp';
               }}
             />
           </div>
