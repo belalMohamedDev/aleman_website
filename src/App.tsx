@@ -14,6 +14,7 @@ import { About } from './pages/About';
 import { Quality } from './pages/Quality';
 import { Products } from './pages/Products';
 import { ProductDetail } from './pages/ProductDetail';
+import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { OrderSuccess } from './pages/OrderSuccess';
 import { Articles } from './pages/Articles';
@@ -28,6 +29,10 @@ function Shell() {
   const { dir } = useLang();
   const location = useLocation();
   const hasDarkHero = location.pathname === '/' || location.pathname === '/about';
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     if (hasDarkHero) {
@@ -52,6 +57,7 @@ function Shell() {
           <Route path="/quality" element={<Quality />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:slug" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
           <Route path="/articles" element={<Articles />} />

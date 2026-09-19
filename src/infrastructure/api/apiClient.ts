@@ -10,6 +10,14 @@ export class ApiError extends Error {
 let activeRefreshPromise: Promise<boolean> | null = null;
 
 export async function requestRefreshToken(): Promise<boolean> {
+  const hasCachedSession =
+    typeof window !== 'undefined' &&
+    !!localStorage.getItem('aleman_cached_user');
+
+  if (!hasCachedSession) {
+    return false;
+  }
+
   if (activeRefreshPromise) {
     return activeRefreshPromise;
   }
@@ -28,12 +36,14 @@ export async function requestRefreshToken(): Promise<boolean> {
       });
 
       if (!response.ok) {
+        localStorage.removeItem('aleman_cached_user');
         window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         return false;
       }
 
       return true;
     } catch {
+      localStorage.removeItem('aleman_cached_user');
       window.dispatchEvent(new CustomEvent('auth:unauthorized'));
       return false;
     } finally {
@@ -68,7 +78,11 @@ export async function apiClient<T>(
     endpoint.includes('/api/Auth/logout') ||
     endpoint.includes('/api/Auth/register');
 
-  if (response.status === 401 && !isAuthEndpoint) {
+  const hasCachedSession =
+    typeof window !== 'undefined' &&
+    !!localStorage.getItem('aleman_cached_user');
+
+  if (response.status === 401 && !isAuthEndpoint && hasCachedSession) {
     const refreshed = await requestRefreshToken();
     if (refreshed) {
       response = await fetch(url, {

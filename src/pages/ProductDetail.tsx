@@ -92,7 +92,6 @@ export function ProductDetail() {
           const otherCategory = allProds.filter((p) => p.categoryId !== prod.categoryId && p.id !== prod.id);
           setRelatedProducts([...sameCategory, ...otherCategory].slice(0, 12));
         })
-        .catch((e) => console.warn('Live product error:', e))
         .finally(() => {
           if (mounted) setIsLoading(false);
         });
@@ -115,7 +114,7 @@ export function ProductDetail() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-[1400px] px-4 pt-10 pb-20 md:px-8">
+      <div className="mx-auto max-w-[1400px] px-4 pt-24 pb-20 md:px-8 md:pt-28">
         <div className="grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <CardSkeleton />
@@ -173,7 +172,7 @@ export function ProductDetail() {
   };
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pt-6 pb-16 md:px-8 md:pt-8 md:pb-24">
+    <div className="mx-auto max-w-[1400px] px-4 pt-24 pb-16 md:px-8 md:pt-28 md:pb-24">
       {/* Breadcrumbs */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <nav className="flex items-center flex-wrap gap-2 text-xs font-bold text-slate-500">

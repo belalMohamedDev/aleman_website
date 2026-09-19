@@ -18,11 +18,10 @@ let messagingInstance: Messaging | null = null;
 
 export async function getFirebaseMessaging(): Promise<Messaging | null> {
   if (typeof window === 'undefined') return null;
-  
+
   try {
-    const supported = await isSupported();
+    const supported = await isSupported().catch(() => false);
     if (!supported) {
-      console.warn('Firebase Messaging is not supported in this browser environment.');
       return null;
     }
 
@@ -31,7 +30,6 @@ export async function getFirebaseMessaging(): Promise<Messaging | null> {
     }
     return messagingInstance;
   } catch (err) {
-    console.warn('Error initializing Firebase Messaging:', err);
     return null;
   }
 }
@@ -47,7 +45,6 @@ export async function requestFcmToken(): Promise<string | null> {
   try {
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
-      console.log('Notification permission was not granted:', permission);
       return null;
     }
 
@@ -60,7 +57,6 @@ export async function requestFcmToken(): Promise<string | null> {
       try {
         registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       } catch (swErr) {
-        console.warn('Could not register service worker:', swErr);
       }
     }
 
@@ -70,7 +66,6 @@ export async function requestFcmToken(): Promise<string | null> {
 
     return token || null;
   } catch (err) {
-    console.warn('Error getting FCM token:', err);
     return null;
   }
 }
@@ -87,7 +82,6 @@ export async function onForegroundMessage(callback: (payload: any) => void): Pro
       callback(payload);
     });
   } catch (err) {
-    console.warn('Error attaching foreground message listener:', err);
     return null;
   }
 }

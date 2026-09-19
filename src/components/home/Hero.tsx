@@ -32,7 +32,6 @@ export function Hero() {
     const testImg = new Image();
     testImg.src = '/aleman_parallax_assets/hero-background-clean.webp';
     testImg.onerror = () => {
-      console.warn('[Aleman Hero] Clean background asset missing, falling back to composite image.');
       setIsFallback(true);
     };
   }, []);

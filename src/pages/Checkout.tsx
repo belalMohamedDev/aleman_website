@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   TruckIcon,
   WarehouseIcon,
@@ -10,14 +12,20 @@ import {
   Loader2Icon,
   SparklesIcon,
   PlusIcon,
+  MinusIcon,
   CalendarIcon,
   PhoneIcon,
   CheckIcon,
   MapPinIcon,
+  ShoppingBagIcon,
+  Trash2Icon,
+  PackageCheckIcon,
+  AlertTriangleIcon,
 } from 'lucide-react';
 import { useCheckout, getRecommendedTruckType } from '../features/orders/useCheckout';
 import { OrderType, PaymentMethod, TruckType } from '../features/orders/types';
 import { useAuth } from '../features/auth/AuthContext';
+import { useCart } from '../features/cart/CartContext';
 import { VehicleModal } from '../components/profile/VehicleModal';
 import { AddressModal } from '../components/profile/AddressModal';
 
@@ -95,15 +103,38 @@ export function Checkout() {
   } = useCheckout();
 
   const { isAuthenticated, openAuthModal } = useAuth();
+  const { openCart, removeItem, updateQuantity, clearCart, totalItemsCount } = useCart();
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
+
+  const handleRemoveItem = async (itemId: string) => {
+    setDeletingItemId(itemId);
+    try {
+      await removeItem(itemId);
+    } finally {
+      setDeletingItemId(null);
+    }
+  };
+
+  const handleClearCart = async () => {
+    await clearCart();
+    setShowClearConfirm(false);
+  };
 
   if (items.length === 0) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center pt-32">
-        <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
-          <TruckIcon className="h-8 w-8" />
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center pt-28">
+        <div className="w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 relative flex items-center justify-center mb-4">
+          <img
+            src="/aleman_parallax_assets/emptyCart.webp"
+            alt="سلة المشتريات فارغة"
+            className="w-full h-full object-contain filter drop-shadow-lg animate-in fade-in zoom-in-95 duration-300"
+            loading="eager"
+            decoding="async"
+          />
         </div>
-        <h2 className="text-xl font-bold text-ink">سلة المشتريات فارغة</h2>
-        <p className="text-sm text-slate-500 mt-1 max-w-sm">
+        <h2 className="text-2xl font-black text-ink">سلة المشتريات فارغة</h2>
+        <p className="text-sm font-semibold text-slate-500 mt-1.5 max-w-sm">
           يرجى إضافة أعلاف إلى سلة المشتريات قبل التوجه إلى صفحة إتمام الطلب.
         </p>
         <Link
@@ -122,11 +153,11 @@ export function Checkout() {
         {/* Page Header */}
         <div className="mb-8">
           <Link
-            to="/products"
+            to="/cart"
             className="inline-flex items-center gap-2 text-xs font-bold text-brand-600 hover:text-brand-700 transition mb-2"
           >
             <ArrowRightIcon className="h-4 w-4" />
-            <span>الرجوع إلى المنتجات</span>
+            <span>الرجوع للسلة</span>
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black text-ink">إتمام طلب الشراء</h1>
           <p className="text-sm font-semibold text-slate-500 mt-1">
@@ -258,11 +289,11 @@ export function Checkout() {
                   {addresses.length > 0 ? (
                     <div className="space-y-3">
                       <div className="grid grid-cols-1 gap-3">
-                        {addresses.map((addr) => {
+                        {addresses.map((addr, index) => {
                           const isSelected = selectedAddressId === addr.id;
                           return (
                             <div
-                              key={addr.id}
+                              key={`addr-${addr.id}-${index}`}
                               onClick={() => setSelectedAddressId(addr.id)}
                               className={`cursor-pointer rounded-2xl border-2 p-4 transition ${isSelected
                                 ? 'border-brand-600 bg-brand-50/25 shadow-xs'
@@ -605,11 +636,11 @@ export function Checkout() {
                 ) : vehicles.length > 0 ? (
                   <div className="space-y-3">
                     <div className="grid grid-cols-1 gap-3">
-                      {vehicles.map((v) => {
+                      {vehicles.map((v, index) => {
                         const isSelected = selectedVehicleId === v.id;
                         return (
                           <div
-                            key={v.id}
+                            key={`veh-${v.id}-${index}`}
                             onClick={() => setSelectedVehicleId(v.id)}
                             className={`cursor-pointer rounded-2xl border-2 p-4 transition ${isSelected
                               ? 'border-brand-600 bg-brand-50/25 shadow-xs'
@@ -920,39 +951,203 @@ export function Checkout() {
 
           {/* Sidebar Summary (Right in RTL) */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 sticky top-28">
-              <h3 className="text-base font-black text-ink mb-4 pb-3 border-b border-slate-100">
-                ملخص الطلب والحمولة
-              </h3>
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 sticky top-28">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-2xs">
+                    <ShoppingBagIcon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-ink">
+                      سلة المشتريات والطلب
+                    </h3>
+                    <span className="text-[11px] font-bold text-slate-400 block -mt-0.5">
+                      {totalItemsCount} شكارة • {items.length} أصناف
+                    </span>
+                  </div>
+                </div>
 
-              {/* Items Mini List */}
-              <div className="space-y-3 mb-4 divide-y divide-slate-100/80">
-                {items.map((item) => {
-                  const itemWeightKg = item.quantity * item.packageWeightKg;
-                  const itemWeightFormatted = itemWeightKg >= 1000
-                    ? `${Number((itemWeightKg / 1000).toFixed(2))} طن (${itemWeightKg.toLocaleString()} كجم)`
-                    : `${itemWeightKg.toLocaleString()} كجم`;
+              </div>
 
-                  return (
-                    <div key={item.id} className="flex justify-between items-center text-xs pt-2.5 first:pt-0">
-                      <div>
-                        <span className="font-bold text-ink line-clamp-1">{item.productName}</span>
-                        <span className="text-slate-500 text-[11px] block">
-                          {item.quantity} شكارة ({item.packageWeightKg} كجم) • إجمالي الوزن: {itemWeightFormatted}
-                        </span>
+              {/* Clear Cart Confirmation Banner */}
+              <AnimatePresence>
+                {showClearConfirm && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mb-4 p-3.5 rounded-2xl bg-red-50/95 border border-red-200/80 shadow-2xs"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <div className="h-7 w-7 rounded-lg bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <AlertTriangleIcon className="h-4 w-4" />
                       </div>
-                      <span className="font-extrabold text-ink">{item.subtotal.toLocaleString()} ج.م</span>
+                      <div>
+                        <h4 className="text-xs font-black text-red-950">تفريغ سلة المشتريات بالكامل؟</h4>
+                        <p className="text-[11px] font-semibold text-red-700 mt-0.5 leading-relaxed">
+                          سيتم حذف كافة الأصناف ({totalItemsCount} شكارة) من الطلب.
+                        </p>
+                      </div>
                     </div>
-                  );
-                })}
+                    <div className="flex items-center justify-end gap-2 mt-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowClearConfirm(false)}
+                        className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
+                      >
+                        تراجع
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClearCart}
+                        className="px-3.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-xs font-black text-white shadow-2xs transition active:scale-95"
+                      >
+                        نعم، تفريغ السلة
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Items List with custom scrolling if long */}
+              <div className="space-y-3 mb-4 max-h-[380px] overflow-y-auto no-scrollbar pr-0.5">
+                <AnimatePresence initial={false}>
+                  {items.map((item) => {
+                    const itemWeightKg = item.quantity * item.packageWeightKg;
+                    const itemWeightFormatted =
+                      itemWeightKg >= 1000
+                        ? `${Number((itemWeightKg / 1000).toFixed(2))} طن (${itemWeightKg.toLocaleString()} كجم)`
+                        : `${itemWeightKg.toLocaleString()} كجم`;
+                    const isItemDeleting = deletingItemId === item.id;
+
+                    return (
+                      <motion.div
+                        key={item.id}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -20, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className={`group relative bg-slate-50/80 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-brand-300/80 p-3 shadow-2xs hover:shadow-xs transition-all duration-200 space-y-2.5 ${isItemDeleting ? 'opacity-40 pointer-events-none' : ''
+                          }`}
+                      >
+                        {/* Top: Product thumbnail + Info + Remove */}
+                        <div className="flex items-start gap-3">
+                          <div className="h-14 w-14 rounded-xl bg-white border border-slate-200/80 flex-shrink-0 overflow-hidden flex items-center justify-center p-1 shadow-2xs">
+                            <img
+                              src={item.productImageUrl || '/hero_farm_bg.webp'}
+                              alt={item.productName}
+                              loading="lazy"
+                              decoding="async"
+                              className="h-full w-full object-contain filter drop-shadow-xs group-hover:scale-105 transition-transform"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/image.webp';
+                              }}
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-1.5">
+                              <h4 className="font-black text-xs text-ink line-clamp-1 leading-snug">
+                                {item.productName}
+                              </h4>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveItem(item.id)}
+                                className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-1 rounded-lg transition flex-shrink-0 -mt-0.5 -mr-0.5"
+                                title="إزالة هذا المنتج"
+                                aria-label={`حذف ${item.productName}`}
+                              >
+                                <Trash2Icon className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                              <span className="inline-flex items-center gap-0.5 rounded-lg bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.5 text-[10px] font-black text-emerald-800">
+                                <PackageCheckIcon className="h-2.5 w-2.5 text-emerald-600" />
+                                <span>شكارة {item.packageWeightKg} كجم</span>
+                              </span>
+                              <span className="text-[11px] font-bold text-slate-500">
+                                {item.unitPrice.toLocaleString()} ج.م
+                              </span>
+                            </div>
+
+                            <div className="mt-1 text-[10px] font-bold text-slate-400">
+                              الوزن: <span className="text-slate-700 font-extrabold">{itemWeightFormatted}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom: Stepper + Subtotal */}
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-200/60">
+                          {/* Stepper */}
+                          <div className="flex items-center border border-slate-200 bg-white rounded-xl p-0.5 shadow-2xs gap-0.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (item.quantity > 1) {
+                                  updateQuantity(item.id, item.quantity - 1);
+                                } else {
+                                  handleRemoveItem(item.id);
+                                }
+                              }}
+                              className={`h-6 w-6 rounded-lg flex items-center justify-center transition active:scale-90 ${item.quantity === 1
+                                ? 'text-red-500 hover:bg-red-50'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                                }`}
+                              aria-label={item.quantity === 1 ? 'إزالة الصنف' : 'تقليل الكمية'}
+                              title={item.quantity === 1 ? 'إزالة الصنف' : 'تقليل الكمية'}
+                            >
+                              {item.quantity === 1 ? (
+                                <Trash2Icon className="h-3 w-3 text-red-500" />
+                              ) : (
+                                <MinusIcon className="h-3 w-3" />
+                              )}
+                            </button>
+                            <span className="w-8 text-center text-xs font-black text-ink select-none">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="h-6 w-6 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition active:scale-90"
+                              aria-label="زيادة الكمية"
+                              title="زيادة الكمية"
+                            >
+                              <PlusIcon className="h-3 w-3" />
+                            </button>
+                          </div>
+
+                          {/* Subtotal */}
+                          <div className="text-end">
+                            <span className="text-xs font-black text-brand-700">
+                              {item.subtotal.toLocaleString()} <span className="text-[10px] text-brand-600 font-bold">ج.م</span>
+                            </span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
+
+              {/* Payload Weight Banner */}
+              <div className="p-3 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 mb-4 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-2xs">
+                    <TruckIcon className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="font-bold text-emerald-950">إجمالي وزن الأعلاف:</span>
+                </div>
+                <span className="font-black text-emerald-900">
+                  {totalWeightTons} طن ({items.reduce((s, i) => s + i.quantity * i.packageWeightKg, 0).toLocaleString()} كجم)
+                </span>
               </div>
 
               {/* Breakdown */}
               <div className="space-y-2.5 pt-3 border-t border-slate-100 text-xs">
-                <div className="flex justify-between text-slate-600">
-                  <span>إجمالي وزن الأعلاف:</span>
-                  <span className="font-extrabold text-emerald-800">{totalWeightTons} طن</span>
-                </div>
+
 
                 <div className="flex justify-between text-slate-600">
                   <span>قيمة المنتجات:</span>

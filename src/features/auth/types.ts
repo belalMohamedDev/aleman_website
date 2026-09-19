@@ -33,3 +33,12 @@ export interface RegisterDto {
   password?: string;
   role?: string;
 }
+
+export interface SendOtpDto {
+  phoneNumber: string;
+}
+
+export interface VerifyOtpDto {
+  phoneNumber: string;
+  code: string;
+}

@@ -12,7 +12,7 @@ export function PageHeader({ eyebrow, title, subtitle, children }: PageHeaderPro
   return (
     <section className="relative overflow-hidden border-b border-brand-100 bg-white">
       <div className="pattern-field pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
-      <div className="relative mx-auto max-w-site px-4 py-12 md:px-6 md:py-16">
+      <div className="relative mx-auto max-w-site px-4 pt-24 pb-12 md:px-6 md:pt-28 md:pb-16">
         <Reveal>
           {eyebrow ?
           <span className="inline-flex items-center gap-2 rounded-pill bg-brand-50 px-3 py-1 text-xs font-bold text-brand-600">

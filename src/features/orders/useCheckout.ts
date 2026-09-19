@@ -125,9 +125,6 @@ export function useCheckout() {
             setSelectedVehicleId(def.id);
           }
         })
-        .catch((err) => {
-          console.error('Failed to fetch user vehicles:', err);
-        })
         .finally(() => setIsLoadingVehicles(false));
     } else {
       setVehicles([]);

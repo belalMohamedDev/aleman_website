@@ -2,14 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   BellIcon,
-  CheckCheckIcon,
   PackageIcon,
   ClockIcon,
   CreditCardIcon,
   CheckCircle2Icon,
   AlertTriangleIcon,
-  SparklesIcon,
-  XIcon,
 } from 'lucide-react';
 import { useNotifications } from '../../features/notifications/useNotifications';
 import type { NotificationItem } from '../../features/notifications/types';
@@ -75,7 +72,6 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
     unreadCount,
     isLoading,
     markAsRead,
-    markAllAsRead,
     loadNotifications,
   } = useNotifications(isAuthenticated);
 
@@ -154,7 +150,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
               )}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            {/* <div className="flex items-center gap-1.5">
               {unreadCount > 0 && (
                 <button
                   type="button"
@@ -173,7 +169,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
               >
                 <XIcon className="h-4 w-4" />
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Filter Tabs */}
@@ -207,12 +203,18 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
                 جاري تحميل الإشعارات...
               </div>
             ) : filteredNotifications.length === 0 ? (
-              <div className="py-10 text-center space-y-2">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400">
-                  <BellIcon className="h-6 w-6 stroke-[1.5]" />
+              <div className="py-6 text-center space-y-2">
+                <div className="mx-auto w-36 h-36 relative flex items-center justify-center mb-2">
+                  <img
+                    src="/aleman_parallax_assets/notification.webp"
+                    alt="لا توجد إشعارات حالياً"
+                    className="w-full h-full object-contain filter drop-shadow-md animate-in fade-in zoom-in-95 duration-300"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
-                <p className="text-xs font-bold text-slate-600">لا توجد إشعارات حالياً</p>
-                <p className="text-[11px] text-slate-400 max-w-[220px] mx-auto">
+                <p className="text-xs font-black text-slate-800">لا توجد إشعارات حالياً</p>
+                <p className="text-[11px] font-medium text-slate-400 max-w-[220px] mx-auto leading-relaxed">
                   ستتلقى إشعارات فورية هنا فور حدوث أي تحديث على طلباتك
                 </p>
               </div>

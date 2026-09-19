@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { authService } from './authService';
 import { notificationService } from '../notifications/notificationService';
+import { requestRefreshToken } from '../../infrastructure/api/apiClient';
 import type { User, LoginDto, RegisterDto } from './types';
 import { toast } from 'sonner';
 
@@ -12,6 +13,8 @@ interface AuthContextValue {
   openAuthModal: () => void;
   closeAuthModal: () => void;
   login: (credentials: LoginDto) => Promise<boolean>;
+  sendLoginOtp: (phoneNumber: string) => Promise<{ success: boolean; message: string }>;
+  verifyLoginOtp: (data: { phoneNumber: string; code: string }) => Promise<boolean>;
   register: (data: RegisterDto) => Promise<boolean>;
   logout: () => void;
 }
@@ -28,14 +31,18 @@ export function useAuth() {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => authService.getUser());
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(() => !!authService.getUser());
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     const handleUnauthorized = () => {
+      const hadUser = !!authService.getUser();
+      authService.setUser(null);
       setUser(null);
-      toast.error('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً');
-      setIsAuthModalOpen(true);
+      if (hadUser) {
+        toast.error('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً');
+        setIsAuthModalOpen(true);
+      }
     };
 
     window.addEventListener('auth:unauthorized', handleUnauthorized);
@@ -45,11 +52,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // If not signed in locally, user is a guest; do not trigger unauthorized API calls
+    const cached = authService.getUser();
+    if (!cached) {
+      setIsLoading(false);
+      return;
+    }
+
     authService.getMe()
       .then((u) => setUser(u))
-      .catch(() => setUser(null))
+      .catch(() => {
+        setUser(null);
+        authService.setUser(null);
+      })
       .finally(() => setIsLoading(false));
   }, []);
+
+  // Proactive Silent Session Refresh:
+  // AccessToken expires every 15 minutes. We silently refresh every 10 minutes (and on tab return)
+  // so an active user never experiences a session expiration or interruption.
+  useEffect(() => {
+    if (!user) return;
+
+    let lastRefreshTime = Date.now();
+
+    const doSilentRefresh = async () => {
+      try {
+        const refreshed = await requestRefreshToken();
+        if (refreshed) {
+          lastRefreshTime = Date.now();
+        }
+      } catch {
+        // Handled internally by requestRefreshToken fallback
+      }
+    };
+
+    // Refresh every 10 minutes (600,000 ms)
+    const interval = setInterval(doSilentRefresh, 10 * 60 * 1000);
+
+    // Also refresh on window focus / tab visibility if 10+ minutes elapsed
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const elapsed = Date.now() - lastRefreshTime;
+        if (elapsed > 10 * 60 * 1000) {
+          doSilentRefresh();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
+  }, [user]);
 
   const openAuthModal = useCallback(() => setIsAuthModalOpen(true), []);
   const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
@@ -68,6 +127,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (err: any) {
       toast.error(err?.message || 'فشل تسجيل الدخول، تحقق من البيانات');
+      return false;
+    }
+  }, [closeAuthModal]);
+
+  const sendLoginOtp = useCallback(async (phoneNumber: string) => {
+    try {
+      const res = await authService.sendLoginOtp(phoneNumber);
+      toast.success(res?.message || 'تم إرسال رمز التحقق بنجاح إلى هاتفك');
+      return { success: true, message: res?.message || '' };
+    } catch (err: any) {
+      toast.error(err?.message || 'فشل إرسال رمز التحقق، تأكد من صحة الرقم');
+      throw err;
+    }
+  }, []);
+
+  const verifyLoginOtp = useCallback(async (data: { phoneNumber: string; code: string }) => {
+    try {
+      const res = await authService.verifyLoginOtp(data);
+      if (res?.user) {
+        setUser(res.user);
+      } else {
+        const me = await authService.getMe();
+        setUser(me);
+      }
+      toast.success('تم تسجيل الدخول بنجاح');
+      closeAuthModal();
+      return true;
+    } catch (err: any) {
+      toast.error(err?.message || 'رمز التحقق غير صحيح أو انتهت صلاحيته');
       return false;
     }
   }, [closeAuthModal]);
@@ -109,12 +197,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated: !isLoading && !!user,
         isLoading,
         isAuthModalOpen,
         openAuthModal,
         closeAuthModal,
         login,
+        sendLoginOtp,
+        verifyLoginOtp,
         register,
         logout,
       }}

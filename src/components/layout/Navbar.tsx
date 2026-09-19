@@ -29,7 +29,7 @@ export function Navbar() {
 
   const isTransparentPage = location.pathname === '/' || location.pathname === '/about';
   const isTransparent = isTransparentPage && !scrolled;
-  const headerClass = isTransparentPage ? 'fixed' : 'sticky';
+  const headerClass = 'fixed';
 
   // Exclude /contact from desktop navbar links since there is a prominent CTA button
   const desktopNav = useMemo(
@@ -292,15 +292,16 @@ export function Navbar() {
             </button>
           )}
 
-          {/* Shopping Cart Link -> Direct to Checkout */}
+          {/* Shopping Cart Link -> Direct to Cart Page (Only visible when authenticated) */}
           {isAuthenticated && (
             <Link
-              to="/checkout"
+              to="/cart"
               className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isTransparent
                 ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
                 : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-brand-300 hover:text-brand-600'
                 }`}
-              aria-label="إتمام الطلب"
+              aria-label="سلة المشتريات"
+              title="سلة المشتريات"
             >
               <ShoppingBagIcon className="h-4 w-4" />
               {totalItemsCount > 0 && (

@@ -9,7 +9,6 @@ export function Products() {
   const {
     categories,
     products,
-    allProducts,
     selectedCategoryId,
     setSelectedCategoryId,
     searchQuery,
@@ -24,7 +23,7 @@ export function Products() {
   }, [categories]);
 
   return (
-    <section className="mx-auto max-w-[1440px] px-4 pt-6 pb-12 md:px-8 md:pt-8 md:pb-16">
+    <section className="mx-auto max-w-[1440px] px-4 pt-24 pb-12 md:px-8 md:pt-28 md:pb-16">
       {/* Compact Header & Search Bar */}
       <div className="mb-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -60,27 +59,26 @@ export function Products() {
               type="button"
               onClick={() => setSelectedCategoryId('all')}
               className={`rounded-xl px-4 py-2 text-xs font-black transition ${selectedCategoryId === 'all'
-                  ? 'bg-brand-600 text-white shadow-sm'
-                  : 'bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100'
+                ? 'bg-brand-600 text-white shadow-sm'
+                : 'bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100'
                 }`}
             >
-              جميع الأقسام ({allProducts.length})
+              جميع الأقسام
             </button>
 
             {categories.map((cat) => {
-              const count = allProducts.filter((p) => p.categoryId === cat.id).length;
               return (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategoryId(cat.id)}
                   className={`rounded-xl px-3.5 py-2 text-xs font-black transition flex items-center gap-1.5 ${selectedCategoryId === cat.id
-                      ? 'bg-brand-600 text-white shadow-sm'
-                      : 'bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100'
+                    ? 'bg-brand-600 text-white shadow-sm'
+                    : 'bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100'
                     }`}
                 >
                   <span>{cat.name}</span>
-                  <span className="opacity-70 text-[11px]">({count})</span>
+                  {/* <span className="opacity-70 text-[11px]">({count})</span> */}
                 </button>
               );
             })}

@@ -27,7 +27,27 @@ export const authService = {
       body: JSON.stringify(credentials),
     });
 
-    if (res.user) {
+    if (res?.user) {
+      this.setUser(res.user);
+    }
+
+    return res;
+  },
+
+  async sendLoginOtp(phoneNumber: string): Promise<{ success: boolean; message: string }> {
+    return apiClient<{ success: boolean; message: string }>('/api/Auth/send-login-otp', {
+      method: 'POST',
+      body: JSON.stringify({ phoneNumber }),
+    });
+  },
+
+  async verifyLoginOtp(data: { phoneNumber: string; code: string }): Promise<AuthResponse> {
+    const res = await apiClient<any>('/api/Auth/verify-login-otp', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+
+    if (res?.user) {
       this.setUser(res.user);
     }
 

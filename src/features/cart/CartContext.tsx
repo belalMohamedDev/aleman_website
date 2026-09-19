@@ -43,7 +43,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const summary = await cartService.getBackendCart();
       setItems(summary.items);
     } catch (err: any) {
-      console.error('Failed to load backend cart:', err);
     } finally {
       setIsLoading(false);
     }
@@ -114,6 +113,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       await cartService.clearBackendCart();
       setItems([]);
+      toast.info('تم تفريغ سلة المشتريات بنجاح');
     } catch (err: any) {
       toast.error(err?.message || 'تعذر إفراغ السلة');
     }

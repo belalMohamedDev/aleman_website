@@ -1,93 +1,169 @@
-import React from 'react';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import type { CategoryId } from '../../types/content';
 import { categories } from '../../data/products';
 import { useLang } from '../../i18n/LanguageContext';
+import './product-categories.css';
 
-const ANIMAL_IMAGES: Record<CategoryId, string> = {
-  poultry: '/animal_chicken.webp',
-  livestock: '/animal_cow.webp',
-  rabbit: '/animal_rabbit.webp',
-  duck: '/animal_duck.webp'
-};
+interface CategoryVisualMeta {
+  image: string;
+  desc: { ar: string; en: string };
+  haloClass: string;
+  liftClass: string;
+}
 
-const CATEGORY_DESCS: Record<CategoryId, { ar: string; en: string }> = {
-  poultry: { ar: 'أعلاف تسمين وبياض متوازنة', en: 'Balanced Broiler & Layer Feeds' },
-  livestock: { ar: 'أعلاف تسمين وحلاب عالية القيمة', en: 'Beef & Dairy High Yield Feed' },
-  rabbit: { ar: 'تركيبات متخصصة لمكافحة الأجسام', en: 'Specialized Rabbit Nutrition' },
-  duck: { ar: 'أعلاف تسمين بط بنسب بروتين دقيقة', en: 'Precision Protein Duck Feed' }
+const CATEGORY_VISUALS: Record<CategoryId, CategoryVisualMeta> = {
+  poultry: {
+    image: '/animal_chicken.webp',
+    desc: { ar: 'أعلاف تسمين وبياض متوازنة بأعلى معايير الهضم', en: 'Balanced Broiler & Layer Feeds' },
+    haloClass: 'halo-poultry',
+    liftClass: 'animal-lift-poultry',
+  },
+  livestock: {
+    image: '/animal_cow.webp',
+    desc: { ar: 'أعلاف تسمين وحلاب لإنتاجية قصوى وصحة قوية', en: 'Beef & Dairy High Yield Feed' },
+    haloClass: 'halo-livestock',
+    liftClass: 'animal-lift-livestock',
+  },
+  rabbit: {
+    image: '/animal_rabbit.webp',
+    desc: { ar: 'تركيبات متخصصة ومناعية لتربية نموذجية', en: 'Specialized Rabbit Nutrition' },
+    haloClass: 'halo-rabbit',
+    liftClass: 'animal-lift-rabbit',
+  },
+  duck: {
+    image: '/animal_duck.webp',
+    desc: { ar: 'أعلاف تسمين وبياض بط بنسب بروتين دقيقة', en: 'Precision Protein Duck Feed' },
+    haloClass: 'halo-duck',
+    liftClass: 'animal-lift-duck',
+  },
 };
 
 export function ProductCategories() {
-  const { lang, dir } = useLang();
-  const Arrow = dir === 'rtl' ? ArrowLeftIcon : ArrowRightIcon;
+  const { lang } = useLang();
+  const sectionRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
 
-  return (
-    <section className="relative mx-auto max-w-site px-4 pt-4 pb-8 md:px-6" aria-label={lang === 'ar' ? 'تصنيفات المنتجات' : 'Product categories'}>
-      {/* Subtle Ambient Glow Behind Cards */}
-      <div className="absolute inset-x-0 -top-12 h-32 bg-gradient-to-b from-brand-900/5 via-transparent to-transparent pointer-events-none blur-xl" aria-hidden="true" />
+  // Scroll Parallax Tracking
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
+  // Smooth Parallax Transformations on Scroll
+  const animalScrollY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    reduced ? [0, 0] : [22, -22]
+  );
+
+  const haloScale = useTransform(
+    scrollYProgress,
+    [0, 0.45, 1],
+    reduced ? [1, 1, 1] : [0.8, 1.15, 0.85]
+  );
+
+  return (
+    <section
+      ref={sectionRef}
+      className="podium-section mx-auto max-w-site px-4 pt-4 sm:pt-8 pb-16 md:px-6"
+      aria-label={lang === 'ar' ? 'تصنيفات الأعلاف والمنتجات' : 'Product categories'}
+    >
+      <div className="podium-grid">
         {categories.map((category, index) => {
-          const animalImg = ANIMAL_IMAGES[category.id];
-          const desc = CATEGORY_DESCS[category.id];
+          const meta = CATEGORY_VISUALS[category.id];
 
           return (
             <motion.div
               key={category.id}
-              initial={reduced ? false : { opacity: 0, y: 35, scale: 0.95 }}
-              whileInView={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, amount: 0.15 }}
+              className="podium-item-wrapper"
+              initial={reduced ? false : { opacity: 0, y: 50, scale: 0.9, rotateX: 12 }}
+              whileInView={reduced ? undefined : { opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
               transition={{
-                duration: 0.65,
-                delay: index * 0.1,
+                duration: 0.75,
+                delay: index * 0.12,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="h-full"
             >
               <Link
                 to={`/products?category=${category.id}`}
-                className="focus-ring group relative flex flex-col justify-between overflow-hidden rounded-[24px] border border-slate-100/90 bg-white/95 backdrop-blur-md p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_35px_-10px_rgba(0,0,0,0.1)] h-full"
+                className="podium-item focus-ring group"
               >
-                {/* Content: Text on the Right, Animal Illustration on the Left (in RTL) */}
-                <div className="relative z-10 flex items-center justify-between gap-3 min-h-[96px]">
-                  {/* Category Text */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-black text-ink group-hover:text-brand-700 transition-colors leading-tight">
-                      {lang === 'ar' ? category.ar : category.en}
-                    </h3>
-                    <p className="mt-2 text-xs text-slate-500 leading-relaxed font-medium line-clamp-2">
-                      {lang === 'ar' ? desc.ar : desc.en}
-                    </p>
-                  </div>
+                {/* 3D Diorama Stage */}
+                <div className="podium-stage">
+                  {/* Atmospheric Glow Halo reacting smoothly to scroll */}
+                  <motion.div
+                    className={`podium-ambient-halo ${meta.haloClass}`}
+                    style={{ scale: haloScale }}
+                  />
 
-                  {/* Animal Illustration with Gentle Floating Idle Motion */}
-                  <div className="shrink-0 w-24 h-24 sm:w-26 sm:h-26 flex items-center justify-center">
-                    <motion.img
-                      animate={reduced ? undefined : { y: [0, -5, 0] }}
+                  {/* 3D Platform Pedestal Base (الطبق) */}
+                  <div className="podium-platform-wrapper">
+                    {/* 3D Disc Body with Top Surface and Cylinder Edge */}
+                    <div className="podium-disc" />
+
+                    {/* Contact Shadow for Animal's Feet on the Platform */}
+                    <motion.div
+                      className="podium-animal-contact-shadow"
+                      animate={
+                        reduced
+                          ? undefined
+                          : {
+                            scale: [1, 0.84, 1],
+                            opacity: [0.7, 0.45, 0.7],
+                          }
+                      }
                       transition={{
                         repeat: Infinity,
-                        duration: 3.2 + index * 0.4,
-                        ease: "easeInOut",
-                        delay: index * 0.15
+                        duration: 3.4 + index * 0.35,
+                        ease: 'easeInOut',
+                        delay: index * 0.2,
                       }}
-                      src={animalImg}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="max-h-full max-w-full object-contain filter drop-shadow-sm transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
+
+                  {/* 3D Animal Avatar with combined Scroll Parallax and Breathing Motion */}
+                  <motion.div
+                    className={`podium-animal-wrapper ${meta.liftClass}`}
+                    style={{ y: animalScrollY }}
+                  >
+                    <motion.div
+                      animate={
+                        reduced
+                          ? undefined
+                          : {
+                            y: [0, -8, 0],
+                          }
+                      }
+                      transition={{
+                        repeat: Infinity,
+                        duration: 3.4 + index * 0.35,
+                        ease: 'easeInOut',
+                        delay: index * 0.2,
+                      }}
+                    >
+                      <img
+                        src={meta.image}
+                        alt={lang === 'ar' ? category.ar : category.en}
+                        loading="lazy"
+                        decoding="async"
+                        className="podium-animal-img"
+                      />
+                    </motion.div>
+                  </motion.div>
                 </div>
 
-                <div className="relative z-10 mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 group-hover:text-brand-700 transition-colors">
-                  <span className="font-black">{lang === 'ar' ? 'تصفح الأنواع' : 'Browse Feed Types'}</span>
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand-50 text-brand-700 border border-brand-100/60 transition-all duration-300 group-hover:bg-brand-600 group-hover:text-white group-hover:border-transparent group-hover:shadow-xs group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
-                    <Arrow className="h-3.5 w-3.5" aria-hidden="true" />
-                  </span>
+                {/* Info & Typography Section */}
+                <div className="podium-info">
+                  <h3 className="podium-title">
+                    {lang === 'ar' ? category.ar : category.en}
+                  </h3>
+
+                  <p className="podium-desc">
+                    {lang === 'ar' ? meta.desc.ar : meta.desc.en}
+                  </p>
                 </div>
               </Link>
             </motion.div>

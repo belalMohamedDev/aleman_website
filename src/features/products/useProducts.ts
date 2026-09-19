@@ -1,11 +1,22 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { productService } from './productService';
 import type { Category, Product } from './types';
 
+const SLUG_TO_KEYWORDS: Record<string, string[]> = {
+  poultry: ['دواجن', 'داجن', 'فراخ', 'دجاج', 'بياض', 'تسمين', 'poultry'],
+  livestock: ['ماشية', 'مواشي', 'ابقار', 'أبقار', 'حلاب', 'عجول', 'livestock', 'cattle'],
+  rabbit: ['ارانب', 'أرانب', 'ارنب', 'أرنب', 'rabbit'],
+  duck: ['بط', 'بطة', 'duck'],
+};
+
 export function useProducts() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | 'all'>('all');
+  const [selectedCategoryId, setSelectedCategoryIdState] = useState<number | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,10 +29,9 @@ export function useProducts() {
         productService.getCategories(),
         productService.getProducts(),
       ]);
-      setCategories(cats.filter(c => c.isActive !== false));
-      setProducts(prods.filter(p => p.isActive !== false));
+      setCategories(cats.filter((c) => c.isActive !== false));
+      setProducts(prods.filter((p) => p.isActive !== false));
     } catch (err: any) {
-      console.error('Failed to load products from API:', err);
       setError(err?.message || 'تعذر تحميل المنتجات من السيرفر');
     } finally {
       setIsLoading(false);
@@ -31,6 +41,57 @@ export function useProducts() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Synchronize category with URL param whenever categories are loaded or categoryParam changes
+  useEffect(() => {
+    if (!categoryParam) {
+      setSelectedCategoryIdState('all');
+      return;
+    }
+
+    if (categories.length === 0) return;
+
+    // 1. Direct numeric ID match
+    const byId = categories.find((c) => String(c.id) === categoryParam);
+    if (byId) {
+      setSelectedCategoryIdState(byId.id);
+      return;
+    }
+
+    // 2. Slug keywords match
+    const paramLower = categoryParam.toLowerCase().trim();
+    const keywords = SLUG_TO_KEYWORDS[paramLower] || [paramLower];
+
+    const matched = categories.find((c) => {
+      const name = c.name.toLowerCase();
+      return keywords.some((kw) => name.includes(kw));
+    });
+
+    if (matched) {
+      setSelectedCategoryIdState(matched.id);
+    } else {
+      setSelectedCategoryIdState('all');
+    }
+  }, [categoryParam, categories]);
+
+  const setSelectedCategoryId = useCallback(
+    (id: number | 'all') => {
+      setSelectedCategoryIdState(id);
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          if (id === 'all') {
+            next.delete('category');
+          } else {
+            next.set('category', String(id));
+          }
+          return next;
+        },
+        { replace: true }
+      );
+    },
+    [setSearchParams]
+  );
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {

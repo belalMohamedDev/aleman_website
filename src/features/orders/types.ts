@@ -18,7 +18,8 @@ export enum TruckType {
   LargeTrailer = 3,
 }
 
-export type { UserAddress, CreateAddressDto } from '../profile/types';
+import type { UserAddress, CreateAddressDto, UserVehicle } from '../profile/types';
+export type { UserAddress, CreateAddressDto, UserVehicle };
 
 export interface CalculateShippingRequestDto {
   addressId: string; // uuid
@@ -105,8 +106,9 @@ export interface OrderResponseDto {
   paymentMethodName?: string;
   isPaid?: boolean;
   paidAt?: string | null;
-  deliveryAddress?: string | null;
+  deliveryAddress?: UserAddress | string | null;
   truckName?: string | null;
+  vehicle?: UserVehicle | null;
   driverName?: string | null;
   vehiclePlateNumber?: string | null;
   driverLicenseNumber?: string | null;

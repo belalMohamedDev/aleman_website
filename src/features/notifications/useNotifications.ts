@@ -34,7 +34,6 @@ export function useNotifications(isAuthenticated: boolean) {
       setPage(res.page);
       setTotalPages(res.totalPages);
     } catch (err: any) {
-      console.warn('Failed to load notifications:', err);
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +76,6 @@ export function useNotifications(isAuthenticated: boolean) {
           sessionStorage.setItem('fcm_web_token', token);
         }
       } catch (e) {
-        console.warn('FCM token registration skipped/failed:', e);
       }
     };
 

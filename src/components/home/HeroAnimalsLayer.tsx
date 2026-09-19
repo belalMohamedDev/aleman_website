@@ -8,9 +8,9 @@ interface HeroAnimalsLayerProps {
   reduced: boolean;
 }
 
-const COW_ASSET = '/aleman_parallax_assets/cow.png';
-const DUCK_ASSET = '/aleman_parallax_assets/duck.png';
-const CHICKEN_ASSET = '/aleman_parallax_assets/chicken.png';
+const COW_ASSET = '/aleman_parallax_assets/cow.webp';
+const DUCK_ASSET = '/aleman_parallax_assets/duck.webp';
+const CHICKEN_ASSET = '/aleman_parallax_assets/chicken.webp';
 
 export function HeroAnimalsLayer({
   y,
