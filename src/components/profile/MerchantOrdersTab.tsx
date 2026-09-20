@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { StoreIcon, SearchIcon, ClockIcon, CheckSquareIcon, BanIcon, PackageIcon } from 'lucide-react';
+import { SearchIcon, ClockIcon, PackageIcon, History } from 'lucide-react';
 import type { OrderResponse } from '../../features/profile/types';
 import { OrderStatus } from '../../features/profile/types';
 import { OrderCard } from './OrderCard';
@@ -14,7 +14,7 @@ interface MerchantOrdersTabProps {
   onSearchChange: (val: string) => void;
 }
 
-type TabType = 'current' | 'delivered' | 'cancelled' | 'all';
+type TabType = 'current' | 'previous';
 
 export function MerchantOrdersTab({
   orders,
@@ -32,24 +32,36 @@ export function MerchantOrdersTab({
         const s = Number(o.status);
         return [
           OrderStatus.Pending,
+          OrderStatus.PendingMerchantApproval,
+          OrderStatus.PendingAdminApproval,
+          OrderStatus.PendingPaymentApproval,
           OrderStatus.Confirmed,
+          OrderStatus.Preparing,
           OrderStatus.Processing,
           OrderStatus.Shipped,
+          OrderStatus.OutForDelivery,
+          OrderStatus.ReadyForPickup,
         ].includes(s);
       }),
     [orders]
   );
 
-  const deliveredOrders = useMemo(
-    () => orders.filter((o) => Number(o.status) === OrderStatus.Delivered),
-    [orders]
-  );
-
-  const cancelledOrders = useMemo(
+  const previousOrders = useMemo(
     () =>
       orders.filter((o) => {
         const s = Number(o.status);
-        return [OrderStatus.Cancelled, OrderStatus.Refunded].includes(s);
+        return ![
+          OrderStatus.Pending,
+          OrderStatus.PendingMerchantApproval,
+          OrderStatus.PendingAdminApproval,
+          OrderStatus.PendingPaymentApproval,
+          OrderStatus.Confirmed,
+          OrderStatus.Preparing,
+          OrderStatus.Processing,
+          OrderStatus.Shipped,
+          OrderStatus.OutForDelivery,
+          OrderStatus.ReadyForPickup,
+        ].includes(s);
       }),
     [orders]
   );
@@ -59,15 +71,12 @@ export function MerchantOrdersTab({
     switch (activeTab) {
       case 'current':
         return currentOrders;
-      case 'delivered':
-        return deliveredOrders;
-      case 'cancelled':
-        return cancelledOrders;
-      case 'all':
+      case 'previous':
+        return previousOrders;
       default:
-        return orders;
+        return currentOrders;
     }
-  }, [activeTab, currentOrders, deliveredOrders, cancelledOrders, orders]);
+  }, [activeTab, currentOrders, previousOrders]);
 
   const tabs: Array<{ id: TabType; label: string; count: number; icon: typeof ClockIcon }> = [
     {
@@ -77,22 +86,10 @@ export function MerchantOrdersTab({
       icon: ClockIcon,
     },
     {
-      id: 'delivered',
-      label: 'الطلبات المُسلّمة',
-      count: deliveredOrders.length,
-      icon: CheckSquareIcon,
-    },
-    {
-      id: 'cancelled',
-      label: 'الطلبات الملغاة',
-      count: cancelledOrders.length,
-      icon: BanIcon,
-    },
-    {
-      id: 'all',
-      label: 'جميع الطلبات',
-      count: orders.length,
-      icon: StoreIcon,
+      id: 'previous',
+      label: 'الطلبات السابقة',
+      count: previousOrders.length,
+      icon: History,
     },
   ];
 
@@ -160,20 +157,18 @@ export function MerchantOrdersTab({
               ? 'لا توجد طلبات عملاء مطابقة للبحث'
               : activeTab === 'current'
               ? 'لا توجد طلبات جارية لعملائك حالياً'
-              : activeTab === 'delivered'
-              ? 'لا توجد طلبات مُسلّمة لعملائك حتى الآن'
-              : activeTab === 'cancelled'
-              ? 'لا توجد طلبات ملغاة لعملائك'
-              : 'لا توجد طلبات مسجلة لعملائك'}
+              : 'لا توجد طلبات سابقة لعملائك'}
           </h3>
           <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
             {searchTerm
               ? 'تأكد من كتابة اسم العميل أو رقم الطلب بشكل صحيح.'
-              : 'طلبات صغار التجار والموزعين التابعين لك ستظهر هنا مع إمكانية متابعتها.'}
+              : activeTab === 'current'
+              ? 'طلبات صغار التجار والموزعين التابعين لك الجارية ستظهر هنا مع إمكانية متابعتها.'
+              : 'طلبات العملاء المكتملة أو الملغاة ستظهر في هذا السجل.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {displayedOrders.map((order) => (
             <OrderCard
               key={order.id}

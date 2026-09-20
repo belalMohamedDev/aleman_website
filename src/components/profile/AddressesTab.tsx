@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPinIcon, PlusIcon, Trash2Icon, StarIcon } from 'lucide-react';
+import { MapPinIcon, PlusIcon, Trash2Icon, StarIcon, CheckCircle2 } from 'lucide-react';
 import type { UserAddress, CreateAddressDto } from '../../features/profile/types';
 import { AddressModal } from './AddressModal';
 
@@ -9,6 +9,9 @@ interface AddressesTabProps {
   onAddAddress: (data: CreateAddressDto) => Promise<boolean>;
   onRemoveAddress: (id: string) => Promise<boolean>;
   onMakeDefault: (id: string) => Promise<boolean>;
+  isModalOpen?: boolean;
+  onOpenModal?: () => void;
+  onCloseModal?: () => void;
 }
 
 export function AddressesTab({
@@ -17,29 +20,17 @@ export function AddressesTab({
   onAddAddress,
   onRemoveAddress,
   onMakeDefault,
+  isModalOpen,
+  onOpenModal,
+  onCloseModal,
 }: AddressesTabProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [internalModalOpen, setInternalModalOpen] = useState(false);
+  const showModal = isModalOpen !== undefined ? isModalOpen : internalModalOpen;
+  const handleOpen = onOpenModal || (() => setInternalModalOpen(true));
+  const handleClose = onCloseModal || (() => setInternalModalOpen(false));
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4 rounded-2xl bg-white p-4 border border-slate-200/80 shadow-sm">
-        <div>
-          <h3 className="text-sm font-black text-ink">دفتر العناوين المحفوظة ({addresses.length})</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            العناوين المسجلة التي يتم استخدامها لحساب تكلفة الشحن وتوصيل الطلبات
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2.5 text-xs font-black text-white shadow-sm transition hover:scale-105 active:scale-95 cursor-pointer"
-        >
-          <PlusIcon className="h-4 w-4" />
-          <span>إضافة عنوان جديد</span>
-        </button>
-      </div>
-
       {isLoading ? (
         <div className="p-12 text-center text-sm font-bold text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-xs">
           جاري تحميل العناوين...
@@ -55,7 +46,7 @@ export function AddressesTab({
           </p>
           <button
             type="button"
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpen}
             className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-bold text-white transition cursor-pointer"
           >
             <PlusIcon className="h-3.5 w-3.5" />
@@ -63,59 +54,80 @@ export function AddressesTab({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {addresses.map((address) => (
             <div
               key={address.id}
-              className={`relative flex flex-col justify-between rounded-2xl border p-5 transition ${
+              className={`group relative rounded-2xl border bg-white p-4 sm:p-5 shadow-xs transition-all duration-200 hover:shadow-md flex flex-col justify-between ${
                 address.isDefault
-                  ? 'border-emerald-500/80 bg-emerald-50/20 shadow-sm'
-                  : 'border-slate-200 bg-white hover:border-brand-200 hover:shadow-sm'
+                  ? 'border-emerald-500/60 shadow-emerald-500/5'
+                  : 'border-slate-200/90 hover:border-slate-300'
               }`}
             >
               <div>
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                      <MapPinIcon className="h-4 w-4 text-brand-600" />
+                {/* Header: City, District & Default Badge */}
+                <div className="flex items-start justify-between gap-2 pb-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-[#234c2e] border border-emerald-100/80">
+                      <MapPinIcon className="h-5 w-5" />
                     </div>
-                    <span className="text-sm font-black text-ink">
-                      {address.city}
-                      {address.district ? ` - ${address.district}` : ''}
-                    </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-base font-black text-ink truncate">
+                          {address.city}
+                        </span>
+                        {address.district && (
+                          <span className="inline-flex items-center rounded-lg bg-slate-100 text-slate-700 px-2 py-0.5 text-xs font-semibold">
+                            {address.district}
+                          </span>
+                        )}
+                      </div>
+                      <span className="block text-[11px] text-slate-400 mt-0.5">
+                        عنوان شحن وتوصيل
+                      </span>
+                    </div>
                   </div>
 
                   {address.isDefault && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-black text-emerald-800">
-                      <StarIcon className="h-3 w-3 fill-emerald-700 text-emerald-700" />
-                      العنوان الافتراضي
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 text-xs font-bold shrink-0">
+                      <StarIcon className="h-3 w-3 fill-emerald-600 text-emerald-600" />
+                      <span>الافتراضي</span>
                     </span>
                   )}
                 </div>
 
-                <div className="mt-3 space-y-1 text-xs text-slate-600 font-medium">
-                  <p>
-                    <span className="font-bold text-slate-700">العنوان:</span> {address.street}
-                  </p>
+                {/* Body: Street Address & Notes (Clean List) */}
+                <div className="my-3 py-3 border-y border-slate-100 space-y-2 text-xs">
+                  <div className="flex items-start gap-1.5 text-slate-600">
+                    <span className="text-slate-400 shrink-0 font-medium">العنوان:</span>
+                    <span className="font-bold text-ink leading-relaxed">{address.street}</span>
+                  </div>
+
                   {address.notes && (
-                    <p className="text-slate-400 text-[11px]">
-                      <span className="font-bold text-slate-500">ملاحظات:</span> {address.notes}
-                    </p>
+                    <div className="pt-1.5 border-t border-slate-50 flex items-start gap-1 text-[11px] text-slate-500">
+                      <span className="text-slate-400 shrink-0 font-medium">ملاحظات:</span>
+                      <span className="line-clamp-2 leading-relaxed">{address.notes}</span>
+                    </div>
                   )}
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-between pt-3 border-t border-slate-100">
-                {!address.isDefault ? (
+              {/* Footer: Make Default & Delete Actions */}
+              <div className="flex items-center justify-between pt-1 text-xs">
+                {address.isDefault ? (
+                  <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    <span>معتمد كافتراضي للشحن</span>
+                  </span>
+                ) : (
                   <button
                     type="button"
                     onClick={() => onMakeDefault(address.id)}
-                    className="text-xs font-bold text-brand-700 hover:text-brand-900 transition underline"
+                    className="inline-flex items-center gap-1 text-slate-500 hover:text-emerald-700 font-semibold transition cursor-pointer"
                   >
-                    تعيين كافتراضي
+                    <StarIcon className="h-3.5 w-3.5 text-slate-400" />
+                    <span>تعيين كافتراضي</span>
                   </button>
-                ) : (
-                  <span className="text-xs font-bold text-slate-400">مُعتمد للشحن</span>
                 )}
 
                 <button
@@ -125,7 +137,7 @@ export function AddressesTab({
                       onRemoveAddress(address.id);
                     }
                   }}
-                  className="flex items-center gap-1 text-xs font-bold text-red-500 hover:text-red-700 transition"
+                  className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 font-semibold transition cursor-pointer"
                   title="حذف العنوان"
                 >
                   <Trash2Icon className="h-3.5 w-3.5" />
@@ -139,8 +151,8 @@ export function AddressesTab({
 
       {/* Add Address Modal */}
       <AddressModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={showModal}
+        onClose={handleClose}
         onSubmit={onAddAddress}
       />
     </div>

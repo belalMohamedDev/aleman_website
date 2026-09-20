@@ -14,7 +14,30 @@ export const cartService = {
       };
     }
 
-    const items: CartItem[] = (data.items || []).map((item: any) => ({
+    // Deduplicate items by ID and ProductPackageId to prevent transient duplicate renders
+    const rawItems: any[] = data.items || [];
+    const itemMap = new Map<string, any>();
+
+    for (const raw of rawItems) {
+      const key = raw.productPackageId ? `pkg-${raw.productPackageId}` : `item-${raw.id}`;
+      if (itemMap.has(key)) {
+        const existing = itemMap.get(key);
+        // If identical item ID was duplicated in-memory, ignore the duplicate
+        if (String(existing.id) === String(raw.id)) {
+          continue;
+        }
+        // If same package was added separately, merge quantity
+        existing.quantity = (existing.quantity || 1) + (raw.quantity || 1);
+        existing.subtotal = (existing.subtotal ?? 0) + (raw.subtotal ?? ((raw.quantity || 1) * (raw.unitPrice || 0)));
+        existing.totalWeightKg = (existing.totalWeightKg ?? 0) + (raw.totalWeightKg ?? ((raw.quantity || 1) * (raw.packageWeightKg || 0)));
+      } else {
+        itemMap.set(key, { ...raw });
+      }
+    }
+
+    const uniqueRawItems = Array.from(itemMap.values());
+
+    const items: CartItem[] = uniqueRawItems.map((item: any) => ({
       id: String(item.id),
       productId: item.productId,
       productName: item.productName || '',
@@ -29,10 +52,10 @@ export const cartService = {
       totalWeightTons: Number(((item.totalWeightKg ?? (item.quantity * (item.packageWeightKg || 0))) / 1000).toFixed(2)),
     }));
 
-    const totalItemsCount = data.totalItemsCount ?? items.reduce((sum, i) => sum + i.quantity, 0);
-    const totalWeightKg = data.totalWeightKg ?? items.reduce((sum, i) => sum + i.totalWeightKg, 0);
-    const totalWeightTons = data.totalWeightTons ?? Number((totalWeightKg / 1000).toFixed(2));
-    const totalPrice = data.totalPrice ?? items.reduce((sum, i) => sum + i.subtotal, 0);
+    const totalItemsCount = items.reduce((sum, i) => sum + i.quantity, 0);
+    const totalWeightKg = items.reduce((sum, i) => sum + i.totalWeightKg, 0);
+    const totalWeightTons = Number((totalWeightKg / 1000).toFixed(2));
+    const totalPrice = items.reduce((sum, i) => sum + i.subtotal, 0);
 
     return {
       items,

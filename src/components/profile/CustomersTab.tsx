@@ -29,7 +29,7 @@ export function CustomersTab({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4">
           <div className="flex items-center gap-2 text-emerald-800 text-xs font-bold mb-1">
-            <UsersIcon className="h-4 w-4 text-emerald-600" />
+
             <span>إجمالي العملاء المسجلين</span>
           </div>
           <p className="text-xl font-black text-ink">{customersCount} عميل</p>
@@ -37,7 +37,7 @@ export function CustomersTab({
 
         <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
           <div className="flex items-center gap-2 text-blue-800 text-xs font-bold mb-1">
-            <ScaleIcon className="h-4 w-4 text-blue-600" />
+
             <span>إجمالي سحوبات الأعلاف</span>
           </div>
           <p className="text-xl font-black text-ink">{totalTons.toFixed(2)} طن</p>
@@ -144,7 +144,7 @@ export function CustomersTab({
       {/* Customer Orders History Modal */}
       {selectedCustomerOrders && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl border border-slate-100">
+          <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden rounded-3xl bg-white p-6 shadow-2xl border border-slate-100">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
               <div>
                 <h3 className="text-base font-black text-ink">

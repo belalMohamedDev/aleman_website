@@ -138,42 +138,53 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   const timelineBadge = getTimelineBadge();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6 backdrop-blur-xs animate-in fade-in duration-200 overflow-hidden"
+    >
       <div
-        className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl bg-slate-50 p-4 sm:p-6 shadow-2xl border border-slate-100"
+        className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl bg-slate-50 shadow-2xl border border-slate-200/80 overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
-        {/* Modal Top Header with Close */}
-        <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-200/60">
-          <h2 className="text-base sm:text-lg font-black text-ink">تفاصيل الطلب</h2>
+        {/* Fixed Top Header - Outside the scroll area so nothing leaks above it */}
+        <div className="flex items-center justify-between px-5 sm:px-6 py-4 bg-white border-b border-slate-200/80 shrink-0 z-10">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-base sm:text-lg font-black text-ink">تفاصيل الطلب</h2>
+            <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg" dir="ltr">
+              #{order.orderNumber}
+            </span>
+          </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-slate-400 hover:bg-slate-200/70 hover:text-slate-700 transition"
+            className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
             aria-label="إغلاق"
           >
             <XIcon className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="space-y-4">
-          {/* Card 1: Order Number & Date matching Screenshot 3 */}
-          <div className="bg-white rounded-3xl p-5 shadow-xs border border-slate-200/80 flex items-center justify-between gap-4">
+        {/* Scrollable Content Body */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {/* Card 1: Order Number & Date */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <span className="text-xs font-bold text-slate-400 block">رقم الطلب</span>
-              <div className="flex items-center gap-2 mt-1">
-                <button
-                  type="button"
-                  onClick={() => copyToClipboard(order.orderNumber, 'رقم الطلب')}
-                  className="text-slate-400 hover:text-brand-600 transition p-1"
-                  title="نسخ رقم الطلب"
-                >
-                  <CopyIcon className="h-4 w-4" />
-                </button>
+              <span className="text-[11px] font-bold text-slate-400 block">رقم الطلب</span>
+              <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-sm sm:text-base font-black text-ink tracking-wide font-mono" dir="ltr">
                   #{order.orderNumber}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(order.orderNumber, 'رقم الطلب')}
+                  className="text-slate-400 hover:text-[#234c2e] hover:bg-emerald-50 rounded-lg p-1 transition cursor-pointer"
+                  title="نسخ رقم الطلب"
+                >
+                  <CopyIcon className="h-3.5 w-3.5" />
+                </button>
               </div>
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 mt-1.5">
                 <ClockIcon className="h-3.5 w-3.5 text-slate-400 shrink-0" />
@@ -183,13 +194,13 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
               </div>
             </div>
 
-            <div className="h-14 w-14 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
-              <ShoppingBagIcon className="h-7 w-7 stroke-[1.8]" />
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-emerald-50 text-[#234c2e] border border-emerald-100 flex items-center justify-center shrink-0 shadow-2xs">
+              <ShoppingBagIcon className="h-6 w-6 sm:h-7 sm:w-7 stroke-[1.8]" />
             </div>
           </div>
 
-          {/* Card 2: Order Path and Status Tracker matching Screenshot 3 & 4 */}
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-5">
+          {/* Card 2: Order Path and Status Tracker */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 space-y-4">
             <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
               <h3 className="text-sm sm:text-base font-black text-ink">حالة ومسار الطلب</h3>
               <span className={`rounded-xl border px-3 py-1 text-xs font-black ${timelineBadge.className}`}>
@@ -741,7 +752,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
 
           {/* Card 3: Current Step Action Card (matching Screenshot 3 & 4) */}
           {isPendingApproval && (
-            <div className="rounded-3xl bg-blue-50/70 border border-blue-200/80 p-5 space-y-3">
+            <div className="rounded-2xl bg-blue-50/70 border border-blue-200/80 p-4 sm:p-5 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <span className="inline-block rounded-lg bg-blue-100 text-blue-800 border border-blue-200 px-2 py-0.5 text-[11px] font-black mb-2">
@@ -777,7 +788,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
 
           {/* Card 3 (Alternate): Bank Accounts & Receipt Upload when Approved for Payment */}
           {isBankTransfer && (isApproved || isReceiptUploaded) && (
-            <div className="rounded-3xl bg-emerald-50/80 border border-emerald-200/80 p-5 space-y-4">
+            <div className="rounded-2xl bg-emerald-50/80 border border-emerald-200/80 p-4 sm:p-5 space-y-4">
               <div className="flex items-start justify-between gap-3 border-b border-emerald-200/60 pb-3">
                 <div>
                   <span className="inline-block rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 text-[11px] font-black mb-1.5">
@@ -876,7 +887,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
           )}
 
           {/* Card 4: Delivery or Factory Pickup Details (matching Screenshot 3 & 4) */}
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-sm sm:text-base font-black text-ink">
                 {order.orderType === OrderType.Delivery ? 'تفاصيل توصيل وصال' : 'تفاصيل الاستلام من المصنع'}
@@ -950,7 +961,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
           </div>
 
           {/* Card 5: Products List */}
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 space-y-4">
             <h3 className="flex items-center gap-2 text-sm sm:text-base font-black text-ink border-b border-slate-100 pb-3">
               <PackageIcon className="h-5 w-5 text-brand-600" />
               <span>أصناف الطلب ({order.items?.length || 0})</span>
@@ -999,7 +1010,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
           </div>
 
           {/* Card 6: Invoice & Weights Summary (matching Screenshot 3 & 4) */}
-          <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-3 text-xs">
+          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 space-y-3 text-xs">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-sm sm:text-base font-black text-ink">ملخص الفاتورة والأوزان</h3>
               <div className="h-9 w-9 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center">
@@ -1047,17 +1058,17 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
               <span className="text-xl">{order.totalAmount.toFixed(1)} ج.م</span>
             </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="mt-5 flex justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto rounded-2xl bg-slate-200 hover:bg-slate-300 px-6 py-3 text-xs font-black text-slate-700 transition"
-          >
-            إغلاق
-          </button>
+          {/* Footer */}
+          <div className="pt-2 flex justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto rounded-xl bg-slate-200/90 hover:bg-slate-300 px-6 py-2.5 text-xs font-black text-slate-700 transition cursor-pointer"
+            >
+              إغلاق
+            </button>
+          </div>
         </div>
       </div>
     </div>

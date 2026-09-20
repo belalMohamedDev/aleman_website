@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PlusIcon } from 'lucide-react';
 import { useAuth } from '../features/auth/AuthContext';
 import { isSubCustomer } from '../features/auth/userUtils';
 import { useAddresses } from '../features/profile/useAddresses';
@@ -20,6 +21,8 @@ export function Profile() {
   const navigate = useNavigate();
   const { user, isAuthenticated, isLoading: isAuthLoading, openAuthModal } = useAuth();
   const [activeTab, setActiveTab] = useState<ProfileTabType>('orders');
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const isSub = isSubCustomer(user);
 
   // Hooks for each feature
@@ -98,11 +101,45 @@ export function Profile() {
 
           {/* Left Column: Main Content Area */}
           <main className="lg:col-span-8 xl:col-span-9 min-w-0">
-            {/* Top Page Header Title (Like Noon) */}
-            <div className="mb-4 sm:mb-6 flex items-center justify-between pb-3 border-b border-slate-200/80">
-              <h1 className="text-xl sm:text-2xl font-black text-ink">
-                {getTabTitle()}
-              </h1>
+            {/* Top Page Header Title with Action Button */}
+            <div className="mb-4 sm:mb-6 flex items-center justify-between pb-3 border-b border-slate-200/80 gap-3">
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-xl sm:text-2xl font-black text-ink">
+                  {getTabTitle()}
+                </h1>
+                {activeTab === 'addresses' && addressHook.addresses.length > 0 && (
+                  <span className="rounded-full bg-slate-100 border border-slate-200/80 px-2.5 py-0.5 text-xs font-black text-slate-700">
+                    {addressHook.addresses.length}
+                  </span>
+                )}
+                {activeTab === 'vehicles' && vehicleHook.vehicles.length > 0 && (
+                  <span className="rounded-full bg-slate-100 border border-slate-200/80 px-2.5 py-0.5 text-xs font-black text-slate-700">
+                    {vehicleHook.vehicles.length}
+                  </span>
+                )}
+              </div>
+
+              {activeTab === 'addresses' && (
+                <button
+                  type="button"
+                  onClick={() => setIsAddressModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-black text-white shadow-xs transition hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  <span>إضافة عنوان جديد</span>
+                </button>
+              )}
+
+              {activeTab === 'vehicles' && (
+                <button
+                  type="button"
+                  onClick={() => setIsVehicleModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-black text-white shadow-xs transition hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  <span>إضافة سيارة وسائق</span>
+                </button>
+              )}
             </div>
 
             {/* Tab Contents */}
@@ -145,6 +182,9 @@ export function Profile() {
                 onAddAddress={addressHook.addAddress}
                 onRemoveAddress={addressHook.removeAddress}
                 onMakeDefault={addressHook.makeDefault}
+                isModalOpen={isAddressModalOpen}
+                onOpenModal={() => setIsAddressModalOpen(true)}
+                onCloseModal={() => setIsAddressModalOpen(false)}
               />
             )}
 
@@ -155,6 +195,9 @@ export function Profile() {
                 onAddVehicle={vehicleHook.addVehicle}
                 onRemoveVehicle={vehicleHook.removeVehicle}
                 onMakeDefault={vehicleHook.makeDefault}
+                isModalOpen={isVehicleModalOpen}
+                onOpenModal={() => setIsVehicleModalOpen(true)}
+                onCloseModal={() => setIsVehicleModalOpen(false)}
               />
             )}
           </main>

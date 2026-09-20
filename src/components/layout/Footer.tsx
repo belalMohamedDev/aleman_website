@@ -6,7 +6,7 @@ import { LOGO_URL } from '../../data/navigation';
 import { categories } from '../../data/products';
 
 export function Footer() {
-  const { t, lang, setLang } = useLang();
+  const { t, lang } = useLang();
 
   const columns = [
     {
@@ -63,8 +63,8 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-3">
               <img src={LOGO_URL} alt="" loading="lazy" decoding="async" className="h-12 w-12 rounded-xl bg-white p-1 object-contain shadow-md" />
-              <div>
-                <span className="text-xl font-black block text-white">{t(ui.brand.name)}</span>
+              <div className="space-y-1.5">
+                <span className="text-xl font-black block text-white leading-snug">{t(ui.brand.name)}</span>
                 <span className="text-xs text-gold-400 font-bold block">{t(ui.brand.tagline)}</span>
               </div>
             </div>

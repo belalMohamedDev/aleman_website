@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { PackageIcon, ClockIcon, CheckSquareIcon, BanIcon, SearchIcon } from 'lucide-react';
+import { PackageIcon, ClockIcon, SearchIcon, History } from 'lucide-react';
 import type { OrderResponse } from '../../features/profile/types';
 import { OrderStatus } from '../../features/profile/types';
 import { OrderCard } from './OrderCard';
@@ -13,7 +13,7 @@ interface OrdersTabProps {
   onCancelOrder: (id: number) => void;
 }
 
-type TabType = 'current' | 'delivered' | 'cancelled' | 'all';
+type TabType = 'current' | 'previous';
 
 export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) {
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
@@ -55,20 +55,19 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
     [searchedOrders]
   );
 
-  const deliveredOrders = useMemo(
-    () => searchedOrders.filter((o) => [OrderStatus.Completed, OrderStatus.Delivered, 6].includes(Number(o.status))),
-    [searchedOrders]
-  );
-
-  const cancelledOrders = useMemo(
+  const previousOrders = useMemo(
     () =>
       searchedOrders.filter((o) => {
         const s = Number(o.status);
-        return [
-          OrderStatus.Cancelled, // 7
-          OrderStatus.RejectedByMerchant, // 10
-          OrderStatus.RejectedByAdmin, // 11
-          OrderStatus.Refunded,
+        return ![
+          OrderStatus.Pending, // 1
+          OrderStatus.PendingMerchantApproval, // 8
+          OrderStatus.PendingAdminApproval, // 9
+          OrderStatus.PendingPaymentApproval, // 12
+          OrderStatus.Confirmed, // 2
+          OrderStatus.Preparing, // 3
+          OrderStatus.OutForDelivery, // 4
+          OrderStatus.ReadyForPickup, // 5
         ].includes(s);
       }),
     [searchedOrders]
@@ -79,15 +78,12 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
     switch (activeTab) {
       case 'current':
         return currentOrders;
-      case 'delivered':
-        return deliveredOrders;
-      case 'cancelled':
-        return cancelledOrders;
-      case 'all':
+      case 'previous':
+        return previousOrders;
       default:
-        return searchedOrders;
+        return currentOrders;
     }
-  }, [activeTab, currentOrders, deliveredOrders, cancelledOrders, searchedOrders]);
+  }, [activeTab, currentOrders, previousOrders]);
 
   const tabs: Array<{ id: TabType; label: string; count: number; icon: typeof ClockIcon }> = [
     {
@@ -97,22 +93,10 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
       icon: ClockIcon,
     },
     {
-      id: 'delivered',
-      label: 'الطلبات المُسلّمة',
-      count: deliveredOrders.length,
-      icon: CheckSquareIcon,
-    },
-    {
-      id: 'cancelled',
-      label: 'الطلبات الملغاة',
-      count: cancelledOrders.length,
-      icon: BanIcon,
-    },
-    {
-      id: 'all',
-      label: 'جميع الطلبات',
-      count: searchedOrders.length,
-      icon: PackageIcon,
+      id: 'previous',
+      label: 'الطلبات السابقة',
+      count: previousOrders.length,
+      icon: History,
     },
   ];
 
@@ -180,26 +164,18 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
               ? 'لا توجد طلبات مطابقة للبحث'
               : activeTab === 'current'
               ? 'لا توجد طلبات جارية حالياً'
-              : activeTab === 'delivered'
-              ? 'لا توجد طلبات مُسلّمة حتى الآن'
-              : activeTab === 'cancelled'
-              ? 'لا توجد طلبات ملغاة'
-              : 'لا توجد طلبات مسجلة'}
+              : 'لا توجد طلبات سابقة'}
           </h3>
           <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
             {searchTerm
               ? 'تأكد من كتابة رقم الطلب بشكل صحيح.'
               : activeTab === 'current'
               ? 'عند إرسال طلب جديد سيظهر هنا فوراً مع إمكانية متابعة خط سيره واعتماد الدفع.'
-              : activeTab === 'delivered'
-              ? 'الطلبات التي تم تسليمها بنجاح ستظهر في هذا السجل.'
-              : activeTab === 'cancelled'
-              ? 'الطلبات التي تم إلغاؤها أو استرجاعها تظهر هنا.'
-              : 'سجل جميع طلباتك سيظهر هنا بمجرد إنشائها.'}
+              : 'الطلبات المكتملة أو الملغاة ستظهر في هذا السجل.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {displayedOrders.map((order) => (
             <OrderCard
               key={order.id}

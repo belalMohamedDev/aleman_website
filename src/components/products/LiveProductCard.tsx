@@ -13,7 +13,7 @@ interface LiveProductCardProps {
   index?: number;
 }
 
-export function LiveProductCard({ product, categoryName, index = 0 }: LiveProductCardProps) {
+export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { isAuthenticated, openAuthModal } = useAuth();
@@ -24,6 +24,7 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
   const [unitMode, setUnitMode] = useState<'bag' | 'ton'>('bag');
   const [inputValue, setInputValue] = useState<number | string>(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const bagsPerTon = selectedPackage?.weightKg ? Math.round(1000 / selectedPackage.weightKg) : 40;
 
@@ -36,11 +37,18 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
 
   const totalPrice = totalBags * (selectedPackage?.price || 0);
 
-  const handleAddToCart = () => {
-    if (!selectedPackage) return;
-    addItem(product, selectedPackage, totalBags);
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 1500);
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!selectedPackage || isAdding) return;
+    setIsAdding(true);
+    try {
+      await addItem(product, selectedPackage, totalBags);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 1500);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -65,21 +73,21 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
       {/* Product Image & Badges */}
       <Link
         to={`/products/${product.id}`}
-        className="block relative bg-gradient-to-b from-brand-50/70 to-slate-50 p-6 flex items-center justify-center min-h-[200px]"
+        className="relative bg-gradient-to-b from-brand-50/60 via-brand-50/30 to-slate-50/80 p-4 pt-6 pb-5 flex items-center justify-center h-64 sm:h-72 overflow-hidden"
       >
         <img
           src={primaryImage}
           alt={product.name}
           loading="lazy"
           decoding="async"
-          className="h-44 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
+          className="h-full w-auto max-h-[230px] sm:max-h-[255px] object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
           onError={(e) => {
             (e.target as HTMLImageElement).src = '/image.webp';
           }}
         />
 
         {/* Top Badges */}
-        <div className="absolute top-3.5 ltr:left-3.5 rtl:right-3.5 flex flex-col gap-1.5 items-start">
+        {/* <div className="absolute top-3.5 ltr:left-3.5 rtl:right-3.5 flex flex-col gap-1.5 items-start">
           {categoryName && (
             <span className="rounded-full bg-brand-500/15 border border-brand-500/20 px-3 py-1 text-[11px] font-extrabold text-brand-700 backdrop-blur-sm">
               {categoryName}
@@ -90,7 +98,7 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
               بروتين {product.proteinPercentage}%
             </span>
           ) : null}
-        </div>
+        </div> */}
       </Link>
 
       {/* Card Body */}
@@ -116,11 +124,10 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
                     key={pkg.id}
                     type="button"
                     onClick={() => setSelectedPackage(pkg)}
-                    className={`rounded-xl px-3 py-1.5 text-xs font-extrabold transition-all ${
-                      selectedPackage?.id === pkg.id
-                        ? 'bg-brand-600 text-white shadow-xs'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
+                    className={`rounded-xl px-3 py-1.5 text-xs font-extrabold transition-all ${selectedPackage?.id === pkg.id
+                      ? 'bg-brand-600 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
                   >
                     شكارة {pkg.weightKg} كجم
                   </button>
@@ -142,11 +149,10 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
                       setUnitMode('bag');
                       setInputValue(totalBags);
                     }}
-                    className={`px-3 py-1 text-xs font-black rounded-lg transition-all ${
-                      unitMode === 'bag'
-                        ? 'bg-brand-600 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-ink'
-                    }`}
+                    className={`px-3 py-1 text-xs font-black rounded-lg transition-all ${unitMode === 'bag'
+                      ? 'bg-brand-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-ink'
+                      }`}
                   >
                     بالشكارة
                   </button>
@@ -157,11 +163,10 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
                       const calculatedTons = Math.max(1, Math.round(totalBags / bagsPerTon));
                       setInputValue(calculatedTons);
                     }}
-                    className={`px-3 py-1 text-xs font-black rounded-lg transition-all ${
-                      unitMode === 'ton'
-                        ? 'bg-brand-600 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-ink'
-                    }`}
+                    className={`px-3 py-1 text-xs font-black rounded-lg transition-all ${unitMode === 'ton'
+                      ? 'bg-brand-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-ink'
+                      }`}
                   >
                     بالطن
                   </button>
@@ -247,12 +252,11 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
               <button
                 type="button"
                 onClick={handleAddToCart}
-                disabled={!selectedPackage}
-                className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-4 text-xs sm:text-sm font-black transition-all ${
-                  isAdded
-                    ? 'bg-brand-700 text-white'
-                    : 'bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20 hover:scale-[1.01] active:scale-95'
-                }`}
+                disabled={!selectedPackage || isAdding || isAdded}
+                className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-4 text-xs sm:text-sm font-black transition-all ${isAdded
+                  ? 'bg-brand-700 text-white'
+                  : 'bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20 hover:scale-[1.01] active:scale-95 disabled:opacity-60'
+                  }`}
               >
                 {isAdded ? (
                   <>

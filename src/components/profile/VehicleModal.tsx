@@ -58,7 +58,7 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center sm:items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200" dir="rtl">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto text-right" dir="rtl">
+      <div className="relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden text-right" dir="rtl">
         {/* Top Drag Indicator */}
         <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
 

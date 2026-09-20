@@ -12,15 +12,14 @@ import {
   Loader2Icon,
   SparklesIcon,
   PlusIcon,
-  MinusIcon,
+
   CalendarIcon,
   PhoneIcon,
   CheckIcon,
   MapPinIcon,
   ShoppingBagIcon,
-  Trash2Icon,
-  PackageCheckIcon,
-  AlertTriangleIcon,
+
+  ChevronDownIcon,
 } from 'lucide-react';
 import { useCheckout, getRecommendedTruckType } from '../features/orders/useCheckout';
 import { OrderType, PaymentMethod, TruckType } from '../features/orders/types';
@@ -103,23 +102,11 @@ export function Checkout() {
   } = useCheckout();
 
   const { isAuthenticated, openAuthModal } = useAuth();
-  const { removeItem, updateQuantity, clearCart, totalItemsCount } = useCart();
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
+  const { totalItemsCount } = useCart();
+  const [showItemsDetails, setShowItemsDetails] = useState(false);
 
-  const handleRemoveItem = async (itemId: string) => {
-    setDeletingItemId(itemId);
-    try {
-      await removeItem(itemId);
-    } finally {
-      setDeletingItemId(null);
-    }
-  };
 
-  const handleClearCart = async () => {
-    await clearCart();
-    setShowClearConfirm(false);
-  };
+
 
   if (items.length === 0) {
     return (
@@ -148,8 +135,8 @@ export function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/70 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+    <div className="min-h-screen bg-slate-50/70 pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         {/* Page Header */}
         <div className="mb-8">
           <Link
@@ -200,9 +187,9 @@ export function Checkout() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Delivery Option */}
                 <label
-                  className={`cursor-pointer rounded-2xl border-2 p-5 flex flex-col justify-between transition ${orderType === OrderType.Delivery
-                    ? 'border-brand-500 bg-brand-50/20 shadow-sm'
-                    : 'border-slate-200 hover:border-slate-300'
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-5 flex flex-col justify-between transition ${orderType === OrderType.Delivery
+                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div className="flex items-start justify-between">
@@ -227,14 +214,14 @@ export function Checkout() {
 
                 {/* Pickup Option */}
                 <label
-                  className={`cursor-pointer rounded-2xl border-2 p-5 flex flex-col justify-between transition ${orderType === OrderType.Pickup
-                    ? 'border-brand-500 bg-brand-50/20 shadow-sm'
-                    : 'border-slate-200 hover:border-slate-300'
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-5 flex flex-col justify-between transition ${orderType === OrderType.Pickup
+                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                      <div className="h-10 w-10 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center">
                         <WarehouseIcon className="h-5 w-5" />
                       </div>
                       <div>
@@ -295,9 +282,9 @@ export function Checkout() {
                             <div
                               key={`addr-${addr.id}-${index}`}
                               onClick={() => setSelectedAddressId(addr.id)}
-                              className={`cursor-pointer rounded-2xl border-2 p-4 transition ${isSelected
-                                ? 'border-brand-600 bg-brand-50/25 shadow-xs'
-                                : 'border-slate-200 bg-white hover:border-slate-300'
+                              className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 transition ${isSelected
+                                ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                                : 'border-slate-200/90 bg-white hover:border-slate-300'
                                 }`}
                             >
                               <div className="flex items-start justify-between gap-3">
@@ -305,8 +292,8 @@ export function Checkout() {
                                 <div className="flex items-start gap-3 flex-1 min-w-0">
                                   <div
                                     className={`mt-0.5 h-6 w-6 rounded-full flex items-center justify-center shrink-0 transition ${isSelected
-                                      ? 'bg-brand-600 text-white shadow-xs'
-                                      : 'border-2 border-slate-300 bg-white'
+                                      ? 'bg-brand-500 text-white shadow-xs'
+                                      : 'border-[1.5px] border-slate-300 bg-white'
                                       }`}
                                   >
                                     {isSelected && <CheckIcon className="h-3.5 w-3.5 stroke-[3]" />}
@@ -476,9 +463,9 @@ export function Checkout() {
                         <label
                           key={truck.type}
                           onClick={() => setTruckType(truck.type)}
-                          className={`relative block rounded-2xl border p-4 transition cursor-pointer ${isSelected
-                            ? 'border-brand-600 bg-brand-50/25 ring-1 ring-brand-500/80 shadow-xs'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                          className={`relative block rounded-[20px] border-[1.5px] p-4 transition cursor-pointer ${isSelected
+                            ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                            : 'border-slate-200/90 hover:border-slate-300 bg-white'
                             }`}
                         >
                           <input
@@ -493,10 +480,10 @@ export function Checkout() {
                             <div className="flex items-start gap-3 flex-1 min-w-0">
                               {/* Custom Radio Button */}
                               <div
-                                className={`mt-0.5 h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition ${isSelected ? 'border-brand-600 bg-white' : 'border-slate-300 bg-white'
+                                className={`mt-0.5 h-5 w-5 rounded-full border-[1.5px] flex items-center justify-center shrink-0 transition ${isSelected ? 'border-brand-500 bg-white' : 'border-slate-300 bg-white'
                                   }`}
                               >
-                                {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-brand-600" />}
+                                {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-brand-500" />}
                               </div>
 
                               <div className="flex-1 min-w-0">
@@ -512,7 +499,7 @@ export function Checkout() {
                                     </span>
                                   )}
                                   {truckPromo && (truckPromo.discountPercentage || truckPromo.discountValue) ? (
-                                    <span className="rounded-md bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-0.5 text-[11px] font-black shadow-xs flex items-center gap-0.5">
+                                    <span className="rounded-md bg-rose-50 text-rose-700 border border-rose-200/80 px-2 py-0.5 text-[11px] font-extrabold flex items-center gap-0.5">
                                       خصم {truckPromo.discountPercentage ? `${truckPromo.discountPercentage}%` : `${truckPromo.discountValue} ج.م`}
                                     </span>
                                   ) : null}
@@ -642,9 +629,9 @@ export function Checkout() {
                           <div
                             key={`veh-${v.id}-${index}`}
                             onClick={() => setSelectedVehicleId(v.id)}
-                            className={`cursor-pointer rounded-2xl border-2 p-4 transition ${isSelected
-                              ? 'border-brand-600 bg-brand-50/25 shadow-xs'
-                              : 'border-slate-200 bg-white hover:border-slate-300'
+                            className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 transition ${isSelected
+                              ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                              : 'border-slate-200/90 bg-white hover:border-slate-300'
                               }`}
                           >
                             <div className="flex items-start justify-between gap-3">
@@ -652,8 +639,8 @@ export function Checkout() {
                               <div className="flex items-start gap-3 flex-1 min-w-0">
                                 <div
                                   className={`mt-0.5 h-6 w-6 rounded-full flex items-center justify-center shrink-0 transition ${isSelected
-                                    ? 'bg-brand-600 text-white shadow-xs'
-                                    : 'border-2 border-slate-300 bg-white'
+                                    ? 'bg-brand-500 text-white shadow-xs'
+                                    : 'border-[1.5px] border-slate-300 bg-white'
                                     }`}
                                 >
                                   {isSelected && <CheckIcon className="h-3.5 w-3.5 stroke-[3]" />}
@@ -835,9 +822,9 @@ export function Checkout() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label
                   onClick={() => setPaymentMethod(PaymentMethod.CashOnDelivery)}
-                  className={`cursor-pointer rounded-2xl border-2 p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.CashOnDelivery
-                    ? 'border-brand-500 bg-brand-50/20'
-                    : 'border-slate-200 hover:border-slate-300'
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.CashOnDelivery
+                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <input
@@ -848,7 +835,7 @@ export function Checkout() {
                     className="h-4 w-4 accent-brand-600"
                   />
                   <div className="flex items-center gap-2.5">
-                    <div className="h-10 w-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                    <div className="h-10 w-10 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center shrink-0">
                       <BanknoteIcon className="h-5 w-5" />
                     </div>
                     <div>
@@ -864,9 +851,9 @@ export function Checkout() {
 
                 <label
                   onClick={() => setPaymentMethod(PaymentMethod.BankTransfer)}
-                  className={`cursor-pointer rounded-2xl border-2 p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.BankTransfer
-                    ? 'border-brand-600 bg-brand-50/20 shadow-xs'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.BankTransfer
+                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
                     }`}
                 >
                   <input
@@ -951,214 +938,56 @@ export function Checkout() {
 
           {/* Sidebar Summary (Right in RTL) */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 sticky top-28">
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-slate-200/80 sticky top-24 space-y-5">
               {/* Header */}
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-2.5">
                   <div className="h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-2xs">
                     <ShoppingBagIcon className="h-4 w-4" />
                   </div>
                   <div>
                     <h3 className="text-base font-black text-ink">
-                      سلة المشتريات والطلب
+                      ملخص الطلب والحمولة
                     </h3>
-                    <span className="text-[11px] font-bold text-slate-400 block -mt-0.5">
+                    <span className="text-[11px] font-bold text-slate-400 block mt-1">
                       {totalItemsCount} شكارة • {items.length} أصناف
                     </span>
                   </div>
                 </div>
 
-              </div>
-
-              {/* Clear Cart Confirmation Banner */}
-              <AnimatePresence>
-                {showClearConfirm && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden mb-4 p-3.5 rounded-2xl bg-red-50/95 border border-red-200/80 shadow-2xs"
-                  >
-                    <div className="flex items-start gap-2.5">
-                      <div className="h-7 w-7 rounded-lg bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <AlertTriangleIcon className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black text-red-950">تفريغ سلة المشتريات بالكامل؟</h4>
-                        <p className="text-[11px] font-semibold text-red-700 mt-0.5 leading-relaxed">
-                          سيتم حذف كافة الأصناف ({totalItemsCount} شكارة) من الطلب.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-end gap-2 mt-3">
-                      <button
-                        type="button"
-                        onClick={() => setShowClearConfirm(false)}
-                        className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
-                      >
-                        تراجع
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleClearCart}
-                        className="px-3.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-xs font-black text-white shadow-2xs transition active:scale-95"
-                      >
-                        نعم، تفريغ السلة
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Items List with custom scrolling if long */}
-              <div className="space-y-3 mb-4 max-h-[380px] overflow-y-auto no-scrollbar pr-0.5">
-                <AnimatePresence initial={false}>
-                  {items.map((item) => {
-                    const itemWeightKg = item.quantity * item.packageWeightKg;
-                    const itemWeightFormatted =
-                      itemWeightKg >= 1000
-                        ? `${Number((itemWeightKg / 1000).toFixed(2))} طن (${itemWeightKg.toLocaleString()} كجم)`
-                        : `${itemWeightKg.toLocaleString()} كجم`;
-                    const isItemDeleting = deletingItemId === item.id;
-
-                    return (
-                      <motion.div
-                        key={item.id}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className={`group relative bg-slate-50/80 hover:bg-white rounded-2xl border border-slate-200/80 hover:border-brand-300/80 p-3 shadow-2xs hover:shadow-xs transition-all duration-200 space-y-2.5 ${isItemDeleting ? 'opacity-40 pointer-events-none' : ''
-                          }`}
-                      >
-                        {/* Top: Product thumbnail + Info + Remove */}
-                        <div className="flex items-start gap-3">
-                          <div className="h-14 w-14 rounded-xl bg-white border border-slate-200/80 flex-shrink-0 overflow-hidden flex items-center justify-center p-1 shadow-2xs">
-                            <img
-                              src={item.productImageUrl || '/hero_farm_bg.webp'}
-                              alt={item.productName}
-                              loading="lazy"
-                              decoding="async"
-                              className="h-full w-full object-contain filter drop-shadow-xs group-hover:scale-105 transition-transform"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/image.webp';
-                              }}
-                            />
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-1.5">
-                              <h4 className="font-black text-xs text-ink line-clamp-1 leading-snug">
-                                {item.productName}
-                              </h4>
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveItem(item.id)}
-                                className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-1 rounded-lg transition flex-shrink-0 -mt-0.5 -mr-0.5"
-                                title="إزالة هذا المنتج"
-                                aria-label={`حذف ${item.productName}`}
-                              >
-                                <Trash2Icon className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-
-                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                              <span className="inline-flex items-center gap-0.5 rounded-lg bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.5 text-[10px] font-black text-emerald-800">
-                                <PackageCheckIcon className="h-2.5 w-2.5 text-emerald-600" />
-                                <span>شكارة {item.packageWeightKg} كجم</span>
-                              </span>
-                              <span className="text-[11px] font-bold text-slate-500">
-                                {item.unitPrice.toLocaleString()} ج.م
-                              </span>
-                            </div>
-
-                            <div className="mt-1 text-[10px] font-bold text-slate-400">
-                              الوزن: <span className="text-slate-700 font-extrabold">{itemWeightFormatted}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Bottom: Stepper + Subtotal */}
-                        <div className="flex items-center justify-between pt-2 border-t border-slate-200/60">
-                          {/* Stepper */}
-                          <div className="flex items-center border border-slate-200 bg-white rounded-xl p-0.5 shadow-2xs gap-0.5">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (item.quantity > 1) {
-                                  updateQuantity(item.id, item.quantity - 1);
-                                } else {
-                                  handleRemoveItem(item.id);
-                                }
-                              }}
-                              className={`h-6 w-6 rounded-lg flex items-center justify-center transition active:scale-90 ${item.quantity === 1
-                                ? 'text-red-500 hover:bg-red-50'
-                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                                }`}
-                              aria-label={item.quantity === 1 ? 'إزالة الصنف' : 'تقليل الكمية'}
-                              title={item.quantity === 1 ? 'إزالة الصنف' : 'تقليل الكمية'}
-                            >
-                              {item.quantity === 1 ? (
-                                <Trash2Icon className="h-3 w-3 text-red-500" />
-                              ) : (
-                                <MinusIcon className="h-3 w-3" />
-                              )}
-                            </button>
-                            <span className="w-8 text-center text-xs font-black text-ink select-none">
-                              {item.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="h-6 w-6 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition active:scale-90"
-                              aria-label="زيادة الكمية"
-                              title="زيادة الكمية"
-                            >
-                              <PlusIcon className="h-3 w-3" />
-                            </button>
-                          </div>
-
-                          {/* Subtotal */}
-                          <div className="text-end">
-                            <span className="text-xs font-black text-brand-700">
-                              {item.subtotal.toLocaleString()} <span className="text-[10px] text-brand-600 font-bold">ج.م</span>
-                            </span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </AnimatePresence>
+                <Link
+                  to="/cart"
+                  className="text-xs font-bold text-brand-600 hover:text-brand-700 bg-brand-50/60 hover:bg-brand-50 px-2.5 py-1 rounded-xl transition"
+                >
+                  تعديل السلة
+                </Link>
               </div>
 
               {/* Payload Weight Banner */}
-              <div className="p-3 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 mb-4 flex items-center justify-between text-xs">
+              <div className="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-2xs">
-                    <TruckIcon className="h-3.5 w-3.5" />
+                  <div className="h-7 w-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-2xs">
+                    <TruckIcon className="h-4 w-4" />
                   </div>
                   <span className="font-bold text-emerald-950">إجمالي وزن الأعلاف:</span>
                 </div>
-                <span className="font-black text-emerald-900">
+                <span className="font-black text-emerald-900 text-sm">
                   {totalWeightTons} طن ({items.reduce((s, i) => s + i.quantity * i.packageWeightKg, 0).toLocaleString()} كجم)
                 </span>
               </div>
 
               {/* Breakdown */}
-              <div className="space-y-2.5 pt-3 border-t border-slate-100 text-xs">
-
-
+              <div className="space-y-3 pt-1 text-xs sm:text-sm">
                 <div className="flex justify-between text-slate-600">
                   <span>قيمة المنتجات:</span>
-                  <span className="font-bold text-ink">{totalPrice.toLocaleString()} ج.م</span>
+                  <span className="font-black text-ink">{totalPrice.toLocaleString()} ج.م</span>
                 </div>
 
                 {orderType === OrderType.Delivery && (
                   <>
                     <div className="flex justify-between text-slate-600">
                       <span>الشاحنة المختارة:</span>
-                      <span className="font-bold text-ink">
+                      <span className="font-black text-ink">
                         {truckType === TruckType.Dababa
                           ? 'دبابة'
                           : truckType === TruckType.Jumbo
@@ -1178,7 +1007,7 @@ export function Checkout() {
                             {(shippingCalculation.totalOriginalShippingFee ?? (shippingFee + shippingCalculation.totalDiscountAmount)).toLocaleString()} ج.م
                           </span>
                         </div>
-                        <div className="flex justify-between text-emerald-600 font-bold">
+                        <div className="flex justify-between text-emerald-600 font-black">
                           <span>خصم عرض الشاحنة:</span>
                           <span>-{shippingCalculation.totalDiscountAmount.toLocaleString()} ج.م</span>
                         </div>
@@ -1189,16 +1018,16 @@ export function Checkout() {
                       <span>
                         تكلفة الشحن {shippingCalculation?.requiredTrucksCount && shippingCalculation.requiredTrucksCount > 1 ? `(${shippingCalculation.requiredTrucksCount} سيارات)` : ''}:
                       </span>
-                      <span className="font-bold text-ink">
+                      <span className="font-black text-ink">
                         {isCalculatingShipping ? 'جاري الحساب…' : `${shippingFee.toLocaleString()} ج.م`}
                       </span>
                     </div>
                   </>
                 )}
 
-                <div className="flex justify-between text-base font-black text-ink pt-3 border-t border-slate-200">
+                <div className="flex justify-between items-center text-base font-black text-ink pt-3.5 border-t border-slate-200">
                   <span>المبلغ الإجمالي:</span>
-                  <span className="text-xl text-brand-600">{finalTotal.toLocaleString()} ج.م</span>
+                  <span className="text-xl sm:text-2xl text-brand-600">{finalTotal.toLocaleString()} ج.م</span>
                 </div>
               </div>
 
@@ -1207,7 +1036,7 @@ export function Checkout() {
                 type="button"
                 onClick={submitOrder}
                 disabled={isSubmitting}
-                className="w-full mt-6 flex items-center justify-center gap-2 rounded-full bg-[#f97316] hover:bg-[#ea580c] disabled:opacity-50 py-4 px-6 text-base font-extrabold text-white shadow-lg shadow-orange-950/20 transition-all hover:scale-[1.02] active:scale-95"
+                className="w-full mt-4 flex items-center justify-center gap-2 rounded-2xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 py-4 px-6 text-base font-black text-white shadow-md shadow-brand-500/20 transition-all hover:scale-[1.01] active:scale-95"
               >
                 {isSubmitting ? (
                   <>
@@ -1221,6 +1050,49 @@ export function Checkout() {
                   </>
                 )}
               </button>
+
+              {/* Compact Items Peek Accordion */}
+              <div className="pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowItemsDetails(!showItemsDetails)}
+                  className="w-full flex items-center justify-between text-xs font-bold text-slate-500 hover:text-ink transition py-1"
+                >
+                  <span>عرض الأصناف المطلوبة ({items.length})</span>
+                  <ChevronDownIcon
+                    className={`h-4 w-4 transition-transform duration-200 ${showItemsDetails ? 'rotate-180 text-brand-600' : ''
+                      }`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {showItemsDetails && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden space-y-2 pt-2.5"
+                    >
+                      {items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between text-xs bg-slate-50/80 p-2.5 rounded-xl border border-slate-100"
+                        >
+                          <div className="min-w-0 pr-1">
+                            <p className="font-bold text-slate-800 line-clamp-1">{item.productName}</p>
+                            <p className="text-[10px] text-slate-400 font-semibold">
+                              {item.quantity} شكارة × {item.unitPrice.toLocaleString()} ج.م
+                            </p>
+                          </div>
+                          <span className="font-black text-brand-700 text-xs shrink-0">
+                            {item.subtotal.toLocaleString()} ج.م
+                          </span>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
 
 

@@ -62,11 +62,10 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
-          : 'border-b border-transparent bg-transparent shadow-none'
-      }`}
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled
+        ? 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
+        : 'border-b border-transparent bg-transparent shadow-none'
+        }`}
     >
       <div className="w-full max-w-[1700px] mx-auto flex h-[72px] items-center justify-between gap-3 px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28">
         {/* Brand Logo & Name */}
@@ -80,16 +79,14 @@ export function Navbar() {
           />
           <span className="hidden flex-col gap-1 sm:flex">
             <span
-              className={`text-sm sm:text-base font-black leading-none transition-colors ${
-                isDarkHeroNav ? 'text-white' : 'text-ink'
-              }`}
+              className={`text-sm sm:text-base font-black leading-none transition-colors ${isDarkHeroNav ? 'text-white' : 'text-ink'
+                }`}
             >
               {t(ui.brand.name)}
             </span>
             <span
-              className={`text-[10px] sm:text-[11px] font-semibold leading-none transition-colors ${
-                isDarkHeroNav ? 'text-white/80' : 'text-ink-muted'
-              }`}
+              className={`text-[10px] sm:text-[11px] font-semibold leading-none transition-colors ${isDarkHeroNav ? 'text-white/80' : 'text-ink-muted'
+                }`}
             >
               {t(ui.brand.tagline)}
             </span>
@@ -105,11 +102,10 @@ export function Navbar() {
                 href={item.to}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${
-                  isDarkHeroNav
-                    ? 'text-white/80 hover:text-white hover:bg-white/10'
-                    : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
-                }`}
+                className={`focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${isDarkHeroNav
+                  ? 'text-white/80 hover:text-white hover:bg-white/10'
+                  : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
+                  }`}
               >
                 {t(item.label)}
               </a>
@@ -119,12 +115,11 @@ export function Navbar() {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  `focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${
-                    isActive
-                      ? isDarkHeroNav
-                        ? 'text-white'
-                        : 'text-brand-600'
-                      : isDarkHeroNav
+                  `focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${isActive
+                    ? isDarkHeroNav
+                      ? 'text-white'
+                      : 'text-brand-600'
+                    : isDarkHeroNav
                       ? 'text-white/80 hover:text-white hover:bg-white/10'
                       : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
                   }`
@@ -135,9 +130,8 @@ export function Navbar() {
                     {t(item.label)}
                     {isActive && (
                       <span
-                        className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full transition-colors ${
-                          isDarkHeroNav ? 'bg-gold-400' : 'bg-gold-500'
-                        }`}
+                        className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full transition-colors ${isDarkHeroNav ? 'bg-gold-400' : 'bg-gold-500'
+                          }`}
                         aria-hidden="true"
                       />
                     )}
@@ -156,15 +150,14 @@ export function Navbar() {
                 onMouseEnter={() => setMoreOpen(true)}
                 aria-expanded={moreOpen}
                 aria-haspopup="true"
-                className={`focus-ring flex items-center gap-1 rounded-pill px-3.5 py-2 text-sm font-bold transition ${
-                  moreActive
-                    ? isDarkHeroNav
-                      ? 'text-white'
-                      : 'text-brand-600'
-                    : isDarkHeroNav
+                className={`focus-ring flex items-center gap-1 rounded-pill px-3.5 py-2 text-sm font-bold transition ${moreActive
+                  ? isDarkHeroNav
+                    ? 'text-white'
+                    : 'text-brand-600'
+                  : isDarkHeroNav
                     ? 'text-white/80 hover:text-white hover:bg-white/10'
                     : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
-                }`}
+                  }`}
               >
                 <span>{lang === 'ar' ? 'المزيد' : 'More'}</span>
                 <ChevronDownIcon
@@ -203,11 +196,10 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggle}
-            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${
-              isDarkHeroNav
-                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 shadow-xs'
-            }`}
+            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${isDarkHeroNav
+              ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+              : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 shadow-xs'
+              }`}
             aria-label={t(ui.nav.language)}
           >
             <Globe className="h-3.5 w-3.5 opacity-80" />
@@ -230,11 +222,10 @@ export function Navbar() {
                 type="button"
                 onClick={() => setUserMenuOpen((v) => !v)}
                 onMouseEnter={() => setUserMenuOpen(true)}
-                className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition ${
-                  isDarkHeroNav
-                    ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                    : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white shadow-xs'
-                }`}
+                className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition ${isDarkHeroNav
+                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                  : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white shadow-xs'
+                  }`}
               >
                 <UserIcon className="h-3.5 w-3.5 opacity-80" />
                 <span className="font-extrabold max-w-[90px] truncate" dir="auto">
@@ -254,10 +245,7 @@ export function Navbar() {
                       {user?.phoneNumber && (
                         <p className="text-[11px] font-medium text-slate-400 mt-0.5">{user.phoneNumber}</p>
                       )}
-                      {/* <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        <CheckCircleIcon className="h-3 w-3" />
-                        حساب معتمد
-                      </span> */}
+
                     </div>
 
                     <Link
@@ -266,7 +254,7 @@ export function Navbar() {
                       className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
                     >
                       <UserIcon className="h-3.5 w-3.5 text-brand-600" />
-                      <span>الملف الشخصي والبيانات</span>
+                      <span>الملف الشخصي</span>
                     </Link>
 
                     <button
@@ -288,11 +276,10 @@ export function Navbar() {
             <button
               type="button"
               onClick={openAuthModal}
-              className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-extrabold transition ${
-                isDarkHeroNav
-                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                  : 'border-brand-200 bg-brand-50/70 text-brand-700 hover:border-brand-300 hover:bg-brand-50 shadow-xs'
-              }`}
+              className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-extrabold transition ${isDarkHeroNav
+                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                : 'border-brand-200 bg-brand-50/70 text-brand-700 hover:border-brand-300 hover:bg-brand-50 shadow-xs'
+                }`}
             >
               <UserIcon className="h-3.5 w-3.5 opacity-80" />
               <span>دخول / تسجيل</span>
@@ -303,11 +290,10 @@ export function Navbar() {
           {isAuthenticated && (
             <Link
               to="/cart"
-              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${
-                isDarkHeroNav
-                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                  : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
-              }`}
+              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isDarkHeroNav
+                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
+                }`}
               aria-label="سلة المشتريات"
               title="سلة المشتريات"
             >
@@ -333,11 +319,10 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className={`focus-ring inline-flex h-10 w-10 items-center justify-center rounded-full border transition lg:hidden ${
-              isDarkHeroNav
-                ? 'border-white/30 text-white hover:border-white bg-white/10 backdrop-blur-sm'
-                : 'border-slate-200 bg-white/80 text-ink hover:border-brand-300 shadow-xs'
-            }`}
+            className={`focus-ring inline-flex h-10 w-10 items-center justify-center rounded-full border transition lg:hidden ${isDarkHeroNav
+              ? 'border-white/30 text-white hover:border-white bg-white/10 backdrop-blur-sm'
+              : 'border-slate-200 bg-white/80 text-ink hover:border-brand-300 shadow-xs'
+              }`}
             aria-label={t(ui.nav.menu)}
           >
             <MenuIcon className="h-5 w-5" aria-hidden="true" />

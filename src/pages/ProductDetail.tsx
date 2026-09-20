@@ -36,6 +36,7 @@ export function ProductDetail() {
   const [unitMode, setUnitMode] = useState<'bag' | 'ton'>('bag');
   const [inputValue, setInputValue] = useState<number | string>(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [direction, setDirection] = useState<number>(0);
 
@@ -205,11 +206,16 @@ export function ProductDetail() {
       : Math.round(Number(inputValue) || 1)
   );
 
-  const handleAddToCart = () => {
-    if (!liveProduct || !selectedPackage) return;
-    addItem(liveProduct, selectedPackage, totalBags);
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 1500);
+  const handleAddToCart = async () => {
+    if (!liveProduct || !selectedPackage || isAdding) return;
+    setIsAdding(true);
+    try {
+      await addItem(liveProduct, selectedPackage, totalBags);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 1500);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -519,9 +525,10 @@ export function ProductDetail() {
                     <button
                       type="button"
                       onClick={handleAddToCart}
+                      disabled={!selectedPackage || isAdding || isAdded}
                       className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-6 text-base font-black text-white shadow-md transition-all ${isAdded
                         ? 'bg-brand-700'
-                        : 'bg-brand-500 hover:bg-brand-600 shadow-brand-500/20 hover:scale-[1.005] active:scale-95'
+                        : 'bg-brand-500 hover:bg-brand-600 shadow-brand-500/20 hover:scale-[1.005] active:scale-95 disabled:opacity-60'
                         }`}
                     >
                       {isAdded ? (

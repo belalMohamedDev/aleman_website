@@ -391,7 +391,7 @@ export function CartDrawer() {
                     <Link
                       to="/cart"
                       onClick={closeCart}
-                      className="w-full flex items-center justify-center gap-2.5 rounded-full bg-[#f97316] hover:bg-[#ea580c] py-3.5 px-5 text-sm font-extrabold text-white shadow-lg shadow-orange-950/20 transition-all hover:scale-[1.01] active:scale-95 text-center"
+                      className="w-full flex items-center justify-center gap-2.5 rounded-2xl bg-brand-500 hover:bg-brand-600 py-3.5 px-5 text-sm font-black text-white shadow-md shadow-brand-500/20 transition-all hover:scale-[1.01] active:scale-95 text-center"
                     >
                       <ShoppingBagIcon className="h-4 w-4" />
                       <span>عرض سلة المشتريات ومراجعة الطلب</span>
@@ -401,7 +401,7 @@ export function CartDrawer() {
                     <Link
                       to="/checkout"
                       onClick={closeCart}
-                      className="w-full flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 py-3 px-4 text-xs font-bold transition active:scale-95 text-center"
+                      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 py-3 px-4 text-xs font-bold transition active:scale-95 text-center"
                     >
                       <span>الذهاب لإتمام الطلب والشحن مباشرة</span>
                     </Link>
