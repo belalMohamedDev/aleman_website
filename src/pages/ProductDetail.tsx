@@ -11,8 +11,10 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { productService } from '../features/products/productService';
 import type { Product, ProductPackage, Category } from '../features/products/types';
+import { getProductImages } from '../features/products/types';
 import { useCart } from '../features/cart/CartContext';
 import { useAuth } from '../features/auth/AuthContext';
 import { getProduct } from '../data/products';
@@ -34,6 +36,8 @@ export function ProductDetail() {
   const [unitMode, setUnitMode] = useState<'bag' | 'ton'>('bag');
   const [inputValue, setInputValue] = useState<number | string>(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+  const [direction, setDirection] = useState<number>(0);
 
   const isNumericId = !isNaN(Number(slug));
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -110,7 +114,35 @@ export function ProductDetail() {
     };
   }, [slug, isNumericId]);
 
-  const legacyProduct = !isNumericId ? getProduct(slug) : null;
+  const legacyProduct = useMemo(
+    () => (!isNumericId ? getProduct(slug) : null),
+    [isNumericId, slug]
+  );
+
+  const productImages = useMemo(() => {
+    if (liveProduct) {
+      return getProductImages(liveProduct);
+    }
+    if (legacyProduct?.image) {
+      return [legacyProduct.image];
+    }
+    return [];
+  }, [liveProduct, legacyProduct]);
+
+  useEffect(() => {
+    setCurrentImageIndex(0);
+    setDirection(0);
+  }, [slug]);
+
+  // Auto-play animation through images automatically if multiple exist
+  useEffect(() => {
+    if (productImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setDirection(1);
+      setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, [productImages.length]);
 
   if (isLoading) {
     return (
@@ -152,8 +184,17 @@ export function ProductDetail() {
     : legacyProduct
       ? legacyProduct.description.ar
       : '';
-  const imageUrl = liveProduct ? liveProduct.imageUrl : legacyProduct ? legacyProduct.image : '';
   const packages = liveProduct ? liveProduct.packages?.filter((p) => p.isActive) || [] : [];
+
+  const activeImageUrl = productImages[currentImageIndex] || (productImages[0] ?? '/hero_farm_bg.webp');
+
+  const handleSelectImage = (idx: number) => {
+    setDirection(idx > currentImageIndex ? 1 : -1);
+    setCurrentImageIndex(idx);
+  };
+
+
+
 
   const bagsPerTon = selectedPackage?.weightKg ? Math.round(1000 / selectedPackage.weightKg) : 40;
 
@@ -198,28 +239,93 @@ export function ProductDetail() {
 
       {/* Main Product View: 2 columns matching height */}
       <section className="grid gap-8 lg:gap-12 lg:grid-cols-12 lg:items-stretch">
-        {/* Product Image Column */}
-        <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
-          <div className="relative flex-1 overflow-hidden rounded-3xl border border-slate-100 bg-gradient-to-b from-brand-50/50 via-white to-slate-50 p-8 sm:p-10 shadow-card flex items-center justify-center min-h-[360px] sm:min-h-[420px]">
-            {/* Category Badge */}
-            <div className="absolute top-4 ltr:left-4 rtl:right-4 flex flex-col gap-2 items-start">
-              {categoryName && (
-                <span className="rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 px-3 py-1 text-xs font-black text-brand-700 shadow-xs">
-                  {categoryName}
-                </span>
+        {/* Product Image Column - Noon Style */}
+        <div className="lg:col-span-5 flex flex-col justify-start space-y-4">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 items-start w-full">
+            {/* Vertical Thumbnails (positioned on the right in RTL) */}
+            {productImages.length > 1 && (
+              <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto max-h-[500px] w-full sm:w-20 flex-shrink-0 p-0.5 scrollbar-none">
+                {productImages.map((imgUrl, idx) => {
+                  const isSelected = currentImageIndex === idx;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSelectImage(idx)}
+                      onMouseEnter={() => handleSelectImage(idx)}
+                      className={`relative h-15 w-15 sm:h-17 sm:w-17 rounded-2xl border transition-all duration-300 flex items-center justify-center flex-shrink-0 cursor-pointer ${isSelected
+                        ? 'border-brand-400/80 bg-brand-50/20 shadow-xs'
+                        : 'border-slate-200/70 hover:border-slate-300 opacity-65 hover:opacity-100'
+                        }`}
+                    >
+                      <img
+                        src={imgUrl}
+                        alt={`${name} ${idx + 1}`}
+                        className="h-full w-full object-contain pointer-events-none"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/image.webp';
+                        }}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Main Preview Container */}
+            <div className="relative flex-1 w-full overflow-hidden rounded-3xl border border-slate-200/70 bg-canvas p-6 sm:p-8 flex flex-col items-center justify-center min-h-[380px] sm:min-h-[460px]">
+
+
+
+
+              {/* Big Product Image with smooth auto-animation */}
+              <div className="relative w-full flex-1 flex items-center justify-center py-2 min-h-[300px] sm:min-h-[380px] overflow-hidden">
+                <AnimatePresence mode="wait" custom={direction}>
+                  <motion.img
+                    key={activeImageUrl}
+                    src={activeImageUrl}
+                    alt={name}
+                    custom={direction}
+                    initial={{ opacity: 0, scale: 0.93, x: direction >= 0 ? 30 : -30 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.93, x: direction >= 0 ? -30 : 30 }}
+                    transition={{ duration: 0.38, ease: [0.25, 1, 0.5, 1] }}
+                    loading="eager"
+                    decoding="async"
+                    className="max-h-76 sm:max-h-96 w-auto object-contain filter drop-shadow-md select-none"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/image.webp';
+                    }}
+                  />
+                </AnimatePresence>
+              </div>
+
+              {/* Dynamic Carousel Pagination Dots (Loading / Step Indicator) */}
+              {productImages.length > 1 && (
+                <div className="flex items-center justify-center gap-1.5 pt-3 pb-1 z-10">
+                  {productImages.map((_, idx) => {
+                    const diff = Math.abs(currentImageIndex - idx);
+                    const isCurrent = diff === 0;
+                    const isNeighbor = diff === 1;
+
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelectImage(idx)}
+                        className={`transition-all duration-300 rounded-full cursor-pointer ${isCurrent
+                          ? 'h-2.5 w-2.5 bg-brand-700 scale-110 shadow-xs ring-2 ring-brand-600/20'
+                          : isNeighbor
+                            ? 'h-2 w-2 bg-brand-400'
+                            : 'h-1.5 w-1.5 bg-brand-200 hover:bg-brand-300'
+                          }`}
+                        aria-label={`الانتقال للصورة ${idx + 1}`}
+                      />
+                    );
+                  })}
+                </div>
               )}
             </div>
-
-            <img
-              src={imageUrl || '/hero_farm_bg.webp'}
-              alt={name}
-              loading="lazy"
-              decoding="async"
-              className="max-h-80 sm:max-h-96 w-auto object-contain filter drop-shadow-xl transition-transform duration-300 hover:scale-105"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/image.webp';
-              }}
-            />
           </div>
 
           {/* Quick Guarantees & Trust Features: 3 Cards */}
@@ -254,7 +360,7 @@ export function ProductDetail() {
 
           {/* Packages Selection (Bags) Card */}
           {packages.length > 0 && (
-            <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200/80 shadow-xs space-y-6">
+            <div className="p-6 sm:p-7 rounded-3xl bg-canvas border border-slate-200/70 space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs sm:text-sm font-black text-ink">
@@ -273,9 +379,9 @@ export function ProductDetail() {
                         key={pkg.id}
                         type="button"
                         onClick={() => setSelectedPackage(pkg)}
-                        className={`relative text-start p-4 sm:p-5 rounded-2xl border-2 transition-all ${isSelected
-                          ? 'border-brand-500 bg-brand-50/60 shadow-xs'
-                          : 'border-slate-200/90 hover:border-brand-200 bg-white hover:bg-slate-50/60'
+                        className={`relative text-start p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${isSelected
+                          ? 'border-brand-400/80 bg-brand-50/20 shadow-xs'
+                          : 'border-slate-200/70 hover:border-slate-300 bg-canvas'
                           }`}
                       >
                         <div className="flex justify-between items-start mb-2">
@@ -284,7 +390,7 @@ export function ProductDetail() {
                               شكارة {pkg.weightKg} كجم
                             </span>
                             {isSelected && (
-                              <CheckCircle2Icon className="h-4 w-4 text-brand-600 flex-shrink-0" />
+                              <CheckCircle2Icon className="h-4 w-4 text-brand-500 flex-shrink-0" />
                             )}
                           </div>
                           <span className={`text-base sm:text-lg font-black ${isSelected ? 'text-brand-600' : 'text-slate-700'}`}>
@@ -292,7 +398,7 @@ export function ProductDetail() {
                           </span>
                         </div>
                         {pkg.pricePerTon ? (
-                          <div className="flex items-center justify-between text-xs text-slate-500 font-semibold pt-1.5 border-t border-slate-100">
+                          <div className="flex items-center justify-between text-xs text-slate-500 font-semibold pt-1.5 border-t border-slate-200/60">
                             <span>سعر الطن:</span>
                             <span className="font-bold text-slate-700">
                               {pkg.pricePerTon.toLocaleString()} ج.م/طن
@@ -307,13 +413,13 @@ export function ProductDetail() {
 
               {/* Quantity, Unit Mode (Bag/Ton), and Direct Add to Cart */}
               {selectedPackage && (
-                <div className="pt-5 border-t border-slate-100 space-y-4">
+                <div className="pt-5 border-t border-slate-200/60 space-y-4">
                   {/* Compact Unified Toolbar: Unit Mode + Quantity Stepper */}
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-50/80 p-2.5 sm:p-3 rounded-2xl border border-slate-200/70">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-canvas p-2.5 sm:p-3 rounded-2xl border border-slate-200/70">
                     {/* Unit Mode Selector */}
                     <div className="flex items-center justify-between sm:justify-start gap-2.5">
                       <span className="text-xs font-black text-slate-700">وحدة الشراء:</span>
-                      <div className="inline-flex rounded-xl bg-white p-1 border border-slate-200 shadow-2xs">
+                      <div className="inline-flex rounded-xl bg-canvas p-1 border border-slate-200/90 shadow-2xs">
                         <button
                           type="button"
                           onClick={() => {
@@ -349,11 +455,11 @@ export function ProductDetail() {
                     {/* Quantity Stepper */}
                     <div className="flex items-center justify-between sm:justify-end gap-2.5">
                       <span className="text-xs font-black text-slate-700">الكمية:</span>
-                      <div className="flex items-center border border-slate-200 focus-within:border-brand-500 rounded-xl bg-white p-0.5 transition shadow-2xs">
+                      <div className="flex items-center border border-slate-200/90 focus-within:border-brand-500 rounded-xl bg-canvas p-0.5 transition shadow-2xs">
                         <button
                           type="button"
                           onClick={() => setInputValue((v) => Math.max(1, (Number(v) || 1) - 1))}
-                          className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-ink transition active:scale-95"
+                          className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-200/60 hover:text-ink transition active:scale-95"
                           aria-label="تقليل الكمية"
                         >
                           <MinusIcon className="h-4 w-4" />
@@ -390,7 +496,7 @@ export function ProductDetail() {
                         <button
                           type="button"
                           onClick={() => setInputValue((v) => (Number(v) || 0) + 1)}
-                          className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-ink transition active:scale-95"
+                          className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-200/60 hover:text-ink transition active:scale-95"
                           aria-label="زيادة الكمية"
                         >
                           <PlusIcon className="h-4 w-4" />
@@ -414,8 +520,8 @@ export function ProductDetail() {
                       type="button"
                       onClick={handleAddToCart}
                       className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-6 text-base font-black text-white shadow-md transition-all ${isAdded
-                        ? 'bg-brand-600'
-                        : 'bg-[#f97316] hover:bg-[#ea580c] shadow-orange-500/20 hover:scale-[1.005] active:scale-95'
+                        ? 'bg-brand-700'
+                        : 'bg-brand-500 hover:bg-brand-600 shadow-brand-500/20 hover:scale-[1.005] active:scale-95'
                         }`}
                     >
                       {isAdded ? (

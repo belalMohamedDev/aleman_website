@@ -18,7 +18,7 @@ export const cartService = {
       id: String(item.id),
       productId: item.productId,
       productName: item.productName || '',
-      productImageUrl: item.productImageUrl || '',
+      productImageUrl: item.productImageUrl || item.imageUrl || (item.images && item.images[0]?.imageUrl) || '',
       productPackageId: item.productPackageId,
       packageWeightKg: item.packageWeightKg || 0,
       unitPrice: item.unitPrice || 0,

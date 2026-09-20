@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ShoppingBagIcon,
+
   Trash2Icon,
   PlusIcon,
   MinusIcon,
-  TruckIcon,
+
   ArrowRightIcon,
   ArrowLeftIcon,
   PackageCheckIcon,
   AlertTriangleIcon,
-  SparklesIcon,
+
   ShieldCheckIcon,
   CheckCircle2Icon,
 } from 'lucide-react';

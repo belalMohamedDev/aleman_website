@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBagIcon, CheckIcon, PlusIcon, MinusIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Product, ProductPackage } from '../../features/products/types';
+import { getProductPrimaryImage } from '../../features/products/types';
 import { useCart } from '../../features/cart/CartContext';
 import { useAuth } from '../../features/auth/AuthContext';
 
@@ -50,6 +51,8 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
     navigate(`/products/${product.id}`);
   };
 
+  const primaryImage = getProductPrimaryImage(product);
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -65,7 +68,7 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
         className="block relative bg-gradient-to-b from-brand-50/70 to-slate-50 p-6 flex items-center justify-center min-h-[200px]"
       >
         <img
-          src={product.imageUrl || '/hero_farm_bg.webp'}
+          src={primaryImage}
           alt={product.name}
           loading="lazy"
           decoding="async"
@@ -247,8 +250,8 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
                 disabled={!selectedPackage}
                 className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-4 text-xs sm:text-sm font-black transition-all ${
                   isAdded
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-[#f97316] hover:bg-[#ea580c] text-white shadow-sm hover:scale-[1.01] active:scale-95'
+                    ? 'bg-brand-700 text-white'
+                    : 'bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20 hover:scale-[1.01] active:scale-95'
                 }`}
               >
                 {isAdded ? (
@@ -267,7 +270,7 @@ export function LiveProductCard({ product, categoryName, index = 0 }: LiveProduc
               <button
                 type="button"
                 onClick={openAuthModal}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-4 text-xs sm:text-sm font-black transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 shadow-sm hover:scale-[1.01] active:scale-95"
+                className="w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-4 text-xs sm:text-sm font-black transition-all bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20 hover:scale-[1.01] active:scale-95"
               >
                 <ShoppingBagIcon className="h-4 w-4 shrink-0" />
                 <span className="whitespace-nowrap">تسجيل الدخول للطلب</span>

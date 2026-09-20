@@ -103,7 +103,7 @@ export function Checkout() {
   } = useCheckout();
 
   const { isAuthenticated, openAuthModal } = useAuth();
-  const { openCart, removeItem, updateQuantity, clearCart, totalItemsCount } = useCart();
+  const { removeItem, updateQuantity, clearCart, totalItemsCount } = useCart();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
 

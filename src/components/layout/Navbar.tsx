@@ -27,9 +27,9 @@ export function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
 
-  const isTransparentPage = location.pathname === '/' || location.pathname === '/about';
-  const isTransparent = isTransparentPage && !scrolled;
-  const headerClass = 'fixed';
+  // Pages with a dark hero section where navbar needs white text/elements when at the top
+  const isDarkHeroPage = location.pathname === '/' || location.pathname === '/about';
+  const isDarkHeroNav = isDarkHeroPage && !scrolled;
 
   // Exclude /contact from desktop navbar links since there is a prominent CTA button
   const desktopNav = useMemo(
@@ -62,10 +62,11 @@ export function Navbar() {
 
   return (
     <header
-      className={`${headerClass} top-0 z-50 w-full transition-all duration-300 ${isTransparent
-        ? 'border-b border-transparent bg-transparent'
-        : 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
-        }`}
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
+          : 'border-b border-transparent bg-transparent shadow-none'
+      }`}
     >
       <div className="w-full max-w-[1700px] mx-auto flex h-[72px] items-center justify-between gap-3 px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28">
         {/* Brand Logo & Name */}
@@ -79,14 +80,16 @@ export function Navbar() {
           />
           <span className="hidden flex-col gap-1 sm:flex">
             <span
-              className={`text-sm sm:text-base font-black leading-none transition-colors ${isTransparent ? 'text-white' : 'text-ink'
-                }`}
+              className={`text-sm sm:text-base font-black leading-none transition-colors ${
+                isDarkHeroNav ? 'text-white' : 'text-ink'
+              }`}
             >
               {t(ui.brand.name)}
             </span>
             <span
-              className={`text-[10px] sm:text-[11px] font-semibold leading-none transition-colors ${isTransparent ? 'text-white/80' : 'text-ink-muted'
-                }`}
+              className={`text-[10px] sm:text-[11px] font-semibold leading-none transition-colors ${
+                isDarkHeroNav ? 'text-white/80' : 'text-ink-muted'
+              }`}
             >
               {t(ui.brand.tagline)}
             </span>
@@ -103,7 +106,7 @@ export function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${
-                  isTransparent
+                  isDarkHeroNav
                     ? 'text-white/80 hover:text-white hover:bg-white/10'
                     : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
                 }`}
@@ -118,10 +121,10 @@ export function Navbar() {
                 className={({ isActive }) =>
                   `focus-ring relative rounded-pill px-3.5 py-2 text-sm font-bold transition ${
                     isActive
-                      ? isTransparent
+                      ? isDarkHeroNav
                         ? 'text-white'
                         : 'text-brand-600'
-                      : isTransparent
+                      : isDarkHeroNav
                       ? 'text-white/80 hover:text-white hover:bg-white/10'
                       : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
                   }`
@@ -133,7 +136,7 @@ export function Navbar() {
                     {isActive && (
                       <span
                         className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full transition-colors ${
-                          isTransparent ? 'bg-gold-400' : 'bg-gold-500'
+                          isDarkHeroNav ? 'bg-gold-400' : 'bg-gold-500'
                         }`}
                         aria-hidden="true"
                       />
@@ -153,14 +156,15 @@ export function Navbar() {
                 onMouseEnter={() => setMoreOpen(true)}
                 aria-expanded={moreOpen}
                 aria-haspopup="true"
-                className={`focus-ring flex items-center gap-1 rounded-pill px-3.5 py-2 text-sm font-bold transition ${moreActive
-                  ? isTransparent
-                    ? 'text-white'
-                    : 'text-brand-600'
-                  : isTransparent
+                className={`focus-ring flex items-center gap-1 rounded-pill px-3.5 py-2 text-sm font-bold transition ${
+                  moreActive
+                    ? isDarkHeroNav
+                      ? 'text-white'
+                      : 'text-brand-600'
+                    : isDarkHeroNav
                     ? 'text-white/80 hover:text-white hover:bg-white/10'
                     : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
-                  }`}
+                }`}
               >
                 <span>{lang === 'ar' ? 'المزيد' : 'More'}</span>
                 <ChevronDownIcon
@@ -199,10 +203,11 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggle}
-            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${isTransparent
-              ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-              : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600'
-              }`}
+            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${
+              isDarkHeroNav
+                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 shadow-xs'
+            }`}
             aria-label={t(ui.nav.language)}
           >
             <Globe className="h-3.5 w-3.5 opacity-80" />
@@ -212,7 +217,7 @@ export function Navbar() {
           {/* Notifications Bell */}
           <NotificationBell
             isAuthenticated={isAuthenticated}
-            isTransparent={isTransparent}
+            isTransparent={isDarkHeroNav}
           />
 
           {/* User Account / Auth Button */}
@@ -225,10 +230,11 @@ export function Navbar() {
                 type="button"
                 onClick={() => setUserMenuOpen((v) => !v)}
                 onMouseEnter={() => setUserMenuOpen(true)}
-                className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition ${isTransparent
-                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                  : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white'
-                  }`}
+                className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition ${
+                  isDarkHeroNav
+                    ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                    : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white shadow-xs'
+                }`}
               >
                 <UserIcon className="h-3.5 w-3.5 opacity-80" />
                 <span className="font-extrabold max-w-[90px] truncate" dir="auto">
@@ -282,10 +288,11 @@ export function Navbar() {
             <button
               type="button"
               onClick={openAuthModal}
-              className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-extrabold transition ${isTransparent
-                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                : 'border-brand-200 bg-brand-50/50 text-brand-700 hover:border-brand-300'
-                }`}
+              className={`focus-ring flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-xs font-extrabold transition ${
+                isDarkHeroNav
+                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                  : 'border-brand-200 bg-brand-50/70 text-brand-700 hover:border-brand-300 hover:bg-brand-50 shadow-xs'
+              }`}
             >
               <UserIcon className="h-3.5 w-3.5 opacity-80" />
               <span>دخول / تسجيل</span>
@@ -296,10 +303,11 @@ export function Navbar() {
           {isAuthenticated && (
             <Link
               to="/cart"
-              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isTransparent
-                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-brand-300 hover:text-brand-600'
-                }`}
+              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${
+                isDarkHeroNav
+                  ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                  : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
+              }`}
               aria-label="سلة المشتريات"
               title="سلة المشتريات"
             >
@@ -325,10 +333,11 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className={`focus-ring inline-flex h-10 w-10 items-center justify-center rounded-full border transition lg:hidden ${isTransparent
-              ? 'border-white/30 text-white hover:border-white bg-white/10 backdrop-blur-sm'
-              : 'border-slate-200 text-ink hover:border-brand-300'
-              }`}
+            className={`focus-ring inline-flex h-10 w-10 items-center justify-center rounded-full border transition lg:hidden ${
+              isDarkHeroNav
+                ? 'border-white/30 text-white hover:border-white bg-white/10 backdrop-blur-sm'
+                : 'border-slate-200 bg-white/80 text-ink hover:border-brand-300 shadow-xs'
+            }`}
             aria-label={t(ui.nav.menu)}
           >
             <MenuIcon className="h-5 w-5" aria-hidden="true" />
