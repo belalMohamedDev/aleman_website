@@ -3,6 +3,17 @@ const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 export function resolveApiUrl(endpoint: string): string {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+  // If the frontend is loaded over HTTPS, browsers block calls to insecure HTTP (Mixed Content).
+  // In that case, use relative path so Vercel proxy rewrite handles it seamlessly over HTTPS.
+  if (
+    typeof window !== 'undefined' &&
+    window.location.protocol === 'https:' &&
+    BASE_URL.startsWith('http://')
+  ) {
+    return cleanEndpoint;
+  }
+
   if (!BASE_URL) {
     return cleanEndpoint;
   }
