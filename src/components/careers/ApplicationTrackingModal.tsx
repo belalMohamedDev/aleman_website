@@ -60,7 +60,7 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-t-card bg-white p-6 shadow-lift sm:rounded-card md:p-8"
+            className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-t-[28px] sm:rounded-[28px] bg-white p-6 shadow-lift md:p-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
