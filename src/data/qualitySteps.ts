@@ -49,7 +49,7 @@ export const qualitySteps: QualityStep[] = [
   icon: 'shield',
   title: L('مراقبة الجودة', 'Quality control'),
   description: L(
-    'اختبار المنتجات النهائية وفقًا لمعايير الجودة المعتمدة داخل المؤسسة.',
+    'اختبار المنتجات النهائية وفقًا لمعايير الجودة المعتمدة داخل المجموعة.',
     'Finished products are tested against the quality standards adopted by the company.'
   )
 },

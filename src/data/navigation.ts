@@ -14,11 +14,7 @@ export const primaryNav: NavItem[] = [
   { to: '/about', label: ui.nav.about },
   { to: '/products', label: ui.nav.products },
   // { to: '/distributors', label: ui.nav.distributors },
-  {
-    to: 'https://www.alemanfeed.com/modules/recruitment/careers.php?lang=ar',
-    label: ui.nav.careers,
-    isExternal: true,
-  },
+  { to: '/careers', label: ui.nav.careers },
   // { to: '/articles', label: ui.nav.articles },
   { to: '/contact', label: ui.nav.contact }
 ];

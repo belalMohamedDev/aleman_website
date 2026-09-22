@@ -32,16 +32,16 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   if (!order) return null;
 
   const { user } = useAuth();
-  const isBankTransfer = 
+  const isBankTransfer =
     order.paymentMethod === PaymentMethod.BankTransfer ||
     order.paymentMethod === 3 ||
     order.paymentMethod === 2 ||
     Boolean(order.paymentMethodName?.includes('تحويل'));
-  
+
   // Distinguish Sub-Customer vs Main Merchant
   const isSub = Boolean(
-    order.parentMerchantId || 
-    (order.parentMerchantName && order.parentMerchantName.trim() !== '') || 
+    order.parentMerchantId ||
+    (order.parentMerchantName && order.parentMerchantName.trim() !== '') ||
     (user && checkIsSubCustomer(user))
   );
   const driverPhone = order.driverPhone || order.vehicle?.driverPhone;
@@ -82,13 +82,13 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   };
 
   // Status flags matching all backend status codes
-  const isPendingApproval = 
+  const isPendingApproval =
     order.status === OrderStatus.Pending ||
     order.status === OrderStatus.PendingMerchantApproval ||
     order.status === OrderStatus.PendingAdminApproval ||
     order.status === 1 || order.status === 8 || order.status === 9;
 
-  const isApproved = 
+  const isApproved =
     order.status === OrderStatus.Confirmed ||
     order.status === OrderStatus.PendingPaymentApproval ||
     order.status === 2 || order.status === 12;
@@ -98,14 +98,14 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   const isDelivered = order.status === OrderStatus.Completed || order.status === 6;
 
   // Sub-customer specific approvals
-  const isMerchantApproved = 
-    Boolean(order.merchantApprovedAt) || 
+  const isMerchantApproved =
+    Boolean(order.merchantApprovedAt) ||
     order.status === OrderStatus.PendingAdminApproval ||
     order.status === 9 ||
     [2, 3, 4, 5, 6, 9, 12].includes(Number(order.status));
 
-  const isFactoryApproved = 
-    Boolean(order.adminApprovedAt) || 
+  const isFactoryApproved =
+    Boolean(order.adminApprovedAt) ||
     [2, 3, 4, 5, 6, 12].includes(Number(order.status));
 
   // Timeline Badge Logic matching Screenshots 3 & 4
@@ -231,13 +231,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 2: موافقة واعتماد التاجر الرئيسي */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isMerchantApproved
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isMerchantApproved
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isPendingApproval
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isMerchantApproved ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -258,13 +257,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 3: مراجعة واعتماد إدارة المصنع */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isFactoryApproved || isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isFactoryApproved || isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isMerchantApproved && isPendingApproval
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isFactoryApproved || isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -287,13 +285,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 4: سداد ورفع إيصال التحويل البنكي */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isApproved
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -305,11 +302,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                       <div className="pt-0.5">
                         <h4
-                          className={`text-xs sm:text-sm ${
-                            isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered || isApproved
+                          className={`text-xs sm:text-sm ${isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered || isApproved
                               ? 'font-black text-ink'
                               : 'font-bold text-slate-400'
-                          }`}
+                            }`}
                         >
                           سداد ورفع إيصال التحويل البنكي
                         </h4>
@@ -326,13 +322,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 5: مراجعة وتأكيد السداد من المالية */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isProcessing || isShipped || isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isProcessing || isShipped || isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isReceiptUploaded || Number(order.status) === 12
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isProcessing || isShipped || isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -344,11 +339,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                       <div className="pt-0.5">
                         <h4
-                          className={`text-xs sm:text-sm ${
-                            isProcessing || isShipped || isDelivered || isReceiptUploaded || Number(order.status) === 12
+                          className={`text-xs sm:text-sm ${isProcessing || isShipped || isDelivered || isReceiptUploaded || Number(order.status) === 12
                               ? 'font-black text-ink'
                               : 'font-bold text-slate-400'
-                          }`}
+                            }`}
                         >
                           مراجعة وتأكيد السداد من المالية
                         </h4>
@@ -365,13 +359,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 6: خرج للتوصيل أو جاهز للتحميل */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isShipped
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -383,9 +376,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                       <div className="pt-0.5">
                         <h4
-                          className={`text-xs sm:text-sm ${
-                            isDelivered || isShipped ? 'font-black text-ink' : 'font-bold text-slate-400'
-                          }`}
+                          className={`text-xs sm:text-sm ${isDelivered || isShipped ? 'font-black text-ink' : 'font-bold text-slate-400'
+                            }`}
                         >
                           {order.orderType === OrderType.Delivery
                             ? 'خرج للتوصيل بشاحنة المصنع'
@@ -419,11 +411,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 2: مراجعة واعتماد إدارة المصنع */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : 'bg-[#f1f5f9] border border-[#cbd5e1]'
-                        }`}
+                          }`}
                       >
                         {isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -433,11 +424,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                       <div className="pt-0.5">
                         <h4
-                          className={`text-xs sm:text-sm ${
-                            isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                          className={`text-xs sm:text-sm ${isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
                               ? 'font-black text-ink'
                               : 'font-bold text-slate-500'
-                          }`}
+                            }`}
                         >
                           مراجعة واعتماد إدارة المصنع
                         </h4>
@@ -452,13 +442,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 3: سداد ورفع إيصال التحويل البنكي */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isApproved
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -470,11 +459,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                       <div className="pt-0.5">
                         <h4
-                          className={`text-xs sm:text-sm ${
-                            isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered || isApproved
+                          className={`text-xs sm:text-sm ${isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered || isApproved
                               ? 'font-black text-ink'
                               : 'font-bold text-slate-400'
-                          }`}
+                            }`}
                         >
                           سداد ورفع إيصال التحويل البنكي
                         </h4>
@@ -491,13 +479,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 4: مراجعة وتأكيد السداد من المالية */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isProcessing || isShipped || isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isProcessing || isShipped || isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isReceiptUploaded || Number(order.status) === 12
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isProcessing || isShipped || isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -509,11 +496,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                       <div className="pt-0.5">
                         <h4
-                          className={`text-xs sm:text-sm ${
-                            isProcessing || isShipped || isDelivered || isReceiptUploaded || Number(order.status) === 12
+                          className={`text-xs sm:text-sm ${isProcessing || isShipped || isDelivered || isReceiptUploaded || Number(order.status) === 12
                               ? 'font-black text-ink'
                               : 'font-bold text-slate-400'
-                          }`}
+                            }`}
                         >
                           مراجعة وتأكيد السداد من المالية
                         </h4>
@@ -530,13 +516,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     {/* Step 5: خرج للتوصيل بشاحنة المصنع أو الاستلام من المصنع */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                          isDelivered
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered
                             ? 'bg-[#00875a] text-white shadow-xs'
                             : isShipped
                               ? 'bg-[#f1f5f9] border border-[#cbd5e1]'
                               : 'bg-[#f8fafc] border border-[#e2e8f0]'
-                        }`}
+                          }`}
                       >
                         {isDelivered ? (
                           <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -548,9 +533,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                       <div className="pt-0.5">
                         <h4
-                          className={`text-xs sm:text-sm ${
-                            isDelivered || isShipped ? 'font-black text-ink' : 'font-bold text-slate-400'
-                          }`}
+                          className={`text-xs sm:text-sm ${isDelivered || isShipped ? 'font-black text-ink' : 'font-bold text-slate-400'
+                            }`}
                         >
                           {order.orderType === OrderType.Delivery
                             ? 'خرج للتوصيل بشاحنة المصنع'
@@ -586,13 +570,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   {/* Step 2: موافقة واعتماد التاجر الرئيسي */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
-                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                        isMerchantApproved
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isMerchantApproved
                           ? 'bg-emerald-600 text-white shadow-xs'
                           : isPendingApproval
                             ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 ring-emerald-100 animate-pulse'
                             : 'bg-slate-100 border border-slate-300 text-slate-400'
-                      }`}
+                        }`}
                     >
                       {isMerchantApproved ? (
                         <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -613,13 +596,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   {/* Step 3: اعتماد وتأكيد إدارة المصنع */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
-                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                        isFactoryApproved
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isFactoryApproved
                           ? 'bg-emerald-600 text-white shadow-xs'
                           : isMerchantApproved && isPendingApproval
                             ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 ring-emerald-100 animate-pulse'
                             : 'bg-slate-100 border border-slate-300 text-slate-400'
-                      }`}
+                        }`}
                     >
                       {isFactoryApproved ? (
                         <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -640,13 +622,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   {/* Step 4: خروج الشحنة أو الاستلام من المصنع */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
-                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                        isDelivered
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered
                           ? 'bg-emerald-600 text-white shadow-xs'
                           : isShipped
                             ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 animate-pulse ring-emerald-100'
                             : 'bg-slate-100 border border-slate-300 text-slate-400'
-                      }`}
+                        }`}
                     >
                       {isDelivered ? (
                         <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -687,13 +668,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   {/* Step 2: تم تأكيد واعتماد الطلب (موافقة المصنع فقط) */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
-                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                        isApproved || isProcessing || isShipped || isDelivered
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isApproved || isProcessing || isShipped || isDelivered
                           ? 'bg-emerald-600 text-white shadow-xs'
                           : isPendingApproval
                             ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 ring-emerald-100 animate-pulse'
                             : 'bg-slate-100 border border-slate-300 text-slate-400'
-                      }`}
+                        }`}
                     >
                       {isApproved || isProcessing || isShipped || isDelivered ? (
                         <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -716,13 +696,12 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   {/* Step 3: خروج الشحنة أو الاستلام من المصنع */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
-                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${
-                        isDelivered
+                      className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered
                           ? 'bg-emerald-600 text-white shadow-xs'
                           : isShipped
                             ? 'border-2 border-emerald-600 bg-emerald-50 text-emerald-700 animate-pulse ring-emerald-100'
                             : 'bg-slate-100 border border-slate-300 text-slate-400'
-                      }`}
+                        }`}
                     >
                       {isDelivered ? (
                         <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -808,7 +787,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
 
               {/* Bank Accounts Info */}
               <div className="space-y-2.5">
-                <p className="text-xs font-bold text-emerald-900">حسابات مؤسسة الإيمان المعتمدة للتحويل:</p>
+                <p className="text-xs font-bold text-emerald-900">حسابات مجموعة شركات الايمان المعتمدة للتحويل:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <div className="rounded-2xl bg-white p-3 border border-emerald-200/70 space-y-1">
                     <span className="font-extrabold text-slate-700 block">البنك الأهلي المصري</span>
@@ -917,9 +896,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   <span className="font-bold text-slate-400">عنوان التسليم</span>
                   <span className="font-black text-ink text-left">
                     {order.deliveryAddress
-                      ? `${order.deliveryAddress.city} - ${order.deliveryAddress.street}${
-                          order.deliveryAddress.district ? ` - ${order.deliveryAddress.district}` : ''
-                        }`
+                      ? `${order.deliveryAddress.city} - ${order.deliveryAddress.street}${order.deliveryAddress.district ? ` - ${order.deliveryAddress.district}` : ''
+                      }`
                       : 'العنوان المسجل في حسابك'}
                   </span>
                 </div>
@@ -986,7 +964,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                         </div>
                       )}
                       <div>
-                        <p className="font-black text-ink text-sm">{item.productName || 'منتج علف مؤسسة الإيمان'}</p>
+                        <p className="font-black text-ink text-sm">{item.productName || 'منتج علف مجموعة شركات الايمان'}</p>
                         <p className="text-[11px] text-slate-500 mt-0.5 font-medium">
                           العبوة: {item.packageWeightKg} كجم • الكمية: {item.quantity} شيكارة • إجمالي الوزن:{' '}
                           <strong className="text-slate-700">

@@ -14,8 +14,7 @@ export function Footer() {
       links: [
         { to: '/', label: t(ui.nav.home) },
         { to: '/about', label: t(ui.nav.about) },
-        // { to: '/quality', label: t(ui.nav.quality) },
-        { to: 'https://www.alemanfeed.com/modules/recruitment/careers.php?lang=ar', label: t(ui.nav.careers) }
+        { to: '/careers', label: t(ui.nav.careers) }
       ]
     },
     {

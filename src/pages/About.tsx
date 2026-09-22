@@ -50,7 +50,7 @@ export function About() {
         <div className="absolute inset-0 z-0">
           <img
             src="/hero_farm_bg.webp"
-            alt="صروح ومصانع مؤسسة الإيمان للأعلاف"
+            alt="صروح ومصانع مجموعة شركات الايمان"
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover object-[center_right] lg:object-center opacity-90 filter brightness-105 contrast-105 scale-100 transition-transform duration-1000"
@@ -174,7 +174,7 @@ export function About() {
             >
               <img
                 src="/image.webp"
-                alt="شعار مؤسسة الإيمان للأعلاف"
+                alt="شعار مجموعة شركات الايمان"
                 loading="lazy"
                 decoding="async"
                 className="h-52 sm:h-64 md:h-72 lg:h-80 w-auto max-w-full object-contain filter drop-shadow-[0_20px_28px_rgba(0,0,0,0.1)] select-none transition-transform duration-300"

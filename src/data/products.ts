@@ -58,7 +58,7 @@ product(
   L('علف دواجن — مرحلة البادئ', 'Poultry feed — starter stage'),
   L('البادئ', 'Starter'),
   L(
-    'علف مخصص لمرحلة البادئ في تربية الدواجن، يُصنَّع ضمن منظومة الجودة الشاملة للمؤسسة من اختيار المواد الخام حتى التعبئة.',
+    'علف مخصص لمرحلة البادئ في تربية الدواجن، يُصنَّع ضمن منظومة الجودة الشاملة للمجموعة من اختيار المواد الخام حتى التعبئة.',
     'Feed formulated for the poultry starter stage, produced within the company total-quality system from raw material selection through packaging.'
   )
 ),
@@ -88,7 +88,7 @@ product(
   L('علف مواشي — إنتاج الألبان', 'Livestock feed — dairy production'),
   L('أبقار حلاب', 'Dairy cattle'),
   L(
-    'علف موجّه لقطعان إنتاج الألبان، ضمن خط إنتاج أعلاف المواشي بالمؤسسة.',
+    'علف موجّه لقطعان إنتاج الألبان، ضمن خط إنتاج أعلاف المواشي بالمجموعة.',
     'Feed directed at dairy herds within the company livestock feed production line.'
   )
 ),
@@ -118,7 +118,7 @@ product(
   L('علف أرانب — مرحلة النمو', 'Rabbit feed — growth stage'),
   L('نمو', 'Growth'),
   L(
-    'علف مكعبات للأرانب في مرحلة النمو، ضمن قطاع أعلاف الأرانب بالمؤسسة.',
+    'علف مكعبات للأرانب في مرحلة النمو، ضمن قطاع أعلاف الأرانب بالمجموعة.',
     'Pelleted feed for rabbits in the growth stage, part of the company rabbit feed segment.'
   )
 ),

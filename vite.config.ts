@@ -12,12 +12,22 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:5094',
+        target: 'http://alemanapp.runasp.net',
         changeOrigin: true,
         secure: false,
       },
       '/images': {
-        target: 'http://localhost:5094',
+        target: 'http://alemanapp.runasp.net',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/modules/recruitment': {
+        target: 'https://www.alemanfeed.com',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/aleman': {
+        target: 'https://www.alemanfeed.com',
         changeOrigin: true,
         secure: false,
       },

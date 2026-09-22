@@ -1,4 +1,16 @@
-const BASE_URL = ((import.meta as any).env?.VITE_API_URL as string) || '';
+const RAW_BASE_URL = ((import.meta as any).env?.VITE_API_URL as string) || '';
+const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
+
+export function resolveApiUrl(endpoint: string): string {
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  if (!BASE_URL) {
+    return cleanEndpoint;
+  }
+  if (BASE_URL.endsWith('/api') && cleanEndpoint.startsWith('/api/')) {
+    return `${BASE_URL}${cleanEndpoint.slice(4)}`;
+  }
+  return `${BASE_URL}${cleanEndpoint}`;
+}
 
 export class ApiError extends Error {
   constructor(public status: number, message: string, public data?: any) {
@@ -24,7 +36,7 @@ export async function requestRefreshToken(): Promise<boolean> {
 
   activeRefreshPromise = (async () => {
     try {
-      const url = `${BASE_URL}/api/Auth/refresh`;
+      const url = resolveApiUrl('/api/Auth/refresh');
       const response = await fetch(url, {
         method: 'POST',
         credentials: 'include',
@@ -64,7 +76,7 @@ export async function apiClient<T>(
     ...(options.headers as Record<string, string>),
   };
 
-  const url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const url = resolveApiUrl(endpoint);
 
   let response = await fetch(url, {
     credentials: 'include',

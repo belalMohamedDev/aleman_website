@@ -4,7 +4,7 @@ const L = (ar: string, en: string): Localized => ({ ar, en });
 
 export const ui = {
   brand: {
-    name: L('مؤسسة الإيمان للأعلاف', 'Aleman Foundation for Feed'),
+    name: L('مجموعة شركات الايمان', 'Aleman Foundation for Feed'),
     short: L('الإيمان', 'Aleman'),
     tagline: L('رائدة صناعة الأعلاف في مصر', 'Egyptian feed manufacturing built on total quality')
   },
@@ -35,7 +35,7 @@ export const ui = {
     placeholderTag: L('بيانات نائبة', 'Placeholder data'),
     demoTag: L('محتوى تجريبي', 'Demo content'),
     placeholderNote: L(
-      'هذا السجل نموذج توضيحي للواجهة، وسيتم استبداله بالبيانات الرسمية للمؤسسة.',
+      'هذا السجل نموذج توضيحي للواجهة، وسيتم استبداله بالبيانات الرسمية للمجموعة.',
       'This record is an interface placeholder and will be replaced with official company data.'
     ),
     noResultsTitle: L('لا توجد نتائج مطابقة', 'No matching results'),
@@ -52,17 +52,17 @@ export const ui = {
     notPublished: L('غير منشور رسميًا', 'Not officially published')
   },
   home: {
-    heroEyebrow: L('مؤسسة الإيمان للأعلاف', 'Aleman Foundation for Feed'),
+    heroEyebrow: L('مجموعة شركات الايمان', 'Aleman Foundation for Feed'),
     heroTitle: L('خبرة صناعية راسخة في تصنيع الأعلاف وتغذية الحيوان', 'Established industrial expertise in feed manufacturing and animal nutrition'),
     heroBody: L(
-      'تُصر مؤسسة الإيمان على الجودة الشاملة في جميع مراحل عمليات التصنيع، بدءًا من اختيار المواد الخام، خلال عملية التصنيع بأكملها، وحتى نهاية عملية التعبئة عالية الجودة — من أجل تقديم قيمة أعلى لعملاء الإيمان الكرام.',
+      'تُصر مجموعة شركات الايمان على الجودة الشاملة في جميع مراحل عمليات التصنيع، بدءًا من اختيار المواد الخام، خلال عملية التصنيع بأكملها، وحتى نهاية عملية التعبئة عالية الجودة — من أجل تقديم قيمة أعلى لعملاء الإيمان الكرام.',
       'Aleman Foundation insists on total quality across every stage of manufacturing — from raw material selection, throughout the entire production process, to the end of high-quality packaging — in order to deliver greater value to its customers.'
     ),
     ctaPrimary: L('استكشف منتجاتنا', 'Explore our products'),
     ctaSecondary: L('تواصل معنا', 'Contact us'),
     heroImageAlt: L('مصنع أعلاف حديث ومزرعة دواجن ومواشي مع أكياس علف', 'Modern feed mill with poultry, cattle and stacked feed sacks'),
     trustTitle: L('لماذا الإيمان', 'Why Aleman'),
-    trustSubtitle: L('الإيمان مؤسسة صناعية زراعية مصرية تبني ثقتها على الجودة في كل مرحلة .', 'An Egyptian agro-industrial company that builds trust through quality at every stage.'),
+    trustSubtitle: L('الإيمان مجموعة صناعية زراعية مصرية تبني ثقتها على الجودة في كل مرحلة .', 'An Egyptian agro-industrial company that builds trust through quality at every stage.'),
     aboutTitle: L('من نحن', 'About us'),
     productsTitle: L('منتجاتنا', 'Our products'),
     productsSubtitle: L('تشكيلة أعلاف تغطي الدواجن والمواشي والأرانب والبط.', 'A feed range covering poultry, livestock, rabbits and ducks.'),
@@ -117,12 +117,12 @@ export const ui = {
   about: {
     pageTitle: L('من نحن', 'About us'),
     intro: L(
-      'مؤسسة الإيمان للأعلاف مؤسسة مصرية متخصصة في تصنيع الأعلاف، تقوم فلسفتها على الجودة الشاملة في كل مرحلة من مراحل الإنتاج.',
+      'مجموعة شركات الايمان مجموعة مصرية متخصصة في تصنيع الأعلاف، تقوم فلسفتها على الجودة الشاملة في كل مرحلة من مراحل الإنتاج.',
       'Aleman Foundation is an Egyptian company specialized in feed manufacturing, built on a philosophy of total quality at every production stage.'
     ),
-    identityTitle: L('هوية المؤسسة', 'Company identity'),
+    identityTitle: L('هوية المجموعة', 'Company identity'),
     identityBody: L(
-      'نعمل على تصنيع أعلاف تغطي احتياجات الدواجن والمواشي والأرانب والبط، مع التزام ثابت بمعايير الجودة التي تتبناها المؤسسة في جميع خطوط الإنتاج.',
+      'نعمل على تصنيع أعلاف تغطي احتياجات الدواجن والمواشي والأرانب والبط، مع التزام ثابت بمعايير الجودة التي تتبناها المجموعة في جميع خطوط الإنتاج.',
       'We manufacture feed covering the needs of poultry, livestock, rabbits and ducks, with a consistent commitment to the quality standards adopted across all production lines.'
     ),
     philosophyTitle: L('فلسفة الجودة', 'Quality philosophy'),
@@ -150,9 +150,9 @@ export const ui = {
       'الهدف من هذه المنظومة هو تقديم قيمة أعلى لعملاء الإيمان الكرام.',
       'The purpose of this system is to deliver greater value to Aleman customers.'
     ),
-    timelineTitle: L('مسيرة المؤسسة', 'Our journey'),
+    timelineTitle: L('مسيرة المجموعة', 'Our journey'),
     timelineNote: L(
-      'التواريخ التفصيلية لمسيرة المؤسسة غير منشورة رسميًا؛ المراحل التالية تصف تسلسل التطور دون سنوات مؤكدة.',
+      'التواريخ التفصيلية لمسيرة المجموعة غير منشورة رسميًا؛ المراحل التالية تصف تسلسل التطور دون سنوات مؤكدة.',
       'Detailed dates are not officially published; the stages below describe the sequence of development without confirmed years.'
     )
   },
@@ -176,7 +176,7 @@ export const ui = {
     statusMid: L('ضمن المدى المتوسط الشائع', 'Within the commonly observed mid-range'),
     statusHigh: L('مرتفع القيمة (كفاءة تحويل أقل)', 'High ratio (lower conversion efficiency)'),
     disclaimer: L(
-      'الحساب رياضي عام ولا يمثل توصية تغذية رسمية من مؤسسة الإيمان. للحصول على إرشاد دقيق يرجى التواصل مع فريق المؤسسة.',
+      'الحساب رياضي عام ولا يمثل توصية تغذية رسمية من مجموعة شركات الايمان. للحصول على إرشاد دقيق يرجى التواصل مع فريق المجموعة.',
       'This is a generic mathematical calculation and does not represent official nutrition guidance from Aleman Foundation. Contact the team for precise recommendations.'
     ),
     totalGain: L('إجمالي الوزن المكتسب للقطيع', 'Total flock weight gain'),
@@ -240,7 +240,7 @@ export const ui = {
     notFound: L('المقال غير موجود', 'Article not found'),
     backToArticles: L('العودة إلى المقالات', 'Back to articles'),
     editorialNote: L(
-      'محتوى إرشادي عام لا يمثل بيانًا فنيًا رسميًا من المؤسسة.',
+      'محتوى إرشادي عام لا يمثل بيانًا فنيًا رسميًا من المجموعة.',
       'General guidance content; not an official technical statement from the company.'
     )
   },
@@ -262,7 +262,7 @@ export const ui = {
     message: L('الرسالة', 'Message'),
     send: L('إرسال الرسالة', 'Send message'),
     sent: L('تم إرسال رسالتك', 'Your message was sent'),
-    sentBody: L('شكرًا لتواصلك مع مؤسسة الإيمان للأعلاف.', 'Thank you for contacting Aleman Foundation.'),
+    sentBody: L('شكرًا لتواصلك مع مجموعة شركات الايمان.', 'Thank you for contacting Aleman Foundation.'),
     channels: L('قنوات التواصل', 'Contact channels'),
     locations: L('المواقع', 'Locations'),
     contactNotice: L(
@@ -280,7 +280,7 @@ export const ui = {
   },
   footer: {
     about: L(
-      'مؤسسة الإيمان للأعلاف — تصنيع أعلاف الدواجن والمواشي والأرانب والبط بمنظومة جودة شاملة.',
+      'مجموعة شركات الايمان — تصنيع أعلاف الدواجن والمواشي والأرانب والبط بمنظومة جودة شاملة.',
       'Aleman Foundation for Feed — manufacturing poultry, livestock, rabbit and duck feed under a total-quality system.'
     ),
     company: L('الشركة', 'Company'),

@@ -52,7 +52,7 @@ export function QualityPipelineJourney() {
               >
                 <img
                   src="/quality_lab_showcase.webp"
-                  alt="معمل فحص وضبط جودة الأعلاف - مؤسسة الإيمان"
+                  alt="معمل فحص وضبط جودة الأعلاف - مجموعة شركات الايمان"
                   loading="lazy"
                   decoding="async"
                   className="quality-visual-standalone-img"

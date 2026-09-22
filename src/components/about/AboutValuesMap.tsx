@@ -87,7 +87,7 @@ export function AboutValuesMap() {
                 >
                   <img
                     src="/image.webp"
-                    alt="شعار مؤسسة الإيمان للأعلاف"
+                    alt="شعار مجموعة شركات الايمان"
                     loading="lazy"
                     decoding="async"
                     className="about-values-emblem-img"

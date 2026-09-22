@@ -29,7 +29,7 @@ export function ProfileHeader({ user, stats }: ProfileHeaderProps) {
           <div className="space-y-1.5 flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-black text-ink">
-                {user?.name || 'مستخدم مؤسسة الإيمان'}
+                {user?.name || 'مستخدم مجموعة شركات الايمان'}
               </h1>
 
 

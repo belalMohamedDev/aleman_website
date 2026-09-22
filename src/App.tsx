@@ -83,7 +83,7 @@ export function App() {
     <LanguageProvider>
       <AuthProvider>
         <CartProvider>
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <Shell />
           </BrowserRouter>
         </CartProvider>

@@ -18,7 +18,7 @@ const messaging = firebase.messaging();
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
 
-  const notificationTitle = payload.notification?.title || 'مؤسسة الإيمان للأعلاف';
+  const notificationTitle = payload.notification?.title || 'مجموعة شركات الايمان';
   const notificationOptions = {
     body: payload.notification?.body || 'لديك إشعار جديد بخصوص طلبك',
     icon: '/logo.png',
