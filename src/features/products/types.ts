@@ -43,6 +43,8 @@ export interface Category {
   createdAt?: string;
 }
 
+import { resolveMediaUrl } from '../../infrastructure/api/apiClient';
+
 /**
  * Returns the primary image URL for a product, with safe fallbacks
  */
@@ -53,11 +55,11 @@ export function getProductPrimaryImage(
   if (product.images && product.images.length > 0) {
     const sorted = [...product.images].sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
     const primary = sorted.find((img) => img.isPrimary && img.imageUrl);
-    if (primary?.imageUrl) return primary.imageUrl;
+    if (primary?.imageUrl) return resolveMediaUrl(primary.imageUrl);
     const first = sorted.find((img) => Boolean(img.imageUrl));
-    if (first?.imageUrl) return first.imageUrl;
+    if (first?.imageUrl) return resolveMediaUrl(first.imageUrl);
   }
-  return product.imageUrl || '/hero_farm_bg.webp';
+  return resolveMediaUrl(product.imageUrl) || '/hero_farm_bg.webp';
 }
 
 /**
@@ -75,8 +77,8 @@ export function getProductImages(
         if (!a.isPrimary && b.isPrimary) return 1;
         return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
       });
-    const urls = sorted.map((img) => img.imageUrl);
+    const urls = sorted.map((img) => resolveMediaUrl(img.imageUrl));
     if (urls.length > 0) return urls;
   }
-  return product.imageUrl ? [product.imageUrl] : [];
+  return product.imageUrl ? [resolveMediaUrl(product.imageUrl)] : [];
 }

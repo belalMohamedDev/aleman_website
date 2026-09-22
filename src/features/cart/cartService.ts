@@ -1,4 +1,4 @@
-import { apiClient } from '../../infrastructure/api/apiClient';
+import { apiClient, resolveMediaUrl } from '../../infrastructure/api/apiClient';
 import type { CartItem, CartSummary } from './types';
 import type { Product, ProductPackage } from '../products/types';
 
@@ -41,7 +41,7 @@ export const cartService = {
       id: String(item.id),
       productId: item.productId,
       productName: item.productName || '',
-      productImageUrl: item.productImageUrl || item.imageUrl || (item.images && item.images[0]?.imageUrl) || '',
+      productImageUrl: resolveMediaUrl(item.productImageUrl || item.imageUrl || (item.images && item.images[0]?.imageUrl) || ''),
       productPackageId: item.productPackageId,
       packageWeightKg: item.packageWeightKg || 0,
       unitPrice: item.unitPrice || 0,

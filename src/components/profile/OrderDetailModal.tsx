@@ -18,6 +18,7 @@ import { ORDER_STATUS_META, OrderStatus, OrderType, PaymentMethod } from '../../
 import { useAuth } from '../../features/auth/AuthContext';
 import { isSubCustomer as checkIsSubCustomer } from '../../features/auth/userUtils';
 import { toast } from 'sonner';
+import { resolveMediaUrl } from '../../infrastructure/api/apiClient';
 
 interface OrderDetailModalProps {
   order: OrderResponse | null;
@@ -952,7 +953,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     <div className="flex items-center gap-3">
                       {item.productImageUrl ? (
                         <img
-                          src={item.productImageUrl}
+                          src={resolveMediaUrl(item.productImageUrl)}
                           alt=""
                           loading="lazy"
                           decoding="async"
