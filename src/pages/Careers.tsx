@@ -279,7 +279,7 @@ export function Careers() {
                 {/* Side Panel: Quick Tracking & Tips */}
                 <div className="space-y-6">
                   {/* Quick Tracking Card */}
-                  <div className="rounded-3xl bg-white border border-slate-200/90 p-6 shadow-card">
+                  <div className="rounded-3xl bg-white border border-slate-100 p-6 shadow-card hover:shadow-lift transition-all duration-300">
                     <div className="flex items-center gap-2 mb-2 text-brand-700">
                       <ClipboardCheck className="h-4 w-4" />
                       <span className="text-xs font-black">
@@ -302,7 +302,7 @@ export function Careers() {
                   </div>
 
                   {/* Application Tips Card */}
-                  <div className="rounded-3xl bg-white border border-slate-200/90 p-6 shadow-card">
+                  <div className="rounded-3xl bg-white border border-slate-100 p-6 shadow-card hover:shadow-lift transition-all duration-300">
                     <div className="flex items-center gap-2 mb-3 text-brand-700">
                       <HelpCircle className="h-4 w-4" />
                       <span className="text-xs font-black">

@@ -99,14 +99,14 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
   return (
     <Reveal
       delay={index * 0.08}
-      className={`group relative flex flex-col rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-card hover:shadow-lift transition-all duration-300 hover:border-brand-200 ${
+      className={`group relative flex flex-col rounded-3xl border border-slate-100 bg-white p-6 sm:p-7 shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1 ${
         isWide ? 'h-full' : 'h-full'
       }`}
     >
       {/* Top Bar: Department + Job Code + Share */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100/80 pb-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700 border border-brand-100/80">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700 border border-brand-100/60">
             <DeptIcon className="h-4 w-4" />
           </div>
           <span className="text-xs font-black text-brand-800">
@@ -116,7 +116,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
 
         <div className="flex items-center gap-2">
           {jobCode && (
-            <span className="rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-[11px] font-black text-slate-600">
+            <span className="rounded-lg bg-slate-50 border border-slate-100 px-2.5 py-1 font-mono text-[11px] font-black text-slate-600">
               {jobCode}
             </span>
           )}
@@ -124,7 +124,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
             type="button"
             onClick={handleShare}
             aria-label={lang === 'ar' ? 'مشاركة رابط الوظيفة' : 'Share job link'}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-brand-600 transition"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-500 hover:bg-slate-50 hover:text-brand-600 hover:border-brand-200 transition shadow-2xs"
           >
             {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Share2 className="h-3.5 w-3.5" />}
           </button>
@@ -137,7 +137,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
           {title}
         </h3>
         {vacancies > 0 && (
-          <span className="shrink-0 rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-800 border border-amber-200/70">
+          <span className="shrink-0 rounded-full bg-amber-50/90 px-3 py-1 text-xs font-black text-amber-800 border border-amber-200/60 shadow-2xs">
             {vacancies} {lang === 'ar' ? 'شواغر متاحة' : 'openings'}
           </span>
         )}
@@ -145,21 +145,21 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
 
       {/* Pills / Key Meta Attributes */}
       <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-        <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50 border border-slate-200/80 px-3 py-1.5 font-bold text-slate-700">
+        <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50/80 border border-slate-100 px-3 py-1.5 font-bold text-slate-700 shadow-2xs">
           <MapPin className="h-3.5 w-3.5 text-brand-600" />
           <span>{location}</span>
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50 border border-slate-200/80 px-3 py-1.5 font-bold text-slate-700">
+        <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50/80 border border-slate-100 px-3 py-1.5 font-bold text-slate-700 shadow-2xs">
           <Clock className="h-3.5 w-3.5 text-brand-600" />
           <span>{jobType}</span>
         </span>
         {workType && (
-          <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50 border border-slate-200/80 px-3 py-1.5 font-bold text-slate-700">
+          <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50/80 border border-slate-100 px-3 py-1.5 font-bold text-slate-700 shadow-2xs">
             <span>{workType}</span>
           </span>
         )}
         {experience && (
-          <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50 border border-slate-200/80 px-3 py-1.5 font-bold text-slate-700">
+          <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-50/80 border border-slate-100 px-3 py-1.5 font-bold text-slate-700 shadow-2xs">
             <Award className="h-3.5 w-3.5 text-brand-600" />
             <span>{experience}</span>
           </span>
