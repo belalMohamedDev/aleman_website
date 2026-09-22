@@ -27,7 +27,7 @@ export default defineConfig({
         secure: false,
       },
       '/aleman': {
-        target: 'https://www.alemanfeed.com',
+        target: 'https://10.0.2.199',
         changeOrigin: true,
         secure: false,
       },

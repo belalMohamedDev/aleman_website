@@ -7,7 +7,6 @@ import type {
   JobApplicationResult,
   ApplicationTrackingResult,
 } from './types';
-import { jobs as fallbackStaticJobs } from '../../data/jobs';
 
 const RECRUITMENT_API_BASE =
   ((import.meta as any).env?.VITE_RECRUITMENT_API_URL as string) ||
@@ -63,74 +62,7 @@ export const DEFAULT_LOOKUPS: RecruitmentLookups = {
   ],
 };
 
-const liveChemistJob: JobDto = {
-  id: 11,
-  job_code: 'JOB-2026-0011',
-  title: 'كيميائى',
-  title_ar: 'كيميائى',
-  title_en: 'Chemist',
-  department: 'إدارة المعمل والجوده',
-  location: 'العامرية - اسكندرية',
-  employment_type: 'Full-Time',
-  employment_type_label: 'دوام كامل',
-  work_type: 'On-site',
-  work_type_label: 'من المقر',
-  vacancies: 1,
-  summary: 'مسؤول عن إجراء التحاليل والاختبارات الكيميائية على المواد الخام والمنتجات، والتأكد من مطابقتها للمواصفات والمعايير المعتمدة، مع الالتزام بإجراءات الجودة والسلامة المهنية.',
-  description: 'مسؤول عن إجراء التحاليل والاختبارات الكيميائية على المواد الخام والمنتجات، والتأكد من مطابقتها للمواصفات والمعايير المعتمدة، مع الالتزام بإجراءات الجودة والسلامة المهنية.',
-  responsibilities: [
-    'إجراء التحاليل الكيميائية والفيزيائية للعينات والمواد الخام ومطابقتها للمواصفات.',
-    'توثيق وتسجيل نتائج الاختبارات اليومية ورفع تقارير الجودة الدورية.',
-    'الالتزام بمعايير السلامة المهنية وممارسات المختبرات الجيدة (GLP).'
-  ],
-  requirements: [
-    'بكالوريوس علوم (كيمياء / كيمياء حيوية) أو ما يعادلها.',
-    'خبرة عملية في معامل التحاليل وضبط الجودة.',
-    'الدقة والالتزام والقدرة على العمل بروح الفريق.'
-  ],
-  qualifications: 'بكالوريوس علوم (كيمياء)',
-  min_experience_years: 1,
-  max_experience_years: 3,
-  experience_label: '1 - 3 سنوات',
-  publish_date: '2026-08-31',
-  deadline: '2026-09-30',
-  status: 'Published',
-  is_featured: true,
-  is_open: true,
-  share_url: 'https://www.alemanfeed.com/modules/recruitment/job.php?code=JOB-2026-0011&lang=ar',
-  web_apply_url: 'https://www.alemanfeed.com/modules/recruitment/public_apply.php?job=JOB-2026-0011',
-};
-
-function mapFallbackJobsToDto(): JobDto[] {
-  const staticDtos = fallbackStaticJobs.map((j) => ({
-    id: j.id,
-    job_code: `JOB-${j.id.toUpperCase()}`,
-    title: j.title.ar,
-    title_ar: j.title.ar,
-    title_en: j.title.en,
-    department: j.department.ar,
-    location: j.location.ar,
-    employment_type: 'Full-Time',
-    employment_type_label: j.type.ar,
-    work_type: 'On-site',
-    work_type_label: 'من المقر',
-    vacancies: 1,
-    summary: j.summary.ar,
-    description: j.summary.ar,
-    responsibilities: j.responsibilities.map((r) => r.ar),
-    requirements: [],
-    qualifications: 'مؤهل مناسب',
-    experience_label: 'متوسط الخبرة',
-    status: 'Published',
-    is_featured: true,
-    is_open: true,
-    placeholder: true,
-  }));
-
-  return [liveChemistJob, ...staticDtos];
-}
-
-class RecruitmentApiError extends Error {
+export class RecruitmentApiError extends Error {
   constructor(public status: number, message: string, public errors?: string[]) {
     super(message);
     this.name = 'RecruitmentApiError';
@@ -157,52 +89,21 @@ export const recruitmentService = {
     const queryString = searchParams.toString();
     const url = `${RECRUITMENT_API_BASE}${queryString ? `?${queryString}` : ''}`;
 
-    try {
-      const response = await fetch(url, {
-        headers: {
-          Accept: 'application/json',
-        },
-      });
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
-      }
-
-      const json = await response.json();
-      if (json && json.success && Array.isArray(json.data)) {
-        return json;
-      }
-      throw new Error(json?.message || 'Invalid API response format');
-    } catch {
-      // Fallback to static demo data when API is offline or not found
-      const fallbackList = mapFallbackJobsToDto();
-      let filtered = fallbackList;
-
-      if (params.q) {
-        const q = params.q.toLowerCase();
-        filtered = filtered.filter(
-          (j) =>
-            j.title.toLowerCase().includes(q) ||
-            j.department.toLowerCase().includes(q) ||
-            j.summary.toLowerCase().includes(q)
-        );
-      }
-      if (params.dept) {
-        filtered = filtered.filter((j) => j.department === params.dept);
-      }
-
-      return {
-        success: true,
-        message: 'تم عرض الوظائف التجريبية (وضع عدم الاتصال بالخادم)',
-        meta: {
-          total: filtered.length,
-          page: 1,
-          limit: 20,
-          total_pages: 1,
-        },
-        data: filtered,
-      };
+    if (!response.ok) {
+      throw new Error(`تعذر الاتصال بالخادم (رمز الاستجابة ${response.status})`);
     }
+
+    const json = await response.json();
+    if (json && json.success && Array.isArray(json.data)) {
+      return json;
+    }
+    throw new Error(json?.message || 'تنسيق استجابة غير صالح من الخادم');
   },
 
   /**
@@ -213,22 +114,17 @@ export const recruitmentService = {
     const param = isNum ? `id=${idOrCode}` : `code=${encodeURIComponent(idOrCode)}`;
     const url = `${RECRUITMENT_API_BASE}?${param}`;
 
-    try {
-      const response = await fetch(url, {
-        headers: { Accept: 'application/json' },
-      });
-      if (!response.ok) throw new Error(`API returned ${response.status}`);
-      const json = await response.json();
-      if (json.success && json.data) return json;
-      throw new Error(json?.message || 'Job not found');
-    } catch {
-      const fallbacks = mapFallbackJobsToDto();
-      const match = fallbacks.find((j) => String(j.id) === String(idOrCode) || j.job_code === idOrCode);
-      if (match) {
-        return { success: true, data: match };
-      }
-      throw new Error('الوظيفة المطلوبة غير موجودة');
+    const response = await fetch(url, {
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) {
+      throw new Error(`تعذر جلب تفاصيل الوظيفة (رمز الاستجابة ${response.status})`);
     }
+    const json = await response.json();
+    if (json.success && json.data) {
+      return json;
+    }
+    throw new Error(json?.message || 'الوظيفة المطلوبة غير موجودة');
   },
 
   /**
@@ -309,37 +205,13 @@ export const recruitmentService = {
       formData.append('photo', payload.photoFile, payload.photoFile.name);
     }
 
-    let response: Response;
-    try {
-      response = await fetch(RECRUITMENT_API_BASE, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-        },
-        body: formData,
-      });
-    } catch (err: any) {
-      // In development or if server is unreachable, simulate successful submission
-      return {
-        success: true,
-        message: 'تم استلام طلب التوظيف بنجاح (محاكاة محلية)',
-        data: {
-          application_id: Math.floor(Math.random() * 900) + 100,
-          application_number: `APP-2026-${Math.floor(Math.random() * 9000) + 1000}`,
-          applicant_name: payload.applicant_name,
-          national_id: payload.national_id,
-          applied_position: payload.applied_position || 'وظيفة عامة',
-          job_id: payload.job_id,
-          job_code: payload.job_code,
-          status: 'progress',
-          workflow_step: 1,
-          stage_name: 'إنشاء الطلب',
-          has_cv: !!payload.cvFile,
-          has_photo: !!payload.photoFile,
-          created_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
-        },
-      };
-    }
+    const response = await fetch(RECRUITMENT_API_BASE, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+      body: formData,
+    });
 
     const json = await response.json();
     if (!response.ok || !json.success) {
