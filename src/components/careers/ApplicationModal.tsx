@@ -52,6 +52,9 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
   const [errors, setErrors] = useState<Errors>({});
   const [copiedAppNo, setCopiedAppNo] = useState(false);
 
+  const cvInputRef = React.useRef<HTMLInputElement>(null);
+  const photoInputRef = React.useRef<HTMLInputElement>(null);
+
   // Derive job title and details
   const jobTitle = job
     ? typeof job.title === 'object' && job.title !== null
@@ -82,6 +85,8 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
   function handleClose() {
     reset();
     setErrors({});
+    if (cvInputRef.current) cvInputRef.current.value = '';
+    if (photoInputRef.current) photoInputRef.current.value = '';
     onClose();
   }
 
@@ -133,9 +138,9 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
       const allowedImgExts = ['jpg', 'jpeg', 'png', 'webp'];
       const ext = photoFile.name.split('.').pop()?.toLowerCase();
       if (!ext || !allowedImgExts.includes(ext)) {
-        errors.general = lang === 'ar' ? 'صيغة الصورة يجب أن تكون JPG أو PNG' : 'Photo must be JPG or PNG';
+        next.general = lang === 'ar' ? 'صيغة الصورة يجب أن تكون JPG أو PNG' : 'Photo must be JPG or PNG';
       } else if (photoFile.size > 5 * 1024 * 1024) {
-        errors.general = lang === 'ar' ? 'حجم الصورة يجب ألا يتجاوز 5 ميجابايت' : 'Photo must not exceed 5MB';
+        next.general = lang === 'ar' ? 'حجم الصورة يجب ألا يتجاوز 5 ميجابايت' : 'Photo must not exceed 5MB';
       }
     }
 
@@ -215,7 +220,10 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-            className="relative flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-[28px] sm:rounded-[28px] bg-white shadow-2xl overflow-hidden"
+            onScroll={(e) => {
+              e.currentTarget.scrollTop = 0;
+            }}
+            className="relative flex h-[90vh] sm:h-auto sm:max-h-[88vh] w-full max-w-2xl flex-col rounded-t-[28px] sm:rounded-[28px] bg-white shadow-2xl overflow-hidden"
           >
             {/* Mobile Drag Indicator */}
             <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-slate-200 sm:hidden" />
@@ -248,7 +256,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
             </div>
 
             {/* Modal Body - Scrollable with NO ugly scrollbar */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6 sm:px-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {result ? (
                 /* Success State Screen */
                 <div className="py-8 text-center">
@@ -516,11 +524,40 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                     <div className="grid gap-3 sm:grid-cols-2">
                       {/* CV Upload */}
                       <Field id="app-cv" label={t(ui.careers.formCv)} hint={t(ui.careers.formCvHint)} required error={errors.cvFile}>
-                        <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-brand-200 bg-white p-4 text-center text-sm transition hover:border-brand-400 hover:bg-brand-50/40 shadow-xs">
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => cvInputRef.current?.click()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              cvInputRef.current?.click();
+                            }
+                          }}
+                          className={`relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center text-sm transition shadow-xs outline-none ${
+                            cvFile
+                              ? 'border-brand-300 bg-brand-50/50'
+                              : 'border-brand-200 bg-white hover:border-brand-400 hover:bg-brand-50/40'
+                          }`}
+                        >
                           {cvFile ? (
-                            <div className="flex items-center gap-2 text-brand-700 font-bold truncate max-w-full">
-                              <FileTextIcon className="h-5 w-5 shrink-0 text-brand-600" />
-                              <span className="truncate text-xs">{cvFile.name}</span>
+                            <div className="flex w-full items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 truncate min-w-0 text-brand-700 font-bold">
+                                <FileTextIcon className="h-5 w-5 shrink-0 text-brand-600" />
+                                <span className="truncate text-xs">{cvFile.name}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCvFile(null);
+                                  if (cvInputRef.current) cvInputRef.current.value = '';
+                                }}
+                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"
+                                title={lang === 'ar' ? 'حذف الملف' : 'Remove file'}
+                              >
+                                <XIcon className="h-3.5 w-3.5" />
+                              </button>
                             </div>
                           ) : (
                             <>
@@ -532,22 +569,55 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                             </>
                           )}
                           <input
+                            ref={cvInputRef}
                             id="app-cv"
                             type="file"
                             accept=".pdf,.doc,.docx"
-                            className="sr-only"
-                            onChange={(e) => setCvFile(e.target.files?.[0] || null)}
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              setCvFile(file);
+                            }}
                           />
-                        </label>
+                        </div>
                       </Field>
 
                       {/* Photo Upload */}
                       <Field id="app-photo" label={lang === 'ar' ? 'صورة شخصية (اختياري)' : 'Personal Photo'} hint="JPG, PNG">
-                        <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-white p-4 text-center text-sm transition hover:border-slate-300 shadow-xs">
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => photoInputRef.current?.click()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              photoInputRef.current?.click();
+                            }
+                          }}
+                          className={`relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center text-sm transition shadow-xs outline-none ${
+                            photoFile
+                              ? 'border-emerald-300 bg-emerald-50/40'
+                              : 'border-slate-200 bg-white hover:border-slate-300'
+                          }`}
+                        >
                           {photoFile ? (
-                            <div className="flex items-center gap-2 text-slate-700 font-bold truncate max-w-full">
-                              <ImageIcon className="h-5 w-5 shrink-0 text-emerald-600" />
-                              <span className="truncate text-xs">{photoFile.name}</span>
+                            <div className="flex w-full items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 truncate min-w-0 text-slate-700 font-bold">
+                                <ImageIcon className="h-5 w-5 shrink-0 text-emerald-600" />
+                                <span className="truncate text-xs">{photoFile.name}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPhotoFile(null);
+                                  if (photoInputRef.current) photoInputRef.current.value = '';
+                                }}
+                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"
+                                title={lang === 'ar' ? 'حذف الصورة' : 'Remove photo'}
+                              >
+                                <XIcon className="h-3.5 w-3.5" />
+                              </button>
                             </div>
                           ) : (
                             <>
@@ -559,13 +629,17 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                             </>
                           )}
                           <input
+                            ref={photoInputRef}
                             id="app-photo"
                             type="file"
                             accept="image/png,image/jpeg,image/webp"
-                            className="sr-only"
-                            onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              setPhotoFile(file);
+                            }}
                           />
-                        </label>
+                        </div>
                       </Field>
                     </div>
 
