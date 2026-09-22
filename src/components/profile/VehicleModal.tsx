@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { XIcon, TruckIcon, UserIcon, PhoneIcon, CreditCardIcon } from 'lucide-react';
 import type { CreateVehicleDto } from '../../features/profile/types';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface VehicleModalProps {
   isOpen: boolean;
@@ -17,11 +19,12 @@ const VEHICLE_TYPE_CHIPS = [
 ];
 
 export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
+  const { t, isRtl } = useLanguage();
   const [driverName, setDriverName] = useState('');
   const [vehiclePlateNumber, setVehiclePlateNumber] = useState('');
   const [driverLicenseNumber, setDriverLicenseNumber] = useState('');
   const [driverPhone, setDriverPhone] = useState('');
-  const [vehicleType, setVehicleType] = useState('دبابة (حتى 3 طن)');
+  const [vehicleType, setVehicleType] = useState('دبابة');
   const [notes, setNotes] = useState('');
   const [isDefault, setIsDefault] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +52,7 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
       setVehiclePlateNumber('');
       setDriverLicenseNumber('');
       setDriverPhone('');
-      setVehicleType('دبابة (حتى 3 طن)');
+      setVehicleType('دبابة');
       setNotes('');
       setIsDefault(false);
       onClose();
@@ -57,8 +60,8 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center sm:items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200" dir="rtl">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden text-right" dir="rtl">
+    <div className="fixed inset-0 z-50 flex items-center sm:items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200" dir={isRtl ? 'rtl' : 'ltr'}>
+      <div className={`relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${isRtl ? 'text-right' : 'text-left'}`}>
         {/* Top Drag Indicator */}
         <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
 
@@ -67,29 +70,29 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
-            aria-label="إغلاق"
+            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition cursor-pointer"
+            aria-label={t(ui.profile.closeModal)}
           >
             <XIcon className="h-5 w-5" />
           </button>
           <h3 className="text-base sm:text-lg font-black text-ink">
-            إضافة سيارة وسائق جديد
+            {t(ui.profile.addVehicleModalTitle)}
           </h3>
           <div className="w-9" /> {/* Spacer to balance close button */}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3.5 text-right" dir="rtl">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           <div className="relative">
             <input
               type="text"
               required
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
-              placeholder="اسم السائق *"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.driverNameField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <UserIcon className="h-5 w-5" />
             </div>
           </div>
@@ -98,13 +101,13 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
             <input
               type="text"
               required
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={vehiclePlateNumber}
               onChange={(e) => setVehiclePlateNumber(e.target.value)}
-              placeholder="رقم لوحة السيارة *"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.plateNumberField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <TruckIcon className="h-5 w-5" />
             </div>
           </div>
@@ -112,13 +115,13 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
           <div className="relative">
             <input
               type="text"
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={driverLicenseNumber}
               onChange={(e) => setDriverLicenseNumber(e.target.value)}
-              placeholder="رقم الرخصة أو الرقم القومي (اختياري)"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.licenseNumberField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <CreditCardIcon className="h-5 w-5" />
             </div>
           </div>
@@ -127,20 +130,20 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
           <div className="relative">
             <input
               type="tel"
-              dir="rtl"
+              dir="ltr"
               value={driverPhone}
               onChange={(e) => setDriverPhone(e.target.value)}
-              placeholder="رقم هاتف السائق للتنسيق (اختياري)"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.driverPhoneField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <PhoneIcon className="h-5 w-5" />
             </div>
           </div>
 
           <div className="pt-1">
-            <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-2 text-right">
-              نوع الشاحنة / السيارة
+            <label className={`block text-xs sm:text-sm font-bold text-slate-700 mb-2 ${isRtl ? 'text-right' : 'text-left'}`}>
+              {t(ui.profile.vehicleTypeField)}
             </label>
             <div className="flex flex-wrap gap-2 justify-start">
               {VEHICLE_TYPE_CHIPS.map((type) => {
@@ -150,7 +153,7 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
                     key={type}
                     type="button"
                     onClick={() => setVehicleType(type)}
-                    className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${isSelected
+                    className={`rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${isSelected
                         ? 'border-2 border-brand-600 bg-brand-50 text-brand-700 shadow-xs'
                         : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                       }`}
@@ -166,11 +169,11 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
           <div>
             <input
               type="text"
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="ملاحظات إضافية (اختياري)"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.checkout.orderNotes)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3 px-4 ${isRtl ? 'text-right placeholder:text-right' : 'text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
           </div>
 
@@ -183,7 +186,7 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
               className="h-4 w-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300 accent-brand-600"
             />
             <span className="text-xs sm:text-sm font-bold text-slate-600">
-              تعيين كمركبة وسائق افتراضي لتحميل أرض المصنع
+              {t(ui.profile.setDefaultVehicle)}
             </span>
           </label>
 
@@ -192,9 +195,9 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-2xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 py-3.5 text-center text-sm font-black text-white shadow-md shadow-brand-600/20 transition hover:scale-[1.01]"
+              className="w-full rounded-2xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 py-3.5 text-center text-sm font-black text-white shadow-md shadow-brand-600/20 transition hover:scale-[1.01] cursor-pointer"
             >
-              {isSubmitting ? 'جاري إضافة السيارة...' : 'إضافة السيارة'}
+              {isSubmitting ? t(ui.profile.savingVehicle) : t(ui.profile.saveVehicleBtn)}
             </button>
           </div>
         </form>
@@ -202,3 +205,4 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
     </div>
   );
 }
+

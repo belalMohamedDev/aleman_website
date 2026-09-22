@@ -139,11 +139,11 @@ export function HeroContentLayer({
           opacity: { delay: 0.9 },
           y: { repeat: Infinity, duration: 2, ease: 'easeInOut' },
         }}
-        aria-label="التمرير للأسفل"
+        aria-label={t(ui.home.scrollDownLabel)}
         className="hero-scroll-btn text-white/80 hover:text-white"
       >
         <span className="text-[11px] font-bold text-amber-400/90 tracking-wider">
-          {lang === 'ar' ? 'اكتشف المزيد' : 'Scroll Down'}
+          {t(ui.home.discoverMore)}
         </span>
         <ChevronDownIcon className="h-4 w-4 text-amber-400" />
       </motion.button>

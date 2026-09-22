@@ -1,4 +1,3 @@
-import React from 'react';
 import { FacebookIcon, MailIcon, MapPinIcon, PhoneIcon, YoutubeIcon } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';

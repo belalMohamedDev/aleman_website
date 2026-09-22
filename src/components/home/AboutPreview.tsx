@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2Icon, ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';

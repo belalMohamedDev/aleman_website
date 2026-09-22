@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -108,7 +108,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                         }`
                       }
                     >
-                      {lang === 'ar' ? 'الملف الشخصي والطلبات' : 'Profile & Orders'}
+                      {t(ui.profile.profileAndOrders)}
                     </NavLink>
                   </li>
                 )}
@@ -117,7 +117,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               {secondaryNav.length > 0 && (
                 <>
                   <p className="mt-6 px-4 text-xs font-bold uppercase tracking-wide text-ink-muted">
-                    {lang === 'ar' ? 'المزيد' : 'More'}
+                    {t(ui.nav.more)}
                   </p>
                   <ul className="mt-2 space-y-1">
                     {secondaryNav.map((item) => (

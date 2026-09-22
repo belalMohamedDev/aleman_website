@@ -12,7 +12,7 @@ type ApplicationTrackingModalProps = {
 };
 
 export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackingModalProps) {
-  const { lang, t } = useLang();
+  const { isRtl, t } = useLang();
   const [query, setQuery] = useState('');
   const { tracking, result, error, track, reset } = useJobTracking();
 
@@ -56,6 +56,7 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
             role="dialog"
             aria-modal="true"
             aria-labelledby="tracking-title"
+            dir={isRtl ? 'rtl' : 'ltr'}
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}
@@ -66,10 +67,10 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
                 <span className="rounded bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">
-                  {lang === 'ar' ? 'بوابة التوظيف' : 'Recruitment Portal'}
+                  {t(ui.recruitment.portalTitle)}
                 </span>
                 <h2 id="tracking-title" className="mt-1 text-xl font-extrabold text-ink">
-                  {lang === 'ar' ? 'متابعة حالة طلب التوظيف' : 'Track Application Status'}
+                  {t(ui.recruitment.trackModalTitle)}
                 </h2>
               </div>
               <button
@@ -85,14 +86,14 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
             {/* Search Input */}
             <form onSubmit={handleSearch} className="mt-6">
               <label htmlFor="track-query" className="block text-sm font-bold text-ink mb-1.5">
-                {lang === 'ar' ? 'رقم الطلب أو الرقم القومي' : 'Application Number or National ID'}
+                {t(ui.recruitment.trackQueryHeading)}
               </label>
               <div className="relative flex items-center">
                 <input
                   id="track-query"
                   type="text"
                   value={query}
-                  placeholder={lang === 'ar' ? 'مثال: APP-2026-0004 أو 2980101...' : 'e.g. APP-2026-0004 or National ID'}
+                  placeholder={t(ui.recruitment.trackAppNoOrNidPlaceholder)}
                   onChange={(e) => setQuery(e.target.value)}
                   className={`${controlClass} ltr:pr-24 rtl:pl-24`}
                 />
@@ -106,13 +107,11 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
                   ) : (
                     <SearchIcon className="h-3.5 w-3.5" />
                   )}
-                  <span>{lang === 'ar' ? 'بحث' : 'Search'}</span>
+                  <span>{t(ui.recruitment.trackBtn)}</span>
                 </button>
               </div>
               <p className="mt-2 text-xs text-ink-muted">
-                {lang === 'ar'
-                  ? 'يمكنك الاستعلام باستخدام كود الطلب المستلم بعد التقديم، أو الرقم القومي للمتقدم.'
-                  : 'You can search using the application code received or applicant National ID.'}
+                {t(ui.recruitment.trackHint)}
               </p>
             </form>
 
@@ -121,7 +120,7 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
               <div className="mt-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 <AlertCircleIcon className="h-5 w-5 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-bold">{lang === 'ar' ? 'لم يتم العثور على نتائج' : 'No results found'}</p>
+                  <p className="font-bold">{t(ui.recruitment.noResultsFound)}</p>
                   <p className="mt-0.5 text-xs text-red-600">{error}</p>
                 </div>
               </div>
@@ -133,7 +132,7 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
                 <div className="flex items-center justify-between border-b border-brand-100 pb-3">
                   <div>
                     <span className="text-[11px] font-bold text-slate-400 uppercase">
-                      {lang === 'ar' ? 'رقم الطلب' : 'Application #'}
+                      {t(ui.recruitment.appNumberLabel)}
                     </span>
                     <p className="text-lg font-mono font-black text-brand-700">
                       {result.application_number}
@@ -161,18 +160,18 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
                   </div>
                   <div className="flex items-center gap-2.5 text-ink-muted">
                     <CalendarIcon className="h-4 w-4 text-brand-500 shrink-0" />
-                    <span>{lang === 'ar' ? `تاريخ التقديم: ${result.application_date}` : `Applied on: ${result.application_date}`}</span>
+                    <span>{`${t(ui.recruitment.appliedOn)} ${result.application_date}`}</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-ink-muted">
                     <ClockIcon className="h-4 w-4 text-brand-500 shrink-0" />
-                    <span>{lang === 'ar' ? `المرحلة الحالية: ${result.stage_name}` : `Stage: ${result.stage_name}`}</span>
+                    <span>{`${t(ui.recruitment.currentStage)} ${result.stage_name}`}</span>
                   </div>
                 </div>
 
                 {result.notes && (
                   <div className="mt-4 rounded-xl bg-white p-3.5 border border-slate-100 text-xs text-ink-muted">
                     <span className="font-bold text-slate-700 block mb-1">
-                      {lang === 'ar' ? 'ملاحظات مسؤولي التوظيف:' : 'HR Notes:'}
+                      {t(ui.recruitment.hrNotes)}
                     </span>
                     {result.notes}
                   </div>

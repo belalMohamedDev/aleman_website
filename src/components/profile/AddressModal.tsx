@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { XIcon, MapPinIcon, HomeIcon, Building2Icon, FileTextIcon } from 'lucide-react';
 import type { CreateAddressDto } from '../../features/profile/types';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface AddressModalProps {
   isOpen: boolean;
@@ -9,6 +11,7 @@ interface AddressModalProps {
 }
 
 export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
+  const { t, isRtl } = useLanguage();
   const [city, setCity] = useState('');
   const [street, setStreet] = useState('');
   const [district, setDistrict] = useState('');
@@ -43,8 +46,8 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center sm:items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200" dir="rtl">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden text-right" dir="rtl">
+    <div className="fixed inset-0 z-50 flex items-center sm:items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200" dir={isRtl ? 'rtl' : 'ltr'}>
+      <div className={`relative w-full max-w-lg rounded-3xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${isRtl ? 'text-right' : 'text-left'}`}>
         {/* Top Drag Indicator */}
         <div className="w-12 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
 
@@ -53,30 +56,30 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
-            aria-label="إغلاق"
+            className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition cursor-pointer"
+            aria-label={t(ui.profile.closeModal)}
           >
             <XIcon className="h-5 w-5" />
           </button>
           <h3 className="text-base sm:text-lg font-black text-ink">
-            إضافة عنوان توصيل جديد
+            {t(ui.profile.addAddressModalTitle)}
           </h3>
           <div className="w-9" /> {/* Spacer to balance close button */}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3.5 text-right" dir="rtl">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           {/* 1. المدينة / المحافظة */}
           <div className="relative">
             <input
               type="text"
               required
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="المدينة / المحافظة *"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.governorateField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <MapPinIcon className="h-5 w-5" />
             </div>
           </div>
@@ -85,13 +88,13 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
           <div className="relative">
             <input
               type="text"
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
-              placeholder="المركز أو الحي (اختياري)"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.districtOptionalField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <Building2Icon className="h-5 w-5" />
             </div>
           </div>
@@ -101,13 +104,13 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
             <input
               type="text"
               required
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={street}
               onChange={(e) => setStreet(e.target.value)}
-              placeholder="اسم الشارع، القرية أو أقرب علامة مميزة *"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.streetField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <HomeIcon className="h-5 w-5" />
             </div>
           </div>
@@ -116,13 +119,13 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
           <div className="relative">
             <input
               type="text"
-              dir="rtl"
+              dir={isRtl ? 'rtl' : 'ltr'}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="ملاحظات إضافية للتوصيل (اختياري)"
-              className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-4 pr-11 text-right text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 placeholder:text-right focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition"
+              placeholder={t(ui.profile.addressNotesField)}
+              className={`w-full rounded-2xl border border-slate-200 bg-white py-3.5 ${isRtl ? 'pl-4 pr-11 text-right placeholder:text-right' : 'pr-4 pl-11 text-left placeholder:text-left'} text-xs sm:text-sm font-semibold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none transition`}
             />
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <div className={`absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none`}>
               <FileTextIcon className="h-5 w-5" />
             </div>
           </div>
@@ -136,7 +139,7 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
               className="h-4 w-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300 accent-brand-600"
             />
             <span className="text-xs sm:text-sm font-bold text-slate-600">
-              تعيين كعنوان افتراضي للشحن والتوصيل
+              {t(ui.profile.setDefaultAddress)}
             </span>
           </label>
 
@@ -145,9 +148,9 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-2xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 py-3.5 text-center text-sm font-black text-white shadow-md shadow-brand-600/20 transition hover:scale-[1.01]"
+              className="w-full rounded-2xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 disabled:opacity-50 py-3.5 text-center text-sm font-black text-white shadow-md shadow-brand-600/20 transition hover:scale-[1.01] cursor-pointer"
             >
-              {isSubmitting ? 'جاري حفظ العنوان...' : 'حفظ العنوان'}
+              {isSubmitting ? t(ui.profile.savingAddress) : t(ui.profile.saveAddressBtn)}
             </button>
           </div>
         </form>
@@ -155,3 +158,4 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
     </div>
   );
 }
+

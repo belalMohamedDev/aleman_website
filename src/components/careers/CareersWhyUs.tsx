@@ -1,30 +1,31 @@
 import { Reveal } from '../shared/Reveal';
 import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 import './careers-journey.css';
 
-const ADVANTAGES = [
-  {
-    id: 'stability',
-    title: 'صرح صناعي رائد ومستقر',
-    desc: 'العمل ضمن كيان صناعي عريق يضم مجمعات إنتاجية عملاقة وخبرة تتجاوز 33 عاماً في قيادة وتطوير صناعة الأعلاف بمصر.',
-  },
-  {
-    id: 'tech',
-    title: 'أحدث التقنيات والمعامل المتطورة',
-    desc: 'تجهيزات أوروبية وسويسرية متقدمة ومعامل مراقبة جودة معتمدة تمنحك خبرة تطبيقية دقيقة بمعايير دولية (ISO).',
-  },
-  {
-    id: 'culture',
-    title: 'بيئة عمل آمنة ومزايا وظيفية عادلة',
-    desc: 'التزام مطلق باشتراطات السلامة والصحة المهنية، مع توفير منظومة أجور وتأمين صحي واجتماعي ومكافآت تقديرية للمتميزين.',
-  },
-];
-
 export function CareersWhyUs() {
-  const { lang } = useLang();
+  const { isRtl, t } = useLang();
+
+  const advantages = [
+    {
+      id: 'stability',
+      title: t(ui.recruitment.adv1Title),
+      desc: t(ui.recruitment.adv1Desc),
+    },
+    {
+      id: 'tech',
+      title: t(ui.recruitment.adv2Title),
+      desc: t(ui.recruitment.adv2Desc),
+    },
+    {
+      id: 'culture',
+      title: t(ui.recruitment.adv3Title),
+      desc: t(ui.recruitment.adv3Desc),
+    },
+  ];
 
   return (
-    <section className="careers-why-section" aria-labelledby="careers-why-title" dir="rtl">
+    <section className="careers-why-section" aria-labelledby="careers-why-title" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Ambient background glow */}
       <div className="careers-why-ambient-glow" aria-hidden="true" />
 
@@ -32,23 +33,19 @@ export function CareersWhyUs() {
         {/* Section Header */}
         <div className="careers-why-header">
           <Reveal>
-
-
             <h2 id="careers-why-title" className="careers-why-title">
-              {lang === 'ar' ? 'لماذا تبدأ مسيرتك المهنية في الإيمان؟' : 'Why Build Your Career at Al-Eman?'}
+              {t(ui.recruitment.whyUsHeading)}
             </h2>
 
             <p className="careers-why-desc">
-              {lang === 'ar'
-                ? 'نوفر لك بيئة مثالية تجمع بين الخبرة الصناعية العميقة وفرص التطور والتميز المستمر'
-                : 'We provide an ideal environment combining deep industrial expertise with continuous growth'}
+              {t(ui.recruitment.whyUsSubtitle)}
             </p>
           </Reveal>
         </div>
 
         {/* Editorial Columns Layout - Open & Card-Free (Matching Image 3) */}
         <div className="careers-why-editorial-grid">
-          {ADVANTAGES.map((adv, idx) => (
+          {advantages.map((adv, idx) => (
             <Reveal key={adv.id} delay={idx * 0.12}>
               <div className="careers-why-editorial-col group">
                 <h3 className="careers-why-editorial-title">
@@ -66,3 +63,4 @@ export function CareersWhyUs() {
     </section>
   );
 }
+

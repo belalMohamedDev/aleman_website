@@ -4,11 +4,12 @@ import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion
 import type { CategoryId } from '../../types/content';
 import { categories } from '../../data/products';
 import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 import './product-categories.css';
 
 interface CategoryCardMeta {
   image: string;
-  desc: { ar: string; en: string };
+  descKey: 'categoryDescPoultry' | 'categoryDescLivestock' | 'categoryDescRabbit' | 'categoryDescDuck';
   barColor: string;
   badgeTextColor: string;
   count: number;
@@ -17,28 +18,28 @@ interface CategoryCardMeta {
 const CATEGORY_CARDS: Record<CategoryId, CategoryCardMeta> = {
   poultry: {
     image: '/categories/card_faded_poultry.webp',
-    desc: { ar: 'أعلاف تسمين وبياض متوازنة بأعلى معايير الجودة', en: 'Balanced Broiler & Layer Feeds' },
+    descKey: 'categoryDescPoultry',
     barColor: 'bg-amber-500',
     badgeTextColor: 'text-amber-700',
     count: 16,
   },
   livestock: {
     image: '/categories/card_faded_livestock.webp',
-    desc: { ar: 'أعلاف تسمين وحلاب لإنتاجية قصوى وجودة عالية', en: 'Beef & Dairy High Yield Feed' },
+    descKey: 'categoryDescLivestock',
     barColor: 'bg-emerald-600',
     badgeTextColor: 'text-emerald-700',
     count: 20,
   },
   rabbit: {
     image: '/categories/card_faded_rabbit.webp',
-    desc: { ar: 'تركيبات متخصصة ومناعية لتربية أرانب نموذجية', en: 'Specialized Rabbit Nutrition' },
+    descKey: 'categoryDescRabbit',
     barColor: 'bg-[#8c6239]',
     badgeTextColor: 'text-[#8c6239]',
     count: 8,
   },
   duck: {
     image: '/categories/card_faded_duck.webp',
-    desc: { ar: 'أعلاف تسمين وبياض بط بنسب بروتين دقيقة', en: 'Precision Protein Duck Feed' },
+    descKey: 'categoryDescDuck',
     barColor: 'bg-sky-600',
     badgeTextColor: 'text-sky-700',
     count: 12,
@@ -46,7 +47,7 @@ const CATEGORY_CARDS: Record<CategoryId, CategoryCardMeta> = {
 };
 
 export function ProductCategories() {
-  const { lang } = useLang();
+  const { lang, isRtl, t } = useLang();
   const reduced = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -71,7 +72,8 @@ export function ProductCategories() {
     <section
       ref={sectionRef}
       className="mx-auto max-w-site px-4 pt-4 sm:pt-8 pb-16 md:px-6 overflow-hidden"
-      aria-label={lang === 'ar' ? 'تصنيفات الأعلاف والمنتجات' : 'Product categories'}
+      dir={isRtl ? 'rtl' : 'ltr'}
+      aria-label={t(ui.home.categoriesAriaLabel)}
     >
       {/* Section Header with smooth scroll animation */}
       <motion.div
@@ -80,10 +82,10 @@ export function ProductCategories() {
       >
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight flex items-center justify-center gap-2.5 flex-wrap">
           <span className="text-emerald-700 font-black">
-            {lang === 'ar' ? 'تغذية متخصصة' : 'Specialized Nutrition'}
+            {t(ui.home.categoriesSpecialized)}
           </span>
           <span className="text-ink font-black">
-            {lang === 'ar' ? 'لكل نوع' : 'for Every Need'}
+            {t(ui.home.categoriesForEveryNeed)}
           </span>
           <img
             src="/categories/icon_two_leaves.webp"
@@ -93,9 +95,7 @@ export function ProductCategories() {
         </h2>
 
         <p className="text-sm sm:text-base font-bold text-slate-500 leading-relaxed max-w-xl mx-auto">
-          {lang === 'ar'
-            ? 'حلول غذائية متكاملة مصممة حسب احتياجات كل نوع من الحيوانات'
-            : 'Integrated nutritional solutions tailored to the specific needs of each animal'}
+          {t(ui.home.categoriesLead)}
         </p>
 
         <div className="pt-1.5 flex justify-center">
@@ -105,7 +105,7 @@ export function ProductCategories() {
               alt=""
               className="w-4 h-4 object-contain inline-block"
             />
-            <span>{lang === 'ar' ? 'جودة.. لنمو أفضل' : 'Quality.. for Better Growth'}</span>
+            <span>{t(ui.home.categoriesBadge)}</span>
           </span>
         </div>
       </motion.div>
@@ -115,6 +115,7 @@ export function ProductCategories() {
         {categories.map((category, index) => {
           const meta = CATEGORY_CARDS[category.id];
           const colParallax = index % 2 === 0 ? parallaxYEven : parallaxYOdd;
+          const categoryTitle = lang === 'ar' ? category.ar : category.en;
 
           return (
             <motion.div
@@ -138,7 +139,7 @@ export function ProductCategories() {
                 <div className="relative w-full aspect-[1.25/1] overflow-hidden">
                   <motion.img
                     src={meta.image}
-                    alt={lang === 'ar' ? category.ar : category.en}
+                    alt={categoryTitle}
                     loading="lazy"
                     decoding="async"
                     style={{ y: photoParallaxY }}
@@ -149,7 +150,7 @@ export function ProductCategories() {
                 {/* Info & Typography Section */}
                 <div className="p-4 sm:p-5 pt-1 pb-6 text-center flex flex-col items-center w-full mt-auto">
                   <h3 className="text-xl sm:text-2xl font-black text-ink leading-tight transition-colors group-hover:text-brand-700">
-                    {lang === 'ar' ? category.ar : category.en}
+                    {categoryTitle}
                   </h3>
 
                   {/* Subtle Colored Accent Bar */}
@@ -158,7 +159,7 @@ export function ProductCategories() {
                   />
 
                   <p className="text-xs sm:text-sm font-bold text-slate-600 leading-relaxed max-w-[240px]">
-                    {lang === 'ar' ? meta.desc.ar : meta.desc.en}
+                    {t(ui.home[meta.descKey])}
                   </p>
                 </div>
               </Link>

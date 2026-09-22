@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLang } from '../i18n/LanguageContext';
 import { ui } from '../i18n/ui';

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { MapPinIcon, PlusIcon, Trash2Icon, StarIcon, CheckCircle2 } from 'lucide-react';
 import type { UserAddress, CreateAddressDto } from '../../features/profile/types';
 import { AddressModal } from './AddressModal';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface AddressesTabProps {
   addresses: UserAddress[];
@@ -24,6 +26,7 @@ export function AddressesTab({
   onOpenModal,
   onCloseModal,
 }: AddressesTabProps) {
+  const { t } = useLanguage();
   const [internalModalOpen, setInternalModalOpen] = useState(false);
   const showModal = isModalOpen !== undefined ? isModalOpen : internalModalOpen;
   const handleOpen = onOpenModal || (() => setInternalModalOpen(true));
@@ -33,16 +36,16 @@ export function AddressesTab({
     <div className="space-y-6">
       {isLoading ? (
         <div className="p-12 text-center text-sm font-bold text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-xs">
-          جاري تحميل العناوين...
+          {t(ui.profile.loadingAddresses)}
         </div>
       ) : addresses.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center shadow-xs">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 mb-3">
             <MapPinIcon className="h-8 w-8" />
           </div>
-          <h3 className="text-base font-black text-ink">لا توجد عناوين مسجلة</h3>
+          <h3 className="text-base font-black text-ink">{t(ui.profile.noAddressesTitle)}</h3>
           <p className="mt-1 text-xs text-slate-400">
-            أضف عناوين مزارعك أو مخازنك لتسهيل وتوفير وقت حساب الشحن عند إنشاء الطلبات.
+            {t(ui.profile.noAddressesDesc)}
           </p>
           <button
             type="button"
@@ -50,7 +53,7 @@ export function AddressesTab({
             className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-bold text-white transition cursor-pointer"
           >
             <PlusIcon className="h-3.5 w-3.5" />
-            <span>إضافة أول عنوان</span>
+            <span>{t(ui.profile.addFirstAddress)}</span>
           </button>
         </div>
       ) : (
@@ -83,7 +86,7 @@ export function AddressesTab({
                         )}
                       </div>
                       <span className="block text-[11px] text-slate-400 mt-0.5">
-                        عنوان شحن وتوصيل
+                        {t(ui.orders.shippingAddressHeading)}
                       </span>
                     </div>
                   </div>
@@ -91,7 +94,7 @@ export function AddressesTab({
                   {address.isDefault && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 text-xs font-bold shrink-0">
                       <StarIcon className="h-3 w-3 fill-emerald-600 text-emerald-600" />
-                      <span>الافتراضي</span>
+                      <span>{t(ui.profile.defaultBadge)}</span>
                     </span>
                   )}
                 </div>
@@ -99,13 +102,13 @@ export function AddressesTab({
                 {/* Body: Street Address & Notes (Clean List) */}
                 <div className="my-3 py-3 border-y border-slate-100 space-y-2 text-xs">
                   <div className="flex items-start gap-1.5 text-slate-600">
-                    <span className="text-slate-400 shrink-0 font-medium">العنوان:</span>
+                    <span className="text-slate-400 shrink-0 font-medium">{t(ui.checkout.shippingAddress)}:</span>
                     <span className="font-bold text-ink leading-relaxed">{address.street}</span>
                   </div>
 
                   {address.notes && (
                     <div className="pt-1.5 border-t border-slate-50 flex items-start gap-1 text-[11px] text-slate-500">
-                      <span className="text-slate-400 shrink-0 font-medium">ملاحظات:</span>
+                      <span className="text-slate-400 shrink-0 font-medium">{t(ui.checkout.orderNotes)}:</span>
                       <span className="line-clamp-2 leading-relaxed">{address.notes}</span>
                     </div>
                   )}
@@ -117,7 +120,7 @@ export function AddressesTab({
                 {address.isDefault ? (
                   <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>معتمد كافتراضي للشحن</span>
+                    <span>{t(ui.profile.defaultBadge)}</span>
                   </span>
                 ) : (
                   <button
@@ -126,22 +129,21 @@ export function AddressesTab({
                     className="inline-flex items-center gap-1 text-slate-500 hover:text-emerald-700 font-semibold transition cursor-pointer"
                   >
                     <StarIcon className="h-3.5 w-3.5 text-slate-400" />
-                    <span>تعيين كافتراضي</span>
+                    <span>{t(ui.profile.setAsDefault)}</span>
                   </button>
                 )}
 
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('هل تريد بالتأكيد حذف هذا العنوان؟')) {
+                    if (window.confirm(t(ui.profile.deleteConfirm))) {
                       onRemoveAddress(address.id);
                     }
                   }}
                   className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 font-semibold transition cursor-pointer"
-                  title="حذف العنوان"
                 >
                   <Trash2Icon className="h-3.5 w-3.5" />
-                  <span>حذف</span>
+                  <span>{t(ui.profile.delete)}</span>
                 </button>
               </div>
             </div>

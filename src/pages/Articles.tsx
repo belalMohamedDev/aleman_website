@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { ArticleCategoryId } from '../types/content';
@@ -9,7 +9,6 @@ import { PageHeader } from '../components/shared/PageHeader';
 import { ArticleCard } from '../components/articles/ArticleCard';
 import { CardSkeletonGrid } from '../components/shared/Skeleton';
 import { EmptyState } from '../components/shared/EmptyState';
-import { PlaceholderNotice } from '../components/shared/PlaceholderNotice';
 
 export function Articles() {
   const { t } = useLang();

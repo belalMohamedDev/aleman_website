@@ -16,10 +16,13 @@ import { MerchantOrdersTab } from '../components/profile/MerchantOrdersTab';
 import { CustomersTab } from '../components/profile/CustomersTab';
 import { AddressesTab } from '../components/profile/AddressesTab';
 import { VehiclesTab } from '../components/profile/VehiclesTab';
+import { useLanguage } from '../i18n/LanguageContext';
+import { ui } from '../i18n/ui';
 
 export function Profile() {
   const navigate = useNavigate();
   const { user, isAuthenticated, isLoading: isAuthLoading, openAuthModal } = useAuth();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<ProfileTabType>('orders');
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -49,7 +52,7 @@ export function Profile() {
   if (isAuthLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-sm font-bold text-slate-400">جاري التحقق من بيانات الحساب...</p>
+        <p className="text-sm font-bold text-slate-400">{t(ui.profile.verifyingAccount)}</p>
       </div>
     );
   }
@@ -69,17 +72,17 @@ export function Profile() {
   const getTabTitle = () => {
     switch (activeTab) {
       case 'orders':
-        return 'الطلبات';
+        return t(ui.profile.tabOrders);
       case 'merchant-orders':
-        return 'طلبات عملائي';
+        return t(ui.profile.tabMerchantOrders);
       case 'customers':
-        return 'قاعدة عملائي';
+        return t(ui.profile.tabCustomers);
       case 'addresses':
-        return 'العناوين المحفوظة';
+        return t(ui.profile.tabAddresses);
       case 'vehicles':
-        return 'أسطول السيارات والسائقين';
+        return t(ui.profile.tabVehicles);
       default:
-        return 'لوحة التحكم';
+        return t(ui.profile.dashboardTitle);
     }
   };
 
@@ -126,7 +129,7 @@ export function Profile() {
                   className="inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-black text-white shadow-xs transition hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
                 >
                   <PlusIcon className="h-4 w-4" />
-                  <span>إضافة عنوان جديد</span>
+                  <span>{t(ui.profile.addNewAddressBtn)}</span>
                 </button>
               )}
 
@@ -137,10 +140,11 @@ export function Profile() {
                   className="inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-black text-white shadow-xs transition hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0"
                 >
                   <PlusIcon className="h-4 w-4" />
-                  <span>إضافة سيارة وسائق</span>
+                  <span>{t(ui.profile.addNewVehicleBtn)}</span>
                 </button>
               )}
             </div>
+
 
             {/* Tab Contents */}
             {activeTab === 'orders' && (

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ClockIcon } from 'lucide-react';
 import { feedPriceRows } from '../data/feedPrices';
 import { useLang } from '../i18n/LanguageContext';

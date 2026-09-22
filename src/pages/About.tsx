@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useLang } from '../i18n/LanguageContext';
+import { ui } from '../i18n/ui';
 import { AboutMissionMap } from '../components/about/AboutMissionMap';
 import { AboutValuesMap } from '../components/about/AboutValuesMap';
 import { AboutMissionValuesBridge } from '../components/about/AboutMissionValuesBridge';
@@ -7,50 +8,17 @@ import { AboutWhyUs } from '../components/about/AboutWhyUs';
 import { AboutStats } from '../components/about/AboutStats';
 
 export function About() {
-  const { dir } = useLang();
-
-  const gallery = [
-    {
-      title: 'معامل الفحص ومراقبة الجودة المتطورة',
-      subtitle: 'فحص فوري وتحليل كيميائي لكافة الخامات قبل دخول التصنيع',
-      image: '/e89e15e1-9e1a-4084-9beb-18bbd3298ea5.jpg',
-      badge: 'رقابة معملية صارمة (ISO)',
-      tagColor: 'bg-emerald-600',
-    },
-    {
-      title: 'خطوط الإنتاج المؤتمتة والتحبيب بالبخار',
-      subtitle: 'أحدث التجهيزات الصناعية السويسرية لإنتاج أعلاف محببة بأعلى نقاء',
-      image: '/3e951125-4919-4762-a40a-229dd36ecc10.jpg',
-      badge: 'أعلى تكنولوجيا تصنيع',
-      tagColor: 'bg-brand-600',
-    },
-    {
-      title: 'أجود المواد الخام النباتية الطبيعية',
-      subtitle: 'ذرة صفراء وكسب صويا نقي 100% مدعمة بالفيتامينات والمعادن',
-      image: '/cfe458d9-a06e-424e-9089-dbe2d0612755.jpg',
-      badge: 'خامات نباتية نقية 100%',
-      tagColor: 'bg-amber-600',
-    },
-    {
-      title: 'أعلى معدلات نمو وأوزان قياسية في المزارع',
-      subtitle: 'نتائج حقلية موثقة في مزارع التسمين والبياض بمختلف المحافظات',
-      image: '/dd2a3da5-18fc-4b1f-8baf-a9936255e9be.jpg',
-      badge: 'أعلى معدل تحويل غذائي',
-      tagColor: 'bg-blue-600',
-    },
-  ];
-
-
+  const { isRtl, t } = useLang();
 
   return (
-    <div className="min-h-screen bg-canvas pb-24 overflow-x-hidden">
+    <div className="min-h-screen bg-canvas pb-24 overflow-x-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Hero Header Section with Factory Background & Dynamic Glow */}
       <section className="relative overflow-hidden bg-[#031b10] text-white pt-28 pb-24 sm:pt-36 sm:pb-28 md:pt-40 md:pb-36">
         {/* Background Image of Factory with High Visibility & Cinematic Overlays */}
         <div className="absolute inset-0 z-0">
           <img
             src="/hero_farm_bg.webp"
-            alt="صروح ومصانع مجموعة شركات الايمان"
+            alt={t(ui.brand.name)}
             loading="lazy"
             decoding="async"
             className="h-full w-full object-cover object-[center_right] lg:object-center opacity-90 filter brightness-105 contrast-105 scale-100 transition-transform duration-1000"
@@ -87,15 +55,13 @@ export function About() {
 
           <div className="max-w-3xl">
             {/* Animated Floating Eyebrow Badge */}
-
-
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight text-white mb-6 tracking-tight drop-shadow-md"
             >
-              أكثر من ثلاثة عقود في صدارة صناعة الأعلاف في مصر
+              {t(ui.about.heroHeading)}
             </motion.h1>
 
             <motion.p
@@ -104,20 +70,14 @@ export function About() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-base sm:text-lg text-emerald-100/95 leading-relaxed font-medium mb-8 max-w-2xl drop-shadow"
             >
-              بدأت رحلتنا عام 1990 بشغف عميق والتزام مطلق بأعلى معايير الجودة الشاملة، لنبني صروحاً صناعية تمد المربي المصري بأجود الأعلاف المتطورة لضمان أعلى إنتاجية وأفضل ربح.
+              {t(ui.about.heroLead)}
             </motion.p>
-
-            {/* Quick Hero CTA Buttons */}
-
           </div>
         </div>
       </section>
 
       {/* Facts & Figures Bar (حقائق وأرقام مع أنيميشن وتأثيرات بصرية) */}
       <AboutStats />
-
-      {/* Visual Facility Showcase Gallery (معرض صور الصروح الصناعية والمعامل) */}
-
 
       {/* Company History & Journey (تاريخ شركة الإيمان مع صورة المجمع عند الغروب) */}
       <section className="mx-auto max-w-[1400px] px-4 md:px-8 pt-8 sm:pt-10 md:pt-14 pb-8 md:pb-12">
@@ -130,21 +90,19 @@ export function About() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-7 space-y-5"
           >
-
-
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-ink leading-snug">
-              تاريخ شركة الإيمان للأعلاف
+              {t(ui.about.historyTitle)}
             </h2>
 
             <div className="space-y-3.5 text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
               <p>
-                تأسست شركة الإيمان عام <strong className="text-brand-700 font-black">1990</strong>، بشغف كبير وشعور شديد بالمسؤولية تجاه الجودة الشاملة لتأسيس قواعد الثقة الراسخة مع العملاء ودعم وتنمية أصحاب المصلحة في السوق المصري.
+                {t(ui.about.historyP1)}
               </p>
               <p>
-                لأكثر من <strong className="text-ink font-black">30 عاماً</strong> من الإشادة بقيم الصدق والنزاهة والعمل الدؤوب، نجحت شركة الإيمان في تلبية احتياجات السوق المصري، بقدرة إنتاجية كبيرة وفورية بمصانع الأعلاف الثلاثة، والتي وضعت مجموعة شركات الإيمان كواحدة من أكبر قلاع تصنيع الأعلاف الموثوقة في جمهورية مصر العربية.
+                {t(ui.about.historyP2)}
               </p>
               <p>
-                نعتمد على نخبة من أمهر الخبراء والمهندسين وأحدث خطوط الإنتاج المؤتمتة بالكامل لضمان التوافق مع أعلى معايير الجودة العالمية ومعدلات التحويل القياسية.
+                {t(ui.about.historyP3)}
               </p>
             </div>
           </motion.div>
@@ -174,7 +132,7 @@ export function About() {
             >
               <img
                 src="/image.webp"
-                alt="شعار مجموعة شركات الايمان"
+                alt={t(ui.brand.name)}
                 loading="lazy"
                 decoding="async"
                 className="h-52 sm:h-64 md:h-72 lg:h-80 w-auto max-w-full object-contain filter drop-shadow-[0_20px_28px_rgba(0,0,0,0.1)] select-none transition-transform duration-300"

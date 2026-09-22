@@ -8,17 +8,15 @@ import {
   LandmarkIcon,
   AlertCircleIcon,
   ArrowRightIcon,
+  ArrowLeftIcon,
   CheckCircle2Icon,
   Loader2Icon,
-  SparklesIcon,
   PlusIcon,
-
   CalendarIcon,
   PhoneIcon,
   CheckIcon,
   MapPinIcon,
   ShoppingBagIcon,
-
   ChevronDownIcon,
 } from 'lucide-react';
 import { useCheckout, getRecommendedTruckType } from '../features/orders/useCheckout';
@@ -27,32 +25,13 @@ import { useAuth } from '../features/auth/AuthContext';
 import { useCart } from '../features/cart/CartContext';
 import { VehicleModal } from '../components/profile/VehicleModal';
 import { AddressModal } from '../components/profile/AddressModal';
-
-const TRUCK_TYPES_CONFIG = [
-  {
-    type: TruckType.Dababa,
-    name: 'دبابة',
-    capacityLabel: 'حتى 2 طن',
-    maxCapacityTons: 2,
-    description: 'شاحنة خفيفة (حمولة حتى 2 طن)',
-  },
-  {
-    type: TruckType.Jumbo,
-    name: 'جامبو',
-    capacityLabel: 'حتى 7 طن',
-    maxCapacityTons: 7,
-    description: 'شاحنة متوسطة (حمولة حتى 7 طن)',
-  },
-  {
-    type: TruckType.Trela,
-    name: 'تريلا',
-    capacityLabel: 'حتى 25 طن',
-    maxCapacityTons: 25,
-    description: 'شاحنة ثقيلة (حمولة حتى 25 طن)',
-  },
-];
+import { useLang } from '../i18n/LanguageContext';
+import { ui } from '../i18n/ui';
 
 export function Checkout() {
+  const { t, dir } = useLang();
+  const BackArrow = dir === 'rtl' ? ArrowRightIcon : ArrowLeftIcon;
+
   const {
     orderType,
     setOrderType,
@@ -105,8 +84,29 @@ export function Checkout() {
   const { totalItemsCount } = useCart();
   const [showItemsDetails, setShowItemsDetails] = useState(false);
 
-
-
+  const truckTypesConfig = [
+    {
+      type: TruckType.Dababa,
+      name: t(ui.checkout.truckDababaName),
+      capacityLabel: t(ui.checkout.truckDababaCap),
+      maxCapacityTons: 2,
+      description: t(ui.checkout.truckDababaDesc),
+    },
+    {
+      type: TruckType.Jumbo,
+      name: t(ui.checkout.truckJumboName),
+      capacityLabel: t(ui.checkout.truckJumboCap),
+      maxCapacityTons: 7,
+      description: t(ui.checkout.truckJumboDesc),
+    },
+    {
+      type: TruckType.Trela,
+      name: t(ui.checkout.truckTrelaName),
+      capacityLabel: t(ui.checkout.truckTrelaCap),
+      maxCapacityTons: 25,
+      description: t(ui.checkout.truckTrelaDesc),
+    },
+  ];
 
   if (items.length === 0) {
     return (
@@ -114,21 +114,21 @@ export function Checkout() {
         <div className="w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 relative flex items-center justify-center mb-4">
           <img
             src="/aleman_parallax_assets/emptyCart.webp"
-            alt="سلة المشتريات فارغة"
+            alt={t(ui.cart.emptyTitle)}
             className="w-full h-full object-contain filter drop-shadow-lg animate-in fade-in zoom-in-95 duration-300"
             loading="eager"
             decoding="async"
           />
         </div>
-        <h2 className="text-2xl font-black text-ink">سلة المشتريات فارغة</h2>
+        <h2 className="text-2xl font-black text-ink">{t(ui.cart.emptyTitle)}</h2>
         <p className="text-sm font-semibold text-slate-500 mt-1.5 max-w-sm">
-          يرجى إضافة أعلاف إلى سلة المشتريات قبل التوجه إلى صفحة إتمام الطلب.
+          {t(ui.cart.emptyBody)}
         </p>
         <Link
           to="/products"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-brand-600 transition"
         >
-          <span>تصفح المنتجات</span>
+          <span>{t(ui.cart.startShopping)}</span>
         </Link>
       </div>
     );
@@ -143,12 +143,12 @@ export function Checkout() {
             to="/cart"
             className="inline-flex items-center gap-2 text-xs font-bold text-brand-600 hover:text-brand-700 transition mb-2"
           >
-            <ArrowRightIcon className="h-4 w-4" />
-            <span>الرجوع للسلة</span>
+            <BackArrow className="h-4 w-4" />
+            <span>{t(ui.common.back)}</span>
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-black text-ink">إتمام طلب الشراء</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-ink">{t(ui.checkout.pageTitle)}</h1>
           <p className="text-sm font-semibold text-slate-500 mt-1">
-            اختر طريقة الاستلام وأدخل بيانات الشحن لتأكيد الطلب
+            {t(ui.checkout.deliveryOptionDesc)}
           </p>
         </div>
 
@@ -158,8 +158,7 @@ export function Checkout() {
             <div className="flex items-center gap-3">
               <AlertCircleIcon className="h-5 w-5 text-amber-600 flex-shrink-0" />
               <div>
-                <p className="text-sm font-extrabold">لإتمام الطلب يرجى تسجيل الدخول أو إنشاء حساب</p>
-                <p className="text-xs text-amber-700">لتتمكن من تتبع شحنتك وحفظ فواتير الشراء</p>
+                <p className="text-sm font-extrabold">{t(ui.auth.unauthorizedNotice)}</p>
               </div>
             </div>
             <button
@@ -167,13 +166,13 @@ export function Checkout() {
               onClick={openAuthModal}
               className="rounded-full bg-amber-600 hover:bg-amber-700 px-5 py-2 text-xs font-bold text-white shadow-sm transition"
             >
-              تسجيل الدخول / حساب جديد
+              {t(ui.auth.loginBtn)}
             </button>
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Main Form (Left/Center in RTL) */}
+          {/* Main Form */}
           <div className="lg:col-span-8 space-y-6">
             {/* Step 1: Order Type Selection */}
             <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200/80">
@@ -181,16 +180,17 @@ export function Checkout() {
                 <span className="h-6 w-6 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center text-xs font-black">
                   1
                 </span>
-                <span>طريقة استلام الأعلاف</span>
+                <span>{t(ui.checkout.orderTypeTitle)}</span>
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Delivery Option */}
                 <label
-                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-5 flex flex-col justify-between transition ${orderType === OrderType.Delivery
-                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
-                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
-                    }`}
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-5 flex flex-col justify-between transition ${
+                    orderType === OrderType.Delivery
+                      ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                      : 'border-slate-200/90 hover:border-slate-300 bg-white'
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -198,8 +198,8 @@ export function Checkout() {
                         <TruckIcon className="h-5 w-5" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-black text-ink">توصيل بشاحنة إلى الموقع</h3>
-                        <p className="text-xs text-slate-500 mt-0.5">شحن مباشر للمزرعة أو المستودع</p>
+                        <h3 className="text-sm font-black text-ink">{t(ui.checkout.deliveryOption)}</h3>
+                        <p className="text-xs text-slate-500 mt-0.5">{t(ui.checkout.deliveryOptionDesc)}</p>
                       </div>
                     </div>
                     <input
@@ -214,10 +214,11 @@ export function Checkout() {
 
                 {/* Pickup Option */}
                 <label
-                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-5 flex flex-col justify-between transition ${orderType === OrderType.Pickup
-                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
-                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
-                    }`}
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-5 flex flex-col justify-between transition ${
+                    orderType === OrderType.Pickup
+                      ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                      : 'border-slate-200/90 hover:border-slate-300 bg-white'
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -225,8 +226,8 @@ export function Checkout() {
                         <WarehouseIcon className="h-5 w-5" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-black text-ink">استلام مباشر من المصنع</h3>
-                        <p className="text-xs text-slate-500 mt-0.5">تحميل بسيارة العميل من الصوامع</p>
+                        <h3 className="text-sm font-black text-ink">{t(ui.checkout.pickupOption)}</h3>
+                        <p className="text-xs text-slate-500 mt-0.5">{t(ui.checkout.pickupOptionDesc)}</p>
                       </div>
                     </div>
                     <input
@@ -246,7 +247,6 @@ export function Checkout() {
               <>
                 {/* Step 2: Delivery Address Card */}
                 <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200/80 space-y-5">
-                  {/* Header matching user design */}
                   <div className="flex items-center justify-between flex-wrap gap-3 border-b border-slate-100 pb-4">
                     <div className="flex items-center gap-2.5">
                       <span className="h-6 w-6 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center text-xs font-black">
@@ -254,7 +254,7 @@ export function Checkout() {
                       </span>
                       <div className="flex items-center gap-2">
                         <MapPinIcon className="h-5 w-5 text-brand-600" />
-                        <h2 className="text-base font-black text-ink">عنوان التوصيل</h2>
+                        <h2 className="text-base font-black text-ink">{t(ui.checkout.shippingAddressTitle)}</h2>
                       </div>
                     </div>
 
@@ -264,13 +264,9 @@ export function Checkout() {
                       className="inline-flex items-center gap-1.5 rounded-xl border border-brand-600/30 bg-brand-50/70 hover:bg-brand-100/70 px-3.5 py-1.5 text-xs font-black text-brand-700 transition hover:scale-105 active:scale-95"
                     >
                       <PlusIcon className="h-3.5 w-3.5" />
-                      <span>إضافة عنوان</span>
+                      <span>{t(ui.checkout.addNewAddress)}</span>
                     </button>
                   </div>
-
-                  <p className="text-xs text-slate-500">
-                    يرجى تحديد عنوان التوصيل لحساب أقرب مسار وتكلفة الشحن المناسبة لحجم حمولتك بدقة.
-                  </p>
 
                   {/* Saved Addresses Cards */}
                   {addresses.length > 0 ? (
@@ -282,37 +278,36 @@ export function Checkout() {
                             <div
                               key={`addr-${addr.id}-${index}`}
                               onClick={() => setSelectedAddressId(addr.id)}
-                              className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 transition ${isSelected
-                                ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
-                                : 'border-slate-200/90 bg-white hover:border-slate-300'
-                                }`}
+                              className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 transition ${
+                                isSelected
+                                  ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                                  : 'border-slate-200/90 bg-white hover:border-slate-300'
+                              }`}
                             >
                               <div className="flex items-start justify-between gap-3">
-                                {/* Address Info + Custom Checkmark */}
                                 <div className="flex items-start gap-3 flex-1 min-w-0">
                                   <div
-                                    className={`mt-0.5 h-6 w-6 rounded-full flex items-center justify-center shrink-0 transition ${isSelected
-                                      ? 'bg-brand-500 text-white shadow-xs'
-                                      : 'border-[1.5px] border-slate-300 bg-white'
-                                      }`}
+                                    className={`mt-0.5 h-6 w-6 rounded-full flex items-center justify-center shrink-0 transition ${
+                                      isSelected
+                                        ? 'bg-brand-500 text-white shadow-xs'
+                                        : 'border-[1.5px] border-slate-300 bg-white'
+                                    }`}
                                   >
                                     {isSelected && <CheckIcon className="h-3.5 w-3.5 stroke-[3]" />}
                                   </div>
 
                                   <div className="flex-1 min-w-0">
-                                    {/* Row 1: Label / City + Default Badge */}
                                     <div className="flex items-center gap-2 flex-wrap">
                                       <span className="text-sm font-black text-ink">
                                         {addr.label || `${addr.city}${addr.district ? ` - ${addr.district}` : ''}`}
                                       </span>
                                       {addr.isDefault && (
                                         <span className="rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold">
-                                          الافتراضي
+                                          {t(ui.profile.setDefaultAddress)}
                                         </span>
                                       )}
                                     </div>
 
-                                    {/* Row 2: Location details */}
                                     <div className="flex items-center gap-1.5 mt-2 text-xs text-slate-600 font-bold">
                                       <MapPinIcon className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                                       <span>
@@ -322,16 +317,14 @@ export function Checkout() {
                                       </span>
                                     </div>
 
-                                    {/* Row 3: Notes if any */}
                                     {addr.notes && (
                                       <p className="text-xs text-slate-400 font-medium mt-1.5">
-                                        ملاحظات: {addr.notes}
+                                        {t(ui.common.notes)}: {addr.notes}
                                       </p>
                                     )}
                                   </div>
                                 </div>
 
-                                {/* City Badge */}
                                 <div className="shrink-0">
                                   <span className="rounded-lg bg-slate-100 text-slate-600 px-2.5 py-1 text-xs font-bold">
                                     {addr.city}
@@ -344,81 +337,64 @@ export function Checkout() {
                       </div>
                     </div>
                   ) : (
-                    /* Empty state if user has no saved addresses yet */
                     <div className="space-y-4">
                       <div className="rounded-2xl border border-dashed border-brand-200 bg-brand-50/20 p-5 text-center">
                         <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-100/70 text-brand-700 mb-2">
                           <MapPinIcon className="h-5 w-5" />
                         </div>
-                        <p className="text-xs font-bold text-slate-700">لم تقم بإضافة عنوان توصيل بعد</p>
-                        <p className="text-[11px] text-slate-400 mt-1 mb-3">
-                          أضف عنوان مزرعتك أو مستودعك لحساب المسافة وسعر الشاحنة بدقة
-                        </p>
+                        <p className="text-xs font-bold text-slate-700">{t(ui.checkout.noSavedAddresses)}</p>
                         <button
                           type="button"
                           onClick={() => setIsAddressModalOpen(true)}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 px-4 py-2 text-xs font-black text-white shadow-sm transition hover:scale-105 active:scale-95"
+                          className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 px-4 py-2 text-xs font-black text-white shadow-sm transition hover:scale-105 active:scale-95"
                         >
                           <PlusIcon className="h-3.5 w-3.5" />
-                          <span>إضافة عنوان جديد</span>
+                          <span>{t(ui.checkout.addNewAddress)}</span>
                         </button>
-                      </div>
-
-                      <div className="relative flex items-center justify-center">
-                        <div className="border-t border-slate-200 w-full" />
-                        <span className="bg-white px-3 text-[11px] font-bold text-slate-400 shrink-0">أو الإدخال السريع</span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
                           <label className="block text-xs font-bold text-slate-700 mb-1">
-                            المدينة / المحافظة <span className="text-red-500">*</span>
+                            {t(ui.profile.cityField)} <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
-                            dir="rtl"
                             value={newAddress.city}
                             onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                            placeholder="مثال: الشرقية، الدقهلية..."
-                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink text-right placeholder:text-right focus:border-brand-500 focus:outline-none"
+                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">المركز / الحي (اختياري)</label>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">{t(ui.profile.districtField)}</label>
                           <input
                             type="text"
-                            dir="rtl"
                             value={newAddress.district || ''}
                             onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
-                            placeholder="مثال: بلبيس، الزقازيق..."
-                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink text-right placeholder:text-right focus:border-brand-500 focus:outline-none"
+                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                           />
                         </div>
 
                         <div className="sm:col-span-2">
                           <label className="block text-xs font-bold text-slate-700 mb-1">
-                            الشارع / العنوان بالتفصيل <span className="text-red-500">*</span>
+                            {t(ui.profile.streetField)} <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
-                            dir="rtl"
                             value={newAddress.street}
                             onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
-                            placeholder="اسم الطريق، القرية، المزرعة أو أقرب علامة مميزة"
-                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink text-right placeholder:text-right focus:border-brand-500 focus:outline-none"
+                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                           />
                         </div>
 
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-bold text-slate-700 mb-1">ملاحظات إضافية للتوصيل (اختياري)</label>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">{t(ui.profile.addressNotesField)}</label>
                           <input
                             type="text"
-                            dir="rtl"
                             value={newAddress.notes || ''}
                             onChange={(e) => setNewAddress({ ...newAddress, notes: e.target.value })}
-                            placeholder="أي تعليمات أو ملاحظات إضافية للتوصيل…"
-                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink text-right placeholder:text-right focus:border-brand-500 focus:outline-none"
+                            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                           />
                         </div>
                       </div>
@@ -435,21 +411,13 @@ export function Checkout() {
                       </span>
                       <div className="flex items-center gap-2">
                         <TruckIcon className="h-5 w-5 text-brand-600" />
-                        <h2 className="text-base font-black text-ink">نوع سيارة الشحن</h2>
+                        <h2 className="text-base font-black text-ink">{t(ui.checkout.truckSelectionTitle)}</h2>
                       </div>
                     </div>
-
-                    {/* <span className="text-xs font-bold text-slate-500">
-                      حمولة الطلب: <span className="text-brand-700 font-black">{totalWeightTons} طن</span>
-                    </span> */}
                   </div>
 
-                  <p className="text-xs text-slate-500">
-                    اختر سيارة النقل المناسبة لحجم حمولتك لتحديد تكلفة الشحن المناسبة:
-                  </p>
-
                   <div className="space-y-3">
-                    {TRUCK_TYPES_CONFIG.map((truck) => {
+                    {truckTypesConfig.map((truck) => {
                       const isSelected = truckType === truck.type;
                       const isRecommended = getRecommendedTruckType(totalWeightTons) === truck.type;
                       const exceedsCapacity = totalWeightTons > truck.maxCapacityTons;
@@ -463,10 +431,11 @@ export function Checkout() {
                         <label
                           key={truck.type}
                           onClick={() => setTruckType(truck.type)}
-                          className={`relative block rounded-[20px] border-[1.5px] p-4 transition cursor-pointer ${isSelected
-                            ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
-                            : 'border-slate-200/90 hover:border-slate-300 bg-white'
-                            }`}
+                          className={`relative block rounded-[20px] border-[1.5px] p-4 transition cursor-pointer ${
+                            isSelected
+                              ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                              : 'border-slate-200/90 hover:border-slate-300 bg-white'
+                          }`}
                         >
                           <input
                             type="radio"
@@ -478,57 +447,51 @@ export function Checkout() {
 
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-3 flex-1 min-w-0">
-                              {/* Custom Radio Button */}
                               <div
-                                className={`mt-0.5 h-5 w-5 rounded-full border-[1.5px] flex items-center justify-center shrink-0 transition ${isSelected ? 'border-brand-500 bg-white' : 'border-slate-300 bg-white'
-                                  }`}
+                                className={`mt-0.5 h-5 w-5 rounded-full border-[1.5px] flex items-center justify-center shrink-0 transition ${
+                                  isSelected ? 'border-brand-500 bg-white' : 'border-slate-300 bg-white'
+                                }`}
                               >
                                 {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-brand-500" />}
                               </div>
 
                               <div className="flex-1 min-w-0">
-                                {/* Title + Badges */}
                                 <div className="flex items-center flex-wrap gap-2">
                                   <span className="text-sm font-black text-ink">{truck.name}</span>
-                                  {/* <span className="rounded-md bg-slate-100 text-slate-600 px-2 py-0.5 text-[11px] font-bold">
-                                    {truck.capacityLabel}
-                                  </span> */}
                                   {isRecommended && (
                                     <span className="rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 text-[11px] font-extrabold">
-                                      الموصى بها
+                                      {t(ui.checkout.recommendedBadge)}
                                     </span>
                                   )}
                                   {truckPromo && (truckPromo.discountPercentage || truckPromo.discountValue) ? (
                                     <span className="rounded-md bg-rose-50 text-rose-700 border border-rose-200/80 px-2 py-0.5 text-[11px] font-extrabold flex items-center gap-0.5">
-                                      خصم {truckPromo.discountPercentage ? `${truckPromo.discountPercentage}%` : `${truckPromo.discountValue} ج.م`}
+                                      {truckPromo.discountPercentage ? `%${truckPromo.discountPercentage}` : `${truckPromo.discountValue} ${t(ui.common.currencyEg)}`}
                                     </span>
                                   ) : null}
                                 </div>
 
-                                {/* Description */}
                                 <p className="text-xs text-slate-500 mt-1">{truck.description}</p>
 
-                                {/* Status: exceeds capacity or fits */}
                                 {exceedsCapacity ? (
                                   <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-xl bg-orange-50/90 border border-orange-200/90 px-3 py-1.5 text-xs font-bold text-orange-900">
                                     <AlertCircleIcon className="h-3.5 w-3.5 text-orange-600 shrink-0" />
                                     <span>
-                                      حمولة طلبك ({totalWeightTons} طن) تحتاج {neededTrucksCount} سيارات
+                                      {totalWeightTons} {t(ui.common.ton)} ({neededTrucksCount})
                                     </span>
                                   </div>
                                 ) : (
                                   <div className="mt-2 text-xs font-bold text-emerald-700 flex items-center gap-1">
                                     <CheckCircle2Icon className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                                    <span>مناسبة لحمولة سلتك ({totalWeightTons} طن)</span>
+                                    <span>{totalWeightTons} {t(ui.common.ton)}</span>
                                   </div>
                                 )}
                               </div>
                             </div>
 
-                            {/* Truck Icon Box */}
                             <div
-                              className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition ${isSelected ? 'bg-brand-100/70 text-brand-700' : 'bg-slate-100 text-slate-500'
-                                }`}
+                              className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition ${
+                                isSelected ? 'bg-brand-100/70 text-brand-700' : 'bg-slate-100 text-slate-500'
+                              }`}
                             >
                               <TruckIcon className="h-5 w-5" />
                             </div>
@@ -537,59 +500,11 @@ export function Checkout() {
                       );
                     })}
                   </div>
-
-                  {/* Smart Notifications: Multiple Trucks, Promotion & Recommendation */}
-                  <div className="mt-3 space-y-2.5">
-                    {/* Notice when multiple trucks are needed */}
-                    {shippingCalculation?.requiredTrucksCount && shippingCalculation.requiredTrucksCount > 1 && (
-                      <div className="rounded-2xl bg-amber-50/90 border border-amber-200 p-3 flex items-start gap-2.5 text-xs text-amber-950">
-                        <AlertCircleIcon className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-extrabold">تنبيه حجم الشحنة:</p>
-                          <p className="text-amber-800 mt-0.5">
-                            نظراً لأن إجمالي وزن الطلب ({totalWeightTons} طن) يتجاوز حمولة سيارة{' '}
-                            {TRUCK_TYPES_CONFIG.find((t) => t.type === truckType)?.name} الواحدة، سيتم احتساب الشحن
-                            على أساس {shippingCalculation.requiredTrucksCount} سيارات نقل لنفس العنوان.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-
-
-                    {/* Recommendation suggestion to switch truck and save money/trucks */}
-                    {shippingCalculation?.recommendation &&
-                      shippingCalculation.recommendation.suggestedTruckType !== truckType &&
-                      (shippingCalculation.recommendation.potentialSavings ?? 0) > 0 && (
-                        <div className="rounded-2xl bg-blue-50/90 border border-blue-200 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                          <div className="flex items-start gap-2.5">
-                            <SparklesIcon className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                            <div>
-                              <p className="font-extrabold text-blue-950">
-                                💡 وفر {(shippingCalculation.recommendation.potentialSavings ?? 0).toLocaleString()} ج.م باختيار {shippingCalculation.recommendation.suggestedTruckName || 'شاحنة أكبر'}!
-                              </p>
-                              <p className="text-[11px] text-blue-700 mt-0.5">
-                                {shippingCalculation.recommendation.message ||
-                                  `تحتاج ${shippingCalculation.recommendation.suggestedTruckCount || 1} سيارة فقط بدلاً من ${shippingCalculation.requiredTrucksCount || 1}، بتكلفة إجمالية ${shippingCalculation.recommendation.suggestedTotalFee?.toLocaleString()} ج.م.`}
-                              </p>
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setTruckType(shippingCalculation.recommendation!.suggestedTruckType as TruckType)}
-                            className="self-start sm:self-center px-3.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-xs hover:bg-blue-700 transition shadow-sm whitespace-nowrap"
-                          >
-                            تبديل إلى {shippingCalculation.recommendation.suggestedTruckName}
-                          </button>
-                        </div>
-                      )}
-                  </div>
                 </div>
               </>
             ) : (
               /* Factory Pickup Details */
               <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200/80 space-y-5">
-                {/* Header matching user design */}
                 <div className="flex items-center justify-between flex-wrap gap-3 border-b border-slate-100 pb-4">
                   <div className="flex items-center gap-2.5">
                     <span className="h-6 w-6 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center text-xs font-black">
@@ -597,7 +512,7 @@ export function Checkout() {
                     </span>
                     <div className="flex items-center gap-2">
                       <TruckIcon className="h-5 w-5 text-brand-600" />
-                      <h2 className="text-base font-black text-ink">سيارة وسائق التحميل</h2>
+                      <h2 className="text-base font-black text-ink">{t(ui.checkout.pickupDetailsTitle)}</h2>
                     </div>
                   </div>
 
@@ -607,18 +522,13 @@ export function Checkout() {
                     className="inline-flex items-center gap-1.5 rounded-xl border border-brand-600/30 bg-brand-50/70 hover:bg-brand-100/70 px-3.5 py-1.5 text-xs font-black text-brand-700 transition hover:scale-105 active:scale-95"
                   >
                     <PlusIcon className="h-3.5 w-3.5" />
-                    <span>إضافة سيارة</span>
+                    <span>{t(ui.checkout.addNewVehicle)}</span>
                   </button>
                 </div>
 
-                <p className="text-xs text-slate-500">
-                  يرجى تحديد أو إدخال بيانات الشاحنة والسائق لتجهيز إذن الدخول والتحميل من صوامع مجموعة شركات الايمان.
-                </p>
-
-                {/* Saved Vehicles Cards */}
                 {isLoadingVehicles ? (
                   <div className="p-8 text-center text-xs font-bold text-slate-400 bg-slate-50/50 rounded-2xl">
-                    جاري تحميل بيانات الشاحنات والسائقين...
+                    {t(ui.common.loading)}
                   </div>
                 ) : vehicles.length > 0 ? (
                   <div className="space-y-3">
@@ -629,39 +539,37 @@ export function Checkout() {
                           <div
                             key={`veh-${v.id}-${index}`}
                             onClick={() => setSelectedVehicleId(v.id)}
-                            className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 transition ${isSelected
-                              ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
-                              : 'border-slate-200/90 bg-white hover:border-slate-300'
-                              }`}
+                            className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 transition ${
+                              isSelected
+                                ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                                : 'border-slate-200/90 bg-white hover:border-slate-300'
+                            }`}
                           >
                             <div className="flex items-start justify-between gap-3">
-                              {/* Driver Info + Custom Checkmark */}
                               <div className="flex items-start gap-3 flex-1 min-w-0">
                                 <div
-                                  className={`mt-0.5 h-6 w-6 rounded-full flex items-center justify-center shrink-0 transition ${isSelected
-                                    ? 'bg-brand-500 text-white shadow-xs'
-                                    : 'border-[1.5px] border-slate-300 bg-white'
-                                    }`}
+                                  className={`mt-0.5 h-6 w-6 rounded-full flex items-center justify-center shrink-0 transition ${
+                                    isSelected
+                                      ? 'bg-brand-500 text-white shadow-xs'
+                                      : 'border-[1.5px] border-slate-300 bg-white'
+                                  }`}
                                 >
                                   {isSelected && <CheckIcon className="h-3.5 w-3.5 stroke-[3]" />}
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                  {/* Row 1: Name + Default Badge */}
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-sm font-black text-ink">{v.driverName}</span>
                                     {v.isDefault && (
                                       <span className="rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold">
-                                        الافتراضي
+                                        {t(ui.profile.setDefaultVehicle)}
                                       </span>
                                     )}
                                   </div>
 
-                                  {/* Row 2: Plate Number + Phone */}
                                   <div className="flex items-center gap-3 mt-2 flex-wrap text-xs">
                                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 text-slate-700 px-2.5 py-1 font-extrabold">
                                       <span>{v.vehiclePlateNumber}</span>
-                                      <span className="text-[10px] bg-white px-1 py-0.2 rounded text-slate-500 border border-slate-200">123</span>
                                     </span>
 
                                     {v.driverPhone && (
@@ -671,17 +579,9 @@ export function Checkout() {
                                       </span>
                                     )}
                                   </div>
-
-                                  {/* Row 3: National ID / License */}
-                                  {v.driverLicenseNumber && (
-                                    <p className="text-xs text-slate-400 font-medium mt-1.5">
-                                      الرقم القومي / الرخصة: {v.driverLicenseNumber}
-                                    </p>
-                                  )}
                                 </div>
                               </div>
 
-                              {/* Vehicle Type Badge */}
                               {v.vehicleType && (
                                 <div className="shrink-0">
                                   <span className="rounded-lg bg-slate-100 text-slate-600 px-2.5 py-1 text-xs font-bold">
@@ -696,78 +596,50 @@ export function Checkout() {
                     </div>
                   </div>
                 ) : (
-                  /* Manual input when user has no saved vehicles */
                   <div className="space-y-4">
-                    <div className="rounded-2xl border border-dashed border-brand-200 bg-brand-50/20 p-5 text-center">
-                      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-100/70 text-brand-700 mb-2">
-                        <TruckIcon className="h-5 w-5" />
-                      </div>
-                      <p className="text-xs font-bold text-slate-700">لم تقم بإضافة مركبة أو سائق بعد</p>
-                      <p className="text-[11px] text-slate-400 mt-1 mb-3">
-                        يمكنك إضافة سيارة وسائق بنقرة واحدة وحفظها لحسابك
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setIsVehicleModalOpen(true)}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 px-4 py-2 text-xs font-black text-white shadow-sm transition hover:scale-105 active:scale-95"
-                      >
-                        <PlusIcon className="h-3.5 w-3.5" />
-                        <span>إضافة سيارة وسائق جديد</span>
-                      </button>
-                    </div>
-
-                    <div className="relative flex items-center justify-center">
-                      <div className="border-t border-slate-200 w-full" />
-                      <span className="bg-white px-3 text-[11px] font-bold text-slate-400 shrink-0">أو الإدخال السريع</span>
-                    </div>
-
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          اسم السائق <span className="text-red-500">*</span>
+                          {t(ui.checkout.driverNameLabel)} <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={driverName}
                           onChange={(e) => setDriverName(e.target.value)}
-                          placeholder="اسم السائق المفوض"
                           className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                         />
                       </div>
 
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          رقم لوحة السيارة <span className="text-red-500">*</span>
+                          {t(ui.checkout.vehiclePlateLabel)} <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={vehiclePlateNumber}
                           onChange={(e) => setVehiclePlateNumber(e.target.value)}
-                          placeholder="مثال: أ ب ج 1234"
                           className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">رقم رخصة القيادة أو القومي</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">{t(ui.checkout.driverLicenseLabel)}</label>
                         <input
                           type="text"
                           value={driverLicenseNumber}
                           onChange={(e) => setDriverLicenseNumber(e.target.value)}
-                          placeholder="رقم الرخصة أو القومي"
                           className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">رقم هاتف السائق</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">{t(ui.checkout.driverPhoneLabel)}</label>
                         <input
                           type="tel"
                           value={driverPhone}
                           onChange={(e) => setDriverPhone(e.target.value)}
-                          placeholder="01xxxxxxxxx"
-                          dir="rtl"
-                          className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink text-right placeholder:text-right focus:border-brand-500 focus:outline-none"
+                          dir="ltr"
+                          className="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -780,16 +652,15 @@ export function Checkout() {
                         className="h-4 w-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300 accent-brand-600"
                       />
                       <span className="text-xs font-bold text-slate-600">
-                        حفظ بيانات السيارة والسائق في حسابي للاستخدام المستقبلي
+                        {t(ui.checkout.saveVehicleForFuture)}
                       </span>
                     </label>
                   </div>
                 )}
 
-                {/* Expected Pickup Date Picker matching user design */}
                 <div className="pt-2 border-t border-slate-100">
                   <label className="block text-xs sm:text-sm font-black text-ink mb-2">
-                    موعد التحميل المتوقع
+                    {t(ui.checkout.expectedPickupDateLabel)}
                   </label>
                   <div className="relative">
                     <input
@@ -803,9 +674,6 @@ export function Checkout() {
                       <CalendarIcon className="h-5 w-5 text-brand-700" />
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1.5">
-                    اختر الموعد المفضل للتحميل لتجهيز إذن الدخول من الصوامع مسبقاً.
-                  </p>
                 </div>
               </div>
             )}
@@ -816,16 +684,17 @@ export function Checkout() {
                 <span className="h-6 w-6 rounded-full bg-brand-500/10 text-brand-600 flex items-center justify-center text-xs font-black">
                   {orderType === OrderType.Delivery ? 4 : 3}
                 </span>
-                <span>طريقة السداد</span>
+                <span>{t(ui.checkout.paymentMethodTitle)}</span>
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label
                   onClick={() => setPaymentMethod(PaymentMethod.CashOnDelivery)}
-                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.CashOnDelivery
-                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
-                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
-                    }`}
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 flex items-center gap-3 transition ${
+                    paymentMethod === PaymentMethod.CashOnDelivery
+                      ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                      : 'border-slate-200/90 hover:border-slate-300 bg-white'
+                  }`}
                 >
                   <input
                     type="radio"
@@ -840,10 +709,10 @@ export function Checkout() {
                     </div>
                     <div>
                       <span className="block text-xs sm:text-sm font-black text-ink">
-                        الدفع عند الاستلام / التحميل
+                        {t(ui.checkout.cashOnDelivery)}
                       </span>
                       <span className="block text-[11px] text-slate-500 mt-0.5">
-                        الدفع نقداً عند استلام الطلب أو التحميل من المصنع
+                        {t(ui.checkout.cashOnDeliveryDesc)}
                       </span>
                     </div>
                   </div>
@@ -851,10 +720,11 @@ export function Checkout() {
 
                 <label
                   onClick={() => setPaymentMethod(PaymentMethod.BankTransfer)}
-                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 flex items-center gap-3 transition ${paymentMethod === PaymentMethod.BankTransfer
-                    ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
-                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
-                    }`}
+                  className={`cursor-pointer rounded-[20px] border-[1.5px] p-4 flex items-center gap-3 transition ${
+                    paymentMethod === PaymentMethod.BankTransfer
+                      ? 'border-brand-400/70 bg-brand-50/35 shadow-xs'
+                      : 'border-slate-200/90 hover:border-slate-300 bg-white'
+                  }`}
                 >
                   <input
                     type="radio"
@@ -869,77 +739,33 @@ export function Checkout() {
                     </div>
                     <div>
                       <span className="block text-xs sm:text-sm font-black text-ink">
-                        تحويل بنكي / إيداع مباشر
+                        {t(ui.checkout.bankTransfer)}
                       </span>
                       <span className="block text-[11px] text-slate-500 mt-0.5">
-                        سداد المبلغ بالتحويل البنكي بعد اعتماد وموافقة إدارة المصنع
+                        {t(ui.checkout.bankTransferDesc)}
                       </span>
                     </div>
                   </div>
                 </label>
               </div>
 
-              {/* Bank Transfer Approval Workflow Notice matching Screenshot 1 */}
-              {paymentMethod === PaymentMethod.BankTransfer && (
-                <div className="mt-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 p-4 space-y-3 animate-in fade-in duration-200">
-                  <div className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-emerald-500/15 text-emerald-700 flex items-center justify-center">
-                      <AlertCircleIcon className="h-4 w-4" />
-                    </div>
-                    <h4 className="text-xs sm:text-sm font-black text-emerald-950">
-                      آلية التحويل البنكي والاعتماد
-                    </h4>
-                  </div>
-
-                  <div className="space-y-2.5 text-xs text-emerald-900 font-medium pr-1">
-                    <div className="flex items-start gap-2.5">
-                      <span className="h-5 w-5 rounded-full bg-emerald-200/80 text-emerald-800 text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
-                        1
-                      </span>
-                      <p className="leading-relaxed">
-                        يتم تقديم الطلب أولاً دون الحاجة لرفع إيصال تحويل الآن.
-                      </p>
-                    </div>
-
-                    <div className="flex items-start gap-2.5">
-                      <span className="h-5 w-5 rounded-full bg-emerald-200/80 text-emerald-800 text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
-                        2
-                      </span>
-                      <p className="leading-relaxed">
-                        يتم مراجعة الطلب واعتماده (من التاجر الرئيسي إن كنت عميلاً فرعياً، ثم من إدارة المصنع).
-                      </p>
-                    </div>
-
-                    <div className="flex items-start gap-2.5">
-                      <span className="h-5 w-5 rounded-full bg-emerald-200/80 text-emerald-800 text-[11px] font-black flex items-center justify-center shrink-0 mt-0.5">
-                        3
-                      </span>
-                      <p className="leading-relaxed">
-                        بمجرد اعتماد الطلب، ستظهر لك بيانات حسابات المصنع البنكية في صفحة تفاصيل الطلب لتقوم بالتحويل ورفع الإيصال لتأكيد شحنته.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Notes */}
               <div className="mt-4 pt-4 border-t border-slate-100">
-                <label className="block text-xs font-bold text-slate-700 mb-1">ملاحظات إضافية على الطلب</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">{t(ui.checkout.additionalNotesTitle)}</label>
                 <textarea
                   rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="أي تعليمات خاصة بالتفريغ أو مواعيد التحميل..."
+                  placeholder={t(ui.checkout.notesPlaceholder)}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs font-semibold text-ink focus:border-brand-500 focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
-          {/* Sidebar Summary (Right in RTL) */}
+          {/* Sidebar Summary */}
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-slate-200/80 sticky top-24 space-y-5">
-              {/* Header */}
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-2.5">
                   <div className="h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-2xs">
@@ -947,10 +773,10 @@ export function Checkout() {
                   </div>
                   <div>
                     <h3 className="text-base font-black text-ink">
-                      ملخص الطلب والحمولة
+                      {t(ui.checkout.orderSummary)}
                     </h3>
                     <span className="text-[11px] font-bold text-slate-400 block mt-1">
-                      {totalItemsCount} شكارة • {items.length} أصناف
+                      {totalItemsCount} {t(ui.common.bag)} • {items.length} {t(ui.common.actions)}
                     </span>
                   </div>
                 </div>
@@ -959,7 +785,7 @@ export function Checkout() {
                   to="/cart"
                   className="text-xs font-bold text-brand-600 hover:text-brand-700 bg-brand-50/60 hover:bg-brand-50 px-2.5 py-1 rounded-xl transition"
                 >
-                  تعديل السلة
+                  {t(ui.common.edit)}
                 </Link>
               </div>
 
@@ -969,65 +795,45 @@ export function Checkout() {
                   <div className="h-7 w-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-2xs">
                     <TruckIcon className="h-4 w-4" />
                   </div>
-                  <span className="font-bold text-emerald-950">إجمالي وزن الأعلاف:</span>
+                  <span className="font-bold text-emerald-950">{t(ui.cart.totalWeight)}:</span>
                 </div>
                 <span className="font-black text-emerald-900 text-sm">
-                  {totalWeightTons} طن ({items.reduce((s, i) => s + i.quantity * i.packageWeightKg, 0).toLocaleString()} كجم)
+                  {totalWeightTons} {t(ui.common.ton)}
                 </span>
               </div>
 
               {/* Breakdown */}
               <div className="space-y-3 pt-1 text-xs sm:text-sm">
                 <div className="flex justify-between text-slate-600">
-                  <span>قيمة المنتجات:</span>
-                  <span className="font-black text-ink">{totalPrice.toLocaleString()} ج.م</span>
+                  <span>{t(ui.checkout.productsSubtotal)}:</span>
+                  <span className="font-black text-ink">{totalPrice.toLocaleString()} {t(ui.common.currencyEg)}</span>
                 </div>
 
                 {orderType === OrderType.Delivery && (
                   <>
                     <div className="flex justify-between text-slate-600">
-                      <span>الشاحنة المختارة:</span>
+                      <span>{t(ui.checkout.truckSelectionTitle)}:</span>
                       <span className="font-black text-ink">
                         {truckType === TruckType.Dababa
-                          ? 'دبابة'
+                          ? t(ui.checkout.truckDababaName)
                           : truckType === TruckType.Jumbo
-                            ? 'جامبو'
-                            : 'تريلا'}
-                        {shippingCalculation?.requiredTrucksCount && shippingCalculation.requiredTrucksCount > 1
-                          ? ` (${shippingCalculation.requiredTrucksCount} سيارات)`
-                          : ''}
+                            ? t(ui.checkout.truckJumboName)
+                            : t(ui.checkout.truckTrelaName)}
                       </span>
                     </div>
 
-                    {shippingCalculation?.totalDiscountAmount && shippingCalculation.totalDiscountAmount > 0 ? (
-                      <>
-                        <div className="flex justify-between text-slate-500">
-                          <span>الشحن قبل الخصم:</span>
-                          <span className="line-through text-slate-400">
-                            {(shippingCalculation.totalOriginalShippingFee ?? (shippingFee + shippingCalculation.totalDiscountAmount)).toLocaleString()} ج.م
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-emerald-600 font-black">
-                          <span>خصم عرض الشاحنة:</span>
-                          <span>-{shippingCalculation.totalDiscountAmount.toLocaleString()} ج.م</span>
-                        </div>
-                      </>
-                    ) : null}
-
                     <div className="flex justify-between text-slate-600">
-                      <span>
-                        تكلفة الشحن {shippingCalculation?.requiredTrucksCount && shippingCalculation.requiredTrucksCount > 1 ? `(${shippingCalculation.requiredTrucksCount} سيارات)` : ''}:
-                      </span>
+                      <span>{t(ui.checkout.shippingFee)}:</span>
                       <span className="font-black text-ink">
-                        {isCalculatingShipping ? 'جاري الحساب…' : `${shippingFee.toLocaleString()} ج.م`}
+                        {isCalculatingShipping ? t(ui.checkout.calculatingShipping) : `${shippingFee.toLocaleString()} ${t(ui.common.currencyEg)}`}
                       </span>
                     </div>
                   </>
                 )}
 
                 <div className="flex justify-between items-center text-base font-black text-ink pt-3.5 border-t border-slate-200">
-                  <span>المبلغ الإجمالي:</span>
-                  <span className="text-xl sm:text-2xl text-brand-600">{finalTotal.toLocaleString()} ج.م</span>
+                  <span>{t(ui.checkout.finalTotal)}:</span>
+                  <span className="text-xl sm:text-2xl text-brand-600">{finalTotal.toLocaleString()} {t(ui.common.currencyEg)}</span>
                 </div>
               </div>
 
@@ -1041,11 +847,11 @@ export function Checkout() {
                 {isSubmitting ? (
                   <>
                     <Loader2Icon className="h-5 w-5 animate-spin" />
-                    <span>جاري تأكيد الطلب…</span>
+                    <span>{t(ui.checkout.submittingOrder)}</span>
                   </>
                 ) : (
                   <>
-                    <span>تأكيد الطلب الآن</span>
+                    <span>{t(ui.checkout.submitOrder)}</span>
                     <CheckCircle2Icon className="h-5 w-5" />
                   </>
                 )}
@@ -1058,10 +864,11 @@ export function Checkout() {
                   onClick={() => setShowItemsDetails(!showItemsDetails)}
                   className="w-full flex items-center justify-between text-xs font-bold text-slate-500 hover:text-ink transition py-1"
                 >
-                  <span>عرض الأصناف المطلوبة ({items.length})</span>
+                  <span>{t(ui.cart.totalItems)} ({items.length})</span>
                   <ChevronDownIcon
-                    className={`h-4 w-4 transition-transform duration-200 ${showItemsDetails ? 'rotate-180 text-brand-600' : ''
-                      }`}
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      showItemsDetails ? 'rotate-180 text-brand-600' : ''
+                    }`}
                   />
                 </button>
 
@@ -1081,11 +888,11 @@ export function Checkout() {
                           <div className="min-w-0 pr-1">
                             <p className="font-bold text-slate-800 line-clamp-1">{item.productName}</p>
                             <p className="text-[10px] text-slate-400 font-semibold">
-                              {item.quantity} شكارة × {item.unitPrice.toLocaleString()} ج.م
+                              {item.quantity} {t(ui.common.bag)} × {item.unitPrice.toLocaleString()} {t(ui.common.currencyEg)}
                             </p>
                           </div>
                           <span className="font-black text-brand-700 text-xs shrink-0">
-                            {item.subtotal.toLocaleString()} ج.م
+                            {item.subtotal.toLocaleString()} {t(ui.common.currencyEg)}
                           </span>
                         </div>
                       ))}
@@ -1093,9 +900,6 @@ export function Checkout() {
                   )}
                 </AnimatePresence>
               </div>
-
-
-
             </div>
           </div>
         </div>

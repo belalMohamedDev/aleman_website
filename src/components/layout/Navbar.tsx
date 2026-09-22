@@ -39,10 +39,10 @@ export function Navbar() {
 
   // Format user display name (clean first name or fallback)
   const userFirstName = useMemo(() => {
-    if (!user?.name) return lang === 'ar' ? 'حسابي' : 'Account';
+    if (!user?.name) return t(ui.nav.profile);
     const first = user.name.trim().split(' ')[0];
     return first.length > 12 ? first.substring(0, 10) + '..' : first;
-  }, [user?.name, lang]);
+  }, [user?.name, t]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -159,7 +159,7 @@ export function Navbar() {
                     : 'text-ink-soft hover:text-brand-600 hover:bg-brand-50/50'
                   }`}
               >
-                <span>{lang === 'ar' ? 'المزيد' : 'More'}</span>
+                <span>{t(ui.nav.more)}</span>
                 <ChevronDownIcon
                   className={`h-4 w-4 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`}
                   aria-hidden="true"
@@ -254,7 +254,7 @@ export function Navbar() {
                       className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
                     >
                       <UserIcon className="h-3.5 w-3.5 text-brand-600" />
-                      <span>الملف الشخصي</span>
+                      <span>{t(ui.nav.profile)}</span>
                     </Link>
 
                     <button
@@ -266,7 +266,7 @@ export function Navbar() {
                       className="w-full flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition mt-1"
                     >
                       <LogOutIcon className="h-3.5 w-3.5" />
-                      <span>تسجيل خروج</span>
+                      <span>{t(ui.nav.logout)}</span>
                     </button>
                   </div>
                 </div>
@@ -282,7 +282,7 @@ export function Navbar() {
                 }`}
             >
               <UserIcon className="h-3.5 w-3.5 opacity-80" />
-              <span>دخول / تسجيل</span>
+              <span>{t(ui.auth.loginRegister)}</span>
             </button>
           )}
 
@@ -294,8 +294,8 @@ export function Navbar() {
                 ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
                 : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
                 }`}
-              aria-label="سلة المشتريات"
-              title="سلة المشتريات"
+              aria-label={t(ui.cart.title)}
+              title={t(ui.cart.title)}
             >
               <ShoppingBagIcon className="h-4 w-4" />
               {totalItemsCount > 0 && (

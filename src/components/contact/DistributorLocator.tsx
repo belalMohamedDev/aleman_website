@@ -1,6 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CircleMarker, MapContainer, Popup, TileLayer } from 'react-leaflet';
 import { BadgeCheckIcon, MapPinIcon, MessageCircleIcon, PhoneIcon, SearchIcon } from 'lucide-react';
+
+const MapContainerComponent = MapContainer as unknown as React.ComponentType<any>;
+const TileLayerComponent = TileLayer as unknown as React.ComponentType<any>;
+const CircleMarkerComponent = CircleMarker as unknown as React.ComponentType<any>;
 import { distributors } from '../../data/distributors';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
@@ -141,13 +145,13 @@ export function DistributorLocator() {
         <div className="overflow-hidden rounded-card border border-slate-100 bg-white shadow-card">
           <h3 className="border-b border-slate-100 px-5 py-4 text-sm font-extrabold text-ink">{t(ui.distributors.mapTitle)}</h3>
           <div className="h-[420px] w-full">
-            <MapContainer center={[29.5, 30.8]} zoom={6} scrollWheelZoom={false} className="h-full w-full">
-              <TileLayer
+            <MapContainerComponent center={[29.5, 30.8]} zoom={6} scrollWheelZoom={false} className="h-full w-full">
+              <TileLayerComponent
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               
               {filtered.map((distributor) =>
-              <CircleMarker
+              <CircleMarkerComponent
                 key={distributor.id}
                 center={distributor.coords}
                 radius={9}
@@ -158,9 +162,9 @@ export function DistributorLocator() {
                     <br />
                     <span className="text-xs">{t(distributor.city)}</span>
                   </Popup>
-                </CircleMarker>
+                </CircleMarkerComponent>
               )}
-            </MapContainer>
+            </MapContainerComponent>
           </div>
         </div>
       </div>

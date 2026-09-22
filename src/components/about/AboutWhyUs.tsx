@@ -1,27 +1,31 @@
 import { Reveal } from '../shared/Reveal';
+import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 import './about-journey.css';
 
-const ADVANTAGES = [
-  {
-    id: 'quality',
-    title: 'أعلى مستوى من الفحص ومراقبة الجودة',
-    desc: 'تخضع جميع المواد الخام والمنتجات النهائية لفحوصات معملية دقيقة بأحدث التقنيات لضمان خلوها من السموم الفطرية ومطابقتها للمواصفات القياسية.',
-  },
-  {
-    id: 'fcr',
-    title: 'أعلى معدل تحويل غذائي مدروس',
-    desc: 'تركيبات علفية متوازنة أعدها كبار خبراء التغذية في مصر لتوفير أقصى إنتاجية للمربي، وأفضل نمو للقطيع بأقل استهلاك ممكن.',
-  },
-  {
-    id: 'capacity',
-    title: 'طاقات إنتاجية ضخمة وشحن فوري بالأطنان',
-    desc: 'من خلال مجمعاتنا الصناعية الثلاثة، نلبي كافة احتياجات السوق المحلي وكبرى مزارع التسمين والبياض بشحن مباشر لكافة المحافظات.',
-  },
-];
-
 export function AboutWhyUs() {
+  const { isRtl, t } = useLang();
+
+  const advantages = [
+    {
+      id: 'quality',
+      title: t(ui.about.whyUs.qualityTitle),
+      desc: t(ui.about.whyUs.qualityDesc),
+    },
+    {
+      id: 'fcr',
+      title: t(ui.about.whyUs.fcrTitle),
+      desc: t(ui.about.whyUs.fcrDesc),
+    },
+    {
+      id: 'capacity',
+      title: t(ui.about.whyUs.capacityTitle),
+      desc: t(ui.about.whyUs.capacityDesc),
+    },
+  ];
+
   return (
-    <section className="about-why-section" aria-labelledby="about-why-title" dir="rtl">
+    <section className="about-why-section" aria-labelledby="about-why-title" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Ambient background glow */}
       <div className="about-why-ambient-glow" aria-hidden="true" />
 
@@ -30,18 +34,18 @@ export function AboutWhyUs() {
         <div className="about-why-header">
           <Reveal>
             <h2 id="about-why-title" className="about-why-title">
-              لماذا تختار أعلاف الإيمان؟
+              {t(ui.about.whyUs.heading)}
             </h2>
 
             <p className="about-why-desc">
-              معايير قياسية ومزايا متكاملة تجعلنا شريك النجاح الأفضل لمزرعتك
+              {t(ui.about.whyUs.lead)}
             </p>
           </Reveal>
         </div>
 
         {/* Editorial Columns Layout - Open & Clean */}
         <div className="about-why-editorial-grid">
-          {ADVANTAGES.map((adv, idx) => (
+          {advantages.map((adv, idx) => (
             <Reveal key={adv.id} delay={idx * 0.12}>
               <div className="about-why-editorial-col group">
                 <h3 className="about-why-editorial-title">

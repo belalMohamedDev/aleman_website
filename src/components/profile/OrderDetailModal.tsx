@@ -19,6 +19,8 @@ import { useAuth } from '../../features/auth/AuthContext';
 import { isSubCustomer as checkIsSubCustomer } from '../../features/auth/userUtils';
 import { toast } from 'sonner';
 import { resolveMediaUrl } from '../../infrastructure/api/apiClient';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface OrderDetailModalProps {
   order: OrderResponse | null;
@@ -33,6 +35,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   if (!order) return null;
 
   const { user } = useAuth();
+  const { t, isRtl, lang } = useLanguage();
   const isBankTransfer =
     order.paymentMethod === PaymentMethod.BankTransfer ||
     order.paymentMethod === 3 ||
@@ -47,26 +50,31 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   );
   const driverPhone = order.driverPhone || order.vehicle?.driverPhone;
 
-  const statusMeta = ORDER_STATUS_META[order.status as OrderStatus] || {
-    labelAr: order.statusName || 'غير محدد',
+  const rawMeta = ORDER_STATUS_META[order.status as OrderStatus];
+  const statusMeta = rawMeta ? {
+    text: lang === 'ar' ? rawMeta.labelAr : rawMeta.labelEn,
+    color: rawMeta.color,
+    bg: rawMeta.bg,
+  } : {
+    text: order.statusName || t(ui.orders.statuses.pending),
     color: 'text-slate-700',
     bg: 'bg-slate-100 border-slate-200',
   };
 
-  const formattedDate = new Date(order.createdAt).toLocaleDateString('ar-EG', {
+  const formattedDate = new Date(order.createdAt).toLocaleDateString(isRtl ? 'ar-EG' : 'en-US', {
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',
   });
 
-  const formattedTime = new Date(order.createdAt).toLocaleTimeString('ar-EG', {
+  const formattedTime = new Date(order.createdAt).toLocaleTimeString(isRtl ? 'ar-EG' : 'en-US', {
     hour: '2-digit',
     minute: '2-digit',
   });
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(`تم نسخ ${label} بنجاح`);
+    toast.success(`${label} ${t(ui.common.copiedSuccess)}`);
   };
 
   const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +85,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
       setTimeout(() => {
         setIsUploadingReceipt(false);
         setIsReceiptUploaded(true);
-        toast.success('تم رفع إيصال السداد البنكي بنجاح وسيتم تدقيقه من المالية');
+        toast.success(t(ui.orders.receiptUploadedSuccess));
       }, 1000);
     }
   };
@@ -109,29 +117,47 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
     Boolean(order.adminApprovedAt) ||
     [2, 3, 4, 5, 6, 12].includes(Number(order.status));
 
-  // Timeline Badge Logic matching Screenshots 3 & 4
+  // Custom status banner text and colors
   const getTimelineBadge = () => {
-    if (isPendingApproval) {
+    const s = Number(order.status);
+    if (s === OrderStatus.PendingMerchantApproval || s === 8) {
+      return {
+        text: t(ui.orders.statuses.pendingMerchant),
+        className: 'bg-amber-50 text-amber-800 border-amber-200',
+      };
+    }
+    if (s === OrderStatus.PendingAdminApproval || s === 9) {
+      return {
+        text: t(ui.orders.statuses.pendingAdmin),
+        className: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
+      };
+    }
+    if (s === OrderStatus.PendingPaymentApproval || s === 12) {
+      return {
+        text: t(ui.orders.statuses.pendingPayment),
+        className: 'bg-blue-50 text-blue-700 border-blue-200',
+      };
+    }
+    if (s === OrderStatus.Pending || s === 1) {
       if (isSub) {
-        if (!isMerchantApproved) {
+        if (!order.merchantApprovedAt) {
           return {
-            text: 'قيد موافقة التاجر الرئيسي',
-            className: 'bg-amber-50 text-amber-800 border-amber-200/80',
+            text: t(ui.orders.statuses.pendingMerchant),
+            className: 'bg-amber-50 text-amber-800 border-amber-200',
           };
         }
         return {
-          text: 'قيد موافقة الإدارة',
+          text: t(ui.orders.statuses.pendingAdmin),
           className: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
         };
       }
-      // Main merchant: direct factory approval
       return {
-        text: 'قيد موافقة الإدارة',
+        text: t(ui.orders.statuses.pendingAdmin),
         className: 'bg-[#eef8f1] text-[#234c2e] border-[#cce7d5]',
       };
     }
     return {
-      text: statusMeta.labelAr,
+      text: statusMeta.text,
       className: `${statusMeta.bg} ${statusMeta.color}`,
     };
   };
@@ -144,16 +170,17 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
         if (e.target === e.currentTarget) onClose();
       }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6 backdrop-blur-xs animate-in fade-in duration-200 overflow-hidden"
+      dir={isRtl ? 'rtl' : 'ltr'}
     >
       <div
         className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl bg-slate-50 shadow-2xl border border-slate-200/80 overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
-        {/* Fixed Top Header - Outside the scroll area so nothing leaks above it */}
+        {/* Fixed Top Header */}
         <div className="flex items-center justify-between px-5 sm:px-6 py-4 bg-white border-b border-slate-200/80 shrink-0 z-10">
           <div className="flex items-center gap-2.5">
-            <h2 className="text-base sm:text-lg font-black text-ink">تفاصيل الطلب</h2>
+            <h2 className="text-base sm:text-lg font-black text-ink">{t(ui.orders.modalTitle)}</h2>
             <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg" dir="ltr">
               #{order.orderNumber}
             </span>
@@ -162,7 +189,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
             type="button"
             onClick={onClose}
             className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
-            aria-label="إغلاق"
+            aria-label={t(ui.common.close)}
           >
             <XIcon className="h-5 w-5" />
           </button>

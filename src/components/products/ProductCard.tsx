@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';

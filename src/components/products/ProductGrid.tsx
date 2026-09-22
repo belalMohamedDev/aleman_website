@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Product } from '../../types/content';
 import { ProductCard } from './ProductCard';
 import { CardSkeletonGrid } from '../shared/Skeleton';

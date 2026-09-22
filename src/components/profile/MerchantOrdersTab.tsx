@@ -4,6 +4,8 @@ import type { OrderResponse } from '../../features/profile/types';
 import { OrderStatus } from '../../features/profile/types';
 import { OrderCard } from './OrderCard';
 import { OrderDetailModal } from './OrderDetailModal';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface MerchantOrdersTabProps {
   orders: OrderResponse[];
@@ -22,6 +24,7 @@ export function MerchantOrdersTab({
   searchTerm,
   onSearchChange,
 }: MerchantOrdersTabProps) {
+  const { t, isRtl } = useLanguage();
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('current');
 
@@ -81,13 +84,13 @@ export function MerchantOrdersTab({
   const tabs: Array<{ id: TabType; label: string; count: number; icon: typeof ClockIcon }> = [
     {
       id: 'current',
-      label: 'الطلبات الحالية',
+      label: t(ui.profile.currentOrdersTab),
       count: currentOrders.length,
       icon: ClockIcon,
     },
     {
       id: 'previous',
-      label: 'الطلبات السابقة',
+      label: t(ui.profile.previousOrdersTab),
       count: previousOrders.length,
       icon: History,
     },
@@ -99,13 +102,14 @@ export function MerchantOrdersTab({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
-          <SearchIcon className="absolute top-1/2 -translate-y-1/2 right-3.5 h-4 w-4 text-slate-400" />
+          <SearchIcon className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-3.5' : 'left-3.5'} h-4 w-4 text-slate-400`} />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="بحث باسم العميل أو رقم الطلب..."
-            className="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pr-10 pl-4 text-xs font-semibold text-ink placeholder-slate-400 focus:border-[#234c2e] focus:bg-white focus:outline-none shadow-xs transition"
+            placeholder={t(ui.profile.customersSearchPlaceholder)}
+            dir={isRtl ? 'rtl' : 'ltr'}
+            className={`w-full rounded-2xl border border-slate-200 bg-white py-2.5 ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-xs font-semibold text-ink placeholder-slate-400 focus:border-[#234c2e] focus:bg-white focus:outline-none shadow-xs transition`}
           />
         </div>
 
@@ -145,7 +149,7 @@ export function MerchantOrdersTab({
       {/* Orders List */}
       {isLoading ? (
         <div className="p-12 text-center text-sm font-bold text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-xs">
-          جاري تحميل طلبات صغار التجار والعملاء...
+          {t(ui.profile.loadingOrders)}
         </div>
       ) : displayedOrders.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center shadow-xs">
@@ -154,17 +158,17 @@ export function MerchantOrdersTab({
           </div>
           <h3 className="text-sm sm:text-base font-black text-ink">
             {searchTerm
-              ? 'لا توجد طلبات عملاء مطابقة للبحث'
+              ? t(ui.profile.noOrdersFound)
               : activeTab === 'current'
-              ? 'لا توجد طلبات جارية لعملائك حالياً'
-              : 'لا توجد طلبات سابقة لعملائك'}
+              ? t(ui.profile.noCurrentOrders)
+              : t(ui.profile.noPreviousOrders)}
           </h3>
           <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
             {searchTerm
-              ? 'تأكد من كتابة اسم العميل أو رقم الطلب بشكل صحيح.'
+              ? t(ui.profile.searchOrdersEmptyDesc)
               : activeTab === 'current'
-              ? 'طلبات صغار التجار والموزعين التابعين لك الجارية ستظهر هنا مع إمكانية متابعتها.'
-              : 'طلبات العملاء المكتملة أو الملغاة ستظهر في هذا السجل.'}
+              ? t(ui.profile.currentOrdersEmptyDesc)
+              : t(ui.profile.previousOrdersEmptyDesc)}
           </p>
         </div>
       ) : (
@@ -173,8 +177,8 @@ export function MerchantOrdersTab({
             <OrderCard
               key={order.id}
               order={order}
-              showCustomerName
               onViewDetails={setSelectedOrder}
+              showCustomerName
             />
           ))}
         </div>

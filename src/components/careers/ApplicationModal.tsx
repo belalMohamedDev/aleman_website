@@ -27,7 +27,7 @@ type ApplicationModalProps = {
 type Errors = Partial<Record<keyof JobApplicationPayload | 'general', string>>;
 
 export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
-  const { t, lang } = useLang();
+  const { t, lang, isRtl } = useLang();
   const { lookups } = useRecruitmentLookups();
   const { submitting, result, error: apiError, submit, reset } = useJobApplication();
 
@@ -97,25 +97,25 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
     if (!trimmedName) {
       next.applicant_name = t(ui.common.required);
     } else if (words.length < 3) {
-      next.applicant_name = lang === 'ar' ? 'يرجى كتابة الاسم ثلاثياً أو رباعياً' : 'Please enter full name (3 or 4 parts)';
+      next.applicant_name = t(ui.recruitment.errNameParts);
     }
 
     const trimmedNid = nationalId.trim();
     if (!trimmedNid) {
       next.national_id = t(ui.common.required);
     } else if (!/^\d{14}$/.test(trimmedNid)) {
-      next.national_id = lang === 'ar' ? 'الرقم القومي يجب أن يتكون من 14 رقماً' : 'National ID must be exactly 14 digits';
+      next.national_id = t(ui.recruitment.errNationalId14);
     }
 
     const trimmedPhone = phone.trim();
     if (!trimmedPhone) {
       next.phone = t(ui.common.required);
     } else if (!/^(01[0125]\d{8}|\+?[0-9\s-]{10,15})$/.test(trimmedPhone)) {
-      next.phone = lang === 'ar' ? 'يرجى إدخال رقم هاتف محمول صالح' : 'Please enter a valid phone number';
+      next.phone = t(ui.recruitment.errValidPhone);
     }
 
     if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      next.email = lang === 'ar' ? 'صيغة البريد الإلكتروني غير صحيحة' : 'Invalid email format';
+      next.email = t(ui.recruitment.errValidEmail);
     }
 
     if (!address.trim()) {
@@ -123,14 +123,14 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
     }
 
     if (!cvFile) {
-      next.cvFile = lang === 'ar' ? 'يرجى إرفاق السيرة الذاتية' : 'Please upload your CV';
+      next.cvFile = t(ui.recruitment.errCvRequired);
     } else {
       const allowedExts = ['pdf', 'doc', 'docx'];
       const ext = cvFile.name.split('.').pop()?.toLowerCase();
       if (!ext || !allowedExts.includes(ext)) {
-        next.cvFile = lang === 'ar' ? 'الملف يجب أن يكون PDF أو Word' : 'CV must be a PDF or Word document';
+        next.cvFile = t(ui.recruitment.errCvFormat);
       } else if (cvFile.size > 10 * 1024 * 1024) {
-        next.cvFile = lang === 'ar' ? 'حجم الملف يجب ألا يتجاوز 10 ميجابايت' : 'File size must not exceed 10MB';
+        next.cvFile = t(ui.recruitment.errCvSize);
       }
     }
 
@@ -138,9 +138,9 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
       const allowedImgExts = ['jpg', 'jpeg', 'png', 'webp'];
       const ext = photoFile.name.split('.').pop()?.toLowerCase();
       if (!ext || !allowedImgExts.includes(ext)) {
-        next.general = lang === 'ar' ? 'صيغة الصورة يجب أن تكون JPG أو PNG' : 'Photo must be JPG or PNG';
+        next.general = t(ui.recruitment.errPhotoFormat);
       } else if (photoFile.size > 5 * 1024 * 1024) {
-        next.general = lang === 'ar' ? 'حجم الصورة يجب ألا يتجاوز 5 ميجابايت' : 'Photo must not exceed 5MB';
+        next.general = t(ui.recruitment.errPhotoSize);
       }
     }
 
@@ -180,7 +180,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
 
       const res = await submit(payload);
       toast.success(t(ui.careers.submitted), {
-        description: `${lang === 'ar' ? 'رقم طلبك هو: ' : 'Your application number is: '} ${res.application_number}`,
+        description: `${t(ui.recruitment.appNumberLabel)} ${res.application_number}`,
       });
     } catch (err: any) {
       const msg = err?.message || (lang === 'ar' ? 'حدث خطأ أثناء إرسال الطلب' : 'Submission failed');
@@ -191,7 +191,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
   const copyApplicationNumber = (num: string) => {
     navigator.clipboard.writeText(num);
     setCopiedAppNo(true);
-    toast.success(lang === 'ar' ? 'تم نسخ رقم الطلب' : 'Application number copied');
+    toast.success(t(ui.recruitment.copiedShort));
     setTimeout(() => setCopiedAppNo(false), 2500);
   };
 
@@ -216,6 +216,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="application-title"
+            dir={isRtl ? 'rtl' : 'ltr'}
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
@@ -233,7 +234,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="rounded-md bg-brand-50 border border-brand-100 px-2 py-0.5 text-[11px] font-black text-brand-700">
-                    {lang === 'ar' ? 'طلب توظيف رسمي' : 'Job Application'}
+                    {t(ui.recruitment.officialApplicationBadge)}
                   </span>
                   {jobCode && (
                     <span className="text-[11px] font-mono font-bold text-slate-400">
@@ -272,7 +273,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
 
                   <div className="mt-6 inline-flex flex-col items-center rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 shadow-xs">
                     <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">
-                      {lang === 'ar' ? 'رقم طلب التوظيف الخاص بك' : 'Your Application Number'}
+                      {t(ui.recruitment.yourAppNoTitle)}
                     </span>
                     <div className="mt-2 flex items-center gap-3">
                       <span className="text-2xl font-black font-mono tracking-wide text-brand-700">
@@ -286,20 +287,18 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         {copiedAppNo ? (
                           <>
                             <CheckIcon className="h-3.5 w-3.5 text-emerald-600" />
-                            <span>{lang === 'ar' ? 'تم النسخ' : 'Copied'}</span>
+                            <span>{t(ui.recruitment.copiedShort)}</span>
                           </>
                         ) : (
                           <>
                             <CopyIcon className="h-3.5 w-3.5" />
-                            <span>{lang === 'ar' ? 'نسخ' : 'Copy'}</span>
+                            <span>{t(ui.recruitment.copyShort)}</span>
                           </>
                         )}
                       </button>
                     </div>
                     <span className="mt-2 text-[11px] text-slate-500 font-medium">
-                      {lang === 'ar'
-                        ? 'احتفظ بهذا الرقم لتتمكن من متابعة وتتبع حالة طلبك لاحقاً'
-                        : 'Save this number to track your application status anytime'}
+                      {t(ui.recruitment.saveAppNoHint)}
                     </span>
                   </div>
 
@@ -309,7 +308,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                       onClick={handleClose}
                       className="rounded-full bg-brand-600 px-8 py-3 text-sm font-black text-white hover:bg-brand-700 transition shadow-sm"
                     >
-                      {lang === 'ar' ? 'إغلاق النافذة' : 'Close'}
+                      {t(ui.recruitment.closeModal)}
                     </button>
                   </div>
                 </div>
@@ -330,7 +329,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         1
                       </span>
                       <h4 className="text-xs font-black text-ink">
-                        {lang === 'ar' ? 'البيانات الشخصية والاتصال' : 'Personal & Contact Information'}
+                        {t(ui.recruitment.personalAndContactInfo)}
                       </h4>
                     </div>
 
@@ -339,7 +338,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         <input
                           id="app-name"
                           value={name}
-                          placeholder={lang === 'ar' ? 'مثال: أحمد محمد علي محمود' : 'Full Name (3 or 4 parts)'}
+                          placeholder={t(ui.recruitment.namePlaceholder)}
                           onChange={(e) => setName(e.target.value)}
                           className={`${controlClass} bg-white shadow-xs`}
                         />
@@ -348,7 +347,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                       <div className="grid gap-3 sm:grid-cols-2">
                         <Field
                           id="app-nid"
-                          label={lang === 'ar' ? 'الرقم القومي (14 رقم)' : 'National ID (14 digits)'}
+                          label={t(ui.recruitment.nationalIdLabel)}
                           required
                           error={errors.national_id}
                         >
@@ -387,7 +386,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                           />
                         </Field>
 
-                        <Field id="app-gov" label={lang === 'ar' ? 'المحافظة' : 'Governorate'} required>
+                        <Field id="app-gov" label={t(ui.recruitment.governorateLabel)} required>
                           <select
                             id="app-gov"
                             value={governorate}
@@ -403,18 +402,18 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         </Field>
                       </div>
 
-                      <Field id="app-address" label={lang === 'ar' ? 'العنوان بالتفصيل' : 'Address'} required error={errors.address}>
+                      <Field id="app-address" label={t(ui.recruitment.detailedAddress)} required error={errors.address}>
                         <input
                           id="app-address"
                           value={address}
-                          placeholder={lang === 'ar' ? 'الشارع / المنطقة / المدينة' : 'Street / Area / City'}
+                          placeholder={t(ui.recruitment.addressPlaceholder)}
                           onChange={(e) => setAddress(e.target.value)}
                           className={`${controlClass} bg-white shadow-xs`}
                         />
                       </Field>
 
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <Field id="app-marital" label={lang === 'ar' ? 'الحالة الاجتماعية' : 'Marital Status'} required>
+                        <Field id="app-marital" label={t(ui.recruitment.maritalStatusLabel)} required>
                           <select
                             id="app-marital"
                             value={maritalStatus}
@@ -429,7 +428,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                           </select>
                         </Field>
 
-                        <Field id="app-military" label={lang === 'ar' ? 'الموقف التجنيدي' : 'Military Status'} required>
+                        <Field id="app-military" label={t(ui.recruitment.militaryStatusLabel)} required>
                           <select
                             id="app-military"
                             value={militaryStatus}
@@ -454,13 +453,13 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         2
                       </span>
                       <h4 className="text-xs font-black text-ink">
-                        {lang === 'ar' ? 'المؤهل الدراسي والخبرة' : 'Education & Experience'}
+                        {t(ui.recruitment.educationAndExperience)}
                       </h4>
                     </div>
 
                     <div className="grid gap-3">
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <Field id="app-qual" label={lang === 'ar' ? 'المؤهل الدراسي' : 'Qualification'} required>
+                        <Field id="app-qual" label={t(ui.recruitment.qualificationLabel)} required>
                           <select
                             id="app-qual"
                             value={qualification}
@@ -475,11 +474,11 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                           </select>
                         </Field>
 
-                        <Field id="app-qual-type" label={lang === 'ar' ? 'التخصص' : 'Specialization'} hint={t(ui.common.optional)}>
+                        <Field id="app-qual-type" label={t(ui.recruitment.qualificationTypeLabel)} hint={t(ui.common.optional)}>
                           <input
                             id="app-qual-type"
                             value={qualificationType}
-                            placeholder={lang === 'ar' ? 'مثال: كيمياء، هندسة، تجارة' : 'e.g. Chemistry, Engineering'}
+                            placeholder={t(ui.recruitment.specializationPlaceholder)}
                             onChange={(e) => setQualificationType(e.target.value)}
                             className={`${controlClass} bg-white shadow-xs`}
                           />
@@ -487,21 +486,21 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                       </div>
 
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <Field id="app-uni" label={lang === 'ar' ? 'الجامعة / المعهد' : 'University / Institute'} hint={t(ui.common.optional)}>
+                        <Field id="app-uni" label={t(ui.recruitment.universityLabel)} hint={t(ui.common.optional)}>
                           <input
                             id="app-uni"
                             value={university}
-                            placeholder={lang === 'ar' ? 'اسم الجامعة أو المعهد' : 'University name'}
+                            placeholder={t(ui.recruitment.universityPlaceholder)}
                             onChange={(e) => setUniversity(e.target.value)}
                             className={`${controlClass} bg-white shadow-xs`}
                           />
                         </Field>
 
-                        <Field id="app-exp" label={lang === 'ar' ? 'سنوات الخبرة' : 'Years of Experience'} hint={t(ui.common.optional)}>
+                        <Field id="app-exp" label={t(ui.recruitment.yearsExperienceLabel)} hint={t(ui.common.optional)}>
                           <input
                             id="app-exp"
                             value={yearsExperience}
-                            placeholder={lang === 'ar' ? 'مثال: 3 سنوات' : 'e.g. 3 years'}
+                            placeholder={t(ui.recruitment.yearsExpPlaceholder)}
                             onChange={(e) => setYearsExperience(e.target.value)}
                             className={`${controlClass} bg-white shadow-xs`}
                           />
@@ -517,7 +516,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         3
                       </span>
                       <h4 className="text-xs font-black text-ink">
-                        {lang === 'ar' ? 'المرفقات والسيرة الذاتية' : 'Attachments & Resume'}
+                        {t(ui.recruitment.attachmentsAndResume)}
                       </h4>
                     </div>
 
@@ -554,7 +553,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                                   if (cvInputRef.current) cvInputRef.current.value = '';
                                 }}
                                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"
-                                title={lang === 'ar' ? 'حذف الملف' : 'Remove file'}
+                                title={t(ui.recruitment.removeFile)}
                               >
                                 <XIcon className="h-3.5 w-3.5" />
                               </button>
@@ -563,7 +562,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                             <>
                               <UploadIcon className="h-5 w-5 text-brand-600" />
                               <span className="text-xs font-bold text-brand-800">
-                                {lang === 'ar' ? 'رفع السيرة الذاتية' : 'Upload CV File'}
+                                {t(ui.recruitment.uploadCvBtn)}
                               </span>
                               <span className="text-[10px] text-slate-400 font-medium">PDF, DOCX (حتى 10MB)</span>
                             </>
@@ -583,7 +582,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                       </Field>
 
                       {/* Photo Upload */}
-                      <Field id="app-photo" label={lang === 'ar' ? 'صورة شخصية (اختياري)' : 'Personal Photo'} hint="JPG, PNG">
+                      <Field id="app-photo" label={t(ui.recruitment.photoOptional)} hint="JPG, PNG">
                         <div
                           role="button"
                           tabIndex={0}
@@ -614,7 +613,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                                   if (photoInputRef.current) photoInputRef.current.value = '';
                                 }}
                                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"
-                                title={lang === 'ar' ? 'حذف الصورة' : 'Remove photo'}
+                                title={t(ui.recruitment.removePhoto)}
                               >
                                 <XIcon className="h-3.5 w-3.5" />
                               </button>
@@ -623,7 +622,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                             <>
                               <ImageIcon className="h-5 w-5 text-slate-400" />
                               <span className="text-xs font-bold text-slate-700">
-                                {lang === 'ar' ? 'إرفاق صورة شخصية' : 'Upload Photo'}
+                                {t(ui.recruitment.uploadPhotoBtn)}
                               </span>
                               <span className="text-[10px] text-slate-400 font-medium">JPG, PNG (حتى 5MB)</span>
                             </>
@@ -648,7 +647,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         id="app-message"
                         rows={2}
                         value={notes}
-                        placeholder={lang === 'ar' ? 'أي مهارات إضافية أو ملاحظات تود ذكرها...' : 'Additional notes...'}
+                        placeholder={t(ui.recruitment.additionalNotesPlaceholder)}
                         onChange={(e) => setNotes(e.target.value)}
                         className={`${controlClass} bg-white resize-none shadow-xs text-xs`}
                       />
@@ -666,7 +665,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                   onClick={handleClose}
                   className="rounded-full border border-slate-200 px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
                 >
-                  {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                  {t(ui.recruitment.cancelBtn)}
                 </button>
                 <button
                   type="submit"
@@ -682,7 +681,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                   ) : (
                     <>
                       <SendIcon className="h-3.5 w-3.5 ltr:rotate-0 rtl:rotate-180" />
-                      <span>{lang === 'ar' ? 'إرسال طلب التقديم' : 'Submit Application'}</span>
+                      <span>{t(ui.recruitment.submitApplicationBtn)}</span>
                     </>
                   )}
                 </button>

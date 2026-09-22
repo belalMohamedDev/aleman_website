@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { TruckIcon, PlusIcon, Trash2Icon, StarIcon, PhoneIcon, UserIcon, ShieldCheckIcon, CheckCircle2 } from 'lucide-react';
 import type { UserVehicle, CreateVehicleDto } from '../../features/profile/types';
 import { VehicleModal } from './VehicleModal';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface VehiclesTabProps {
   vehicles: UserVehicle[];
@@ -24,6 +26,7 @@ export function VehiclesTab({
   onOpenModal,
   onCloseModal,
 }: VehiclesTabProps) {
+  const { t } = useLanguage();
   const [internalModalOpen, setInternalModalOpen] = useState(false);
   const showModal = isModalOpen !== undefined ? isModalOpen : internalModalOpen;
   const handleOpen = onOpenModal || (() => setInternalModalOpen(true));
@@ -33,16 +36,16 @@ export function VehiclesTab({
     <div className="space-y-6">
       {isLoading ? (
         <div className="p-12 text-center text-sm font-bold text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-xs">
-          جاري تحميل بيانات الأسطول والسائقين...
+          {t(ui.profile.loadingVehicles)}
         </div>
       ) : vehicles.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center shadow-xs">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 mb-3">
             <TruckIcon className="h-8 w-8" />
           </div>
-          <h3 className="text-base font-black text-ink">لا توجد سيارات أو سائقين مسجلين</h3>
+          <h3 className="text-base font-black text-ink">{t(ui.profile.noVehiclesTitle)}</h3>
           <p className="mt-1 text-xs text-slate-400">
-            أضف بيانات سياراتك وسائقيك لتفادي إدخالها يدوياً عند كل طلب استلام ذاتي من المصنع.
+            {t(ui.profile.noVehiclesDesc)}
           </p>
           <button
             type="button"
@@ -50,7 +53,7 @@ export function VehiclesTab({
             className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#234c2e] hover:bg-[#1b3b24] px-4 py-2 text-xs font-bold text-white transition cursor-pointer"
           >
             <PlusIcon className="h-3.5 w-3.5" />
-            <span>إضافة أول سائق وسيارة</span>
+            <span>{t(ui.profile.addFirstVehicle)}</span>
           </button>
         </div>
       ) : (
@@ -83,7 +86,7 @@ export function VehiclesTab({
                         )}
                       </div>
                       <span className="block text-[11px] text-slate-400 mt-0.5">
-                        مركبة معتمدة للاستلام
+                        {t(ui.orders.readyForPickup)}
                       </span>
                     </div>
                   </div>
@@ -91,7 +94,7 @@ export function VehiclesTab({
                   {vehicle.isDefault && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 text-xs font-bold shrink-0">
                       <StarIcon className="h-3 w-3 fill-emerald-600 text-emerald-600" />
-                      <span>الافتراضي</span>
+                      <span>{t(ui.profile.defaultBadge)}</span>
                     </span>
                   )}
                 </div>
@@ -101,7 +104,7 @@ export function VehiclesTab({
                   <div className="flex items-center justify-between text-slate-600">
                     <span className="flex items-center gap-1.5 text-slate-400">
                       <UserIcon className="h-3.5 w-3.5" />
-                      <span>السائق:</span>
+                      <span>{t(ui.checkout.driverName)}:</span>
                     </span>
                     <span className="font-bold text-ink truncate">{vehicle.driverName}</span>
                   </div>
@@ -110,7 +113,7 @@ export function VehiclesTab({
                     <div className="flex items-center justify-between text-slate-600">
                       <span className="flex items-center gap-1.5 text-slate-400">
                         <PhoneIcon className="h-3.5 w-3.5" />
-                        <span>الهاتف:</span>
+                        <span>{t(ui.checkout.driverPhone)}:</span>
                       </span>
                       <span className="font-bold text-ink font-mono" dir="ltr">
                         {vehicle.driverPhone}
@@ -122,7 +125,7 @@ export function VehiclesTab({
                     <div className="flex items-center justify-between text-slate-600">
                       <span className="flex items-center gap-1.5 text-slate-400">
                         <ShieldCheckIcon className="h-3.5 w-3.5" />
-                        <span>رقم الرخصة:</span>
+                        <span>{t(ui.profile.licenseNumberField)}:</span>
                       </span>
                       <span className="font-bold text-ink font-mono">
                         {vehicle.driverLicenseNumber}
@@ -132,7 +135,7 @@ export function VehiclesTab({
 
                   {vehicle.notes && (
                     <div className="pt-1.5 border-t border-slate-50 flex items-start gap-1 text-[11px] text-slate-500">
-                      <span className="text-slate-400 shrink-0 font-medium">ملاحظات:</span>
+                      <span className="text-slate-400 shrink-0 font-medium">{t(ui.checkout.orderNotes)}:</span>
                       <span className="line-clamp-2 leading-relaxed">{vehicle.notes}</span>
                     </div>
                   )}
@@ -144,7 +147,7 @@ export function VehiclesTab({
                 {vehicle.isDefault ? (
                   <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>معتمد كافتراضي للاستلام</span>
+                    <span>{t(ui.profile.defaultBadge)}</span>
                   </span>
                 ) : (
                   <button
@@ -153,22 +156,22 @@ export function VehiclesTab({
                     className="inline-flex items-center gap-1 text-slate-500 hover:text-emerald-700 font-semibold transition cursor-pointer"
                   >
                     <StarIcon className="h-3.5 w-3.5 text-slate-400" />
-                    <span>تعيين كافتراضي</span>
+                    <span>{t(ui.profile.setAsDefault)}</span>
                   </button>
                 )}
 
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('هل تريد بالتأكيد حذف هذه السيارة؟')) {
+                    if (window.confirm(t(ui.profile.deleteConfirm))) {
                       onRemoveVehicle(vehicle.id);
                     }
                   }}
                   className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 font-semibold transition cursor-pointer"
-                  title="حذف السيارة"
+                  title={t(ui.profile.delete)}
                 >
                   <Trash2Icon className="h-3.5 w-3.5" />
-                  <span>حذف</span>
+                  <span>{t(ui.profile.delete)}</span>
                 </button>
               </div>
             </div>
@@ -185,3 +188,4 @@ export function VehiclesTab({
     </div>
   );
 }
+

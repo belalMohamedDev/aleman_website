@@ -1,49 +1,46 @@
 import { Reveal } from '../shared/Reveal';
 import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 import './careers-journey.css';
 
-const STEPS = [
-  {
-    number: '01',
-    title: 'التقديم الإلكتروني',
-    desc: 'اختر الوظيفة المناسبة واملأ استمارة التقديم بدقة مع إرفاق السيرة الذاتية المحدثة بصيغة PDF.',
-  },
-  {
-    number: '02',
-    title: 'الفرز والتقييم الفني',
-    desc: 'يقوم فريق الموارد البشرية واللجنة الفنية بمراجعة المؤهلات والخبرات ومطابقتها للمتطلبات الوظيفية.',
-  },
-  {
-    number: '03',
-    title: 'المقابلة الشخصية',
-    desc: 'التواصل مع المرشحين المؤهلين لإجراء المقابلات الفنية والشخصية واختبارات الجدارات المعملية والميدانية.',
-  },
-  {
-    number: '04',
-    title: 'العرض وبدء الرحلة',
-    desc: 'تقديم العرض الوظيفي الرسمي، واستكمال مسوغات التعيين، والبدء في برنامج التهيئة والانضمام لأسرة الإيمان.',
-  },
-];
-
 export function CareersProcess() {
-  const { lang } = useLang();
+  const { isRtl, t } = useLang();
+
+  const steps = [
+    {
+      number: '01',
+      title: t(ui.recruitment.step1Title),
+      desc: t(ui.recruitment.step1Desc),
+    },
+    {
+      number: '02',
+      title: t(ui.recruitment.step2Title),
+      desc: t(ui.recruitment.step2Desc),
+    },
+    {
+      number: '03',
+      title: t(ui.recruitment.step3Title),
+      desc: t(ui.recruitment.step3Desc),
+    },
+    {
+      number: '04',
+      title: t(ui.recruitment.step4Title),
+      desc: t(ui.recruitment.step4Desc),
+    },
+  ];
 
   return (
-    <section className="careers-process-section" aria-labelledby="careers-process-title" dir="rtl">
+    <section className="careers-process-section" aria-labelledby="careers-process-title" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="mx-auto max-w-site px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="careers-process-header">
           <Reveal>
-
-
             <h2 id="careers-process-title" className="careers-process-title">
-              {lang === 'ar' ? 'مراحل الانضمام إلى فريقنا' : 'Our Hiring Journey'}
+              {t(ui.recruitment.processHeading)}
             </h2>
 
             <p className="careers-process-desc">
-              {lang === 'ar'
-                ? 'خطوات واضحة ومنظمة تضمن تقييم كل كفاءة بكل نزاهة واحترافية'
-                : 'Structured milestones ensuring fair and professional evaluation'}
+              {t(ui.recruitment.processSubtitle)}
             </p>
           </Reveal>
         </div>
@@ -52,7 +49,7 @@ export function CareersProcess() {
         <div className="careers-pipeline-container">
           {/* Mobile View: Vertical Clean Connected Line */}
           <div className="sm:hidden careers-pipeline-mobile-list">
-            {STEPS.map((step, idx) => (
+            {steps.map((step, idx) => (
               <Reveal key={step.number} delay={idx * 0.1}>
                 <div className="careers-pipeline-mobile-item">
                   <div className="careers-pipeline-mobile-node">
@@ -76,16 +73,16 @@ export function CareersProcess() {
               {/* Step 01 */}
               <Reveal delay={0.06} className="careers-step-1">
                 <div className="careers-editorial-item">
-                  <h3 className="careers-editorial-title">{STEPS[0].title}</h3>
-                  <p className="careers-editorial-desc">{STEPS[0].desc}</p>
+                  <h3 className="careers-editorial-title">{steps[0].title}</h3>
+                  <p className="careers-editorial-desc">{steps[0].desc}</p>
                 </div>
               </Reveal>
 
               {/* Step 03 */}
               <Reveal delay={0.2} className="careers-step-3">
                 <div className="careers-editorial-item">
-                  <h3 className="careers-editorial-title">{STEPS[2].title}</h3>
-                  <p className="careers-editorial-desc">{STEPS[2].desc}</p>
+                  <h3 className="careers-editorial-title">{steps[2].title}</h3>
+                  <p className="careers-editorial-desc">{steps[2].desc}</p>
                 </div>
               </Reveal>
             </div>
@@ -134,16 +131,16 @@ export function CareersProcess() {
               {/* Step 02 */}
               <Reveal delay={0.12} className="careers-step-2">
                 <div className="careers-editorial-item">
-                  <h3 className="careers-editorial-title">{STEPS[1].title}</h3>
-                  <p className="careers-editorial-desc">{STEPS[1].desc}</p>
+                  <h3 className="careers-editorial-title">{steps[1].title}</h3>
+                  <p className="careers-editorial-desc">{steps[1].desc}</p>
                 </div>
               </Reveal>
 
               {/* Step 04 */}
               <Reveal delay={0.28} className="careers-step-4">
                 <div className="careers-editorial-item">
-                  <h3 className="careers-editorial-title">{STEPS[3].title}</h3>
-                  <p className="careers-editorial-desc">{STEPS[3].desc}</p>
+                  <h3 className="careers-editorial-title">{steps[3].title}</h3>
+                  <p className="careers-editorial-desc">{steps[3].desc}</p>
                 </div>
               </Reveal>
             </div>

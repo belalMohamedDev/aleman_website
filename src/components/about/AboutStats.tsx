@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion, useInView, useMotionValue, animate } from 'framer-motion';
+import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface StatItem {
   id: string;
@@ -9,41 +11,6 @@ interface StatItem {
   subtext: string;
   image: string;
 }
-
-const STATS_DATA: StatItem[] = [
-  {
-    id: 'years',
-    targetValue: 33,
-    prefix: '+',
-    label: 'سنة من الخبرة والريادة',
-    subtext: 'تأسست عام 1990',
-    image: '/years.webp',
-  },
-  {
-    id: 'factories',
-    targetValue: 3,
-    prefix: '',
-    label: 'مجمعات صناعية عملاقة',
-    subtext: 'طاقة إنتاجية وفورية ضخمة',
-    image: '/factory.webp',
-  },
-  {
-    id: 'engineers',
-    targetValue: 3200,
-    prefix: '+',
-    label: 'مهندس وفني واستشاري',
-    subtext: 'كوادر علمية بأعلى المستويات',
-    image: '/workers.webp',
-  },
-  {
-    id: 'capacity',
-    targetValue: 1000,
-    prefix: '+',
-    label: 'طن طاقة إنتاجية يومياً',
-    subtext: 'تغطي كبرى مزارع الجمهورية',
-    image: '/production.webp',
-  },
-];
 
 function AnimatedCounter({ value, prefix = '' }: { value: number; prefix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -76,8 +43,45 @@ function AnimatedCounter({ value, prefix = '' }: { value: number; prefix?: strin
 }
 
 export function AboutStats() {
+  const { isRtl, t } = useLang();
+
+  const statsData: StatItem[] = [
+    {
+      id: 'years',
+      targetValue: 33,
+      prefix: '+',
+      label: t(ui.about.stats.yearsLabel),
+      subtext: t(ui.about.stats.yearsSubtext),
+      image: '/years.webp',
+    },
+    {
+      id: 'factories',
+      targetValue: 3,
+      prefix: '',
+      label: t(ui.about.stats.factoriesLabel),
+      subtext: t(ui.about.stats.factoriesSubtext),
+      image: '/factory.webp',
+    },
+    {
+      id: 'engineers',
+      targetValue: 3200,
+      prefix: '+',
+      label: t(ui.about.stats.engineersLabel),
+      subtext: t(ui.about.stats.engineersSubtext),
+      image: '/workers.webp',
+    },
+    {
+      id: 'capacity',
+      targetValue: 1000,
+      prefix: '+',
+      label: t(ui.about.stats.capacityLabel),
+      subtext: t(ui.about.stats.capacitySubtext),
+      image: '/production.webp',
+    },
+  ];
+
   return (
-    <section className="relative -mt-12 mx-auto max-w-[1400px] px-4 md:px-8 z-20" dir="rtl">
+    <section className="relative -mt-12 mx-auto max-w-[1400px] px-4 md:px-8 z-20" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Floating Glass Container */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -97,7 +101,7 @@ export function AboutStats() {
         />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 relative z-10">
-          {STATS_DATA.map((item, idx) => (
+          {statsData.map((item, idx) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 30, scale: 0.95 }}

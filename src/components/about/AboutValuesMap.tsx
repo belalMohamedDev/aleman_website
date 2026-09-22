@@ -1,45 +1,47 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ShieldCheckIcon } from 'lucide-react';
+import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 import { Reveal } from '../shared/Reveal';
 import './about-journey.css';
-
-const CORE_VALUES = [
-  {
-    number: '01',
-    title: 'الالتزام',
-    desc: 'نستهدف التميز في كل التفاصيل من خلال جميع عملياتنا، وملتزمون بالحفاظ على هذا التميز الصارم في كل مرحلة إنتاجية.'
-  },
-  {
-    number: '02',
-    title: 'النزاهة',
-    desc: 'نحترم التزاماتنا ونحافظ على وعودنا، ونتعامل بأمانة وشفافية مطلقة في كافة المواقف مع جميع شركائنا وعملائنا.'
-  },
-  {
-    number: '03',
-    title: 'المسؤولية',
-    desc: 'مستعدون دائماً لتحمل مسؤولياتنا الكاملة تجاه رضا عملائنا الكرام جنباً إلى جنب مع مسؤوليتنا المجتمعية والبيئية.'
-  },
-  {
-    number: '04',
-    title: 'التنوع والانفتاح',
-    desc: 'نقدر الاختلافات الإيجابية ونتبنى أحدث المعارف والابتكارات التغذوية العالمية لتحقيق أفضل الفوائد لعملائنا.'
-  },
-  {
-    number: '05',
-    title: 'الاحترام المتبادل',
-    desc: 'نحترم موظفينا، موردينا، وشركاء نجاحنا، ونبني علاقات عمل راسخة ومستدامة قائمة على التقدير المتبادل.'
-  },
-  {
-    number: '06',
-    title: 'الاحترافية',
-    desc: 'تطبيق أعلى درجات الاحترافية في إدارة سلاسل التوريد والإنتاج التي تنعكس في جودة كل شكارة علف ننتجها.'
-  }
-];
 
 export function AboutValuesMap() {
   const containerRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const { isRtl, t } = useLang();
+
+  const coreValues = [
+    {
+      number: '01',
+      title: t(ui.about.values.v1Title),
+      desc: t(ui.about.values.v1Desc),
+    },
+    {
+      number: '02',
+      title: t(ui.about.values.v2Title),
+      desc: t(ui.about.values.v2Desc),
+    },
+    {
+      number: '03',
+      title: t(ui.about.values.v3Title),
+      desc: t(ui.about.values.v3Desc),
+    },
+    {
+      number: '04',
+      title: t(ui.about.values.v4Title),
+      desc: t(ui.about.values.v4Desc),
+    },
+    {
+      number: '05',
+      title: t(ui.about.values.v5Title),
+      desc: t(ui.about.values.v5Desc),
+    },
+    {
+      number: '06',
+      title: t(ui.about.values.v6Title),
+      desc: t(ui.about.values.v6Desc),
+    },
+  ];
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -51,19 +53,17 @@ export function AboutValuesMap() {
   const shadowScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.92, 1.05, 0.94]);
 
   return (
-    <section ref={containerRef} className="about-values-section" aria-labelledby="about-values-title" dir="rtl">
+    <section ref={containerRef} className="about-values-section" aria-labelledby="about-values-title" dir={isRtl ? 'rtl' : 'ltr'}>
       <div className="mx-auto max-w-site px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div id="about-values-heading" className="about-values-header">
           <Reveal>
-
-
             <h2 id="about-values-title" className="about-values-title">
-              قيمنا الراسخة
+              {t(ui.about.values.heading)}
             </h2>
 
             <p className="about-values-desc">
-              الركائز الأخلاقية والمهنية التي توجه مسيرتنا اليومية منذ عام 1990
+              {t(ui.about.values.lead)}
             </p>
           </Reveal>
         </div>
@@ -87,7 +87,7 @@ export function AboutValuesMap() {
                 >
                   <img
                     src="/image.webp"
-                    alt="شعار مجموعة شركات الايمان"
+                    alt={t(ui.brand.name)}
                     loading="lazy"
                     decoding="async"
                     className="about-values-emblem-img"
@@ -114,9 +114,9 @@ export function AboutValuesMap() {
                   <div className="about-editorial-item">
                     <div className="about-editorial-header">
                       <span className="about-values-mobile-point">01</span>
-                      <h3 className="about-editorial-title">{CORE_VALUES[0].title}</h3>
+                      <h3 className="about-editorial-title">{coreValues[0].title}</h3>
                     </div>
-                    <p className="about-editorial-desc">{CORE_VALUES[0].desc}</p>
+                    <p className="about-editorial-desc">{coreValues[0].desc}</p>
                   </div>
                 </Reveal>
 
@@ -125,9 +125,9 @@ export function AboutValuesMap() {
                   <div className="about-editorial-item">
                     <div className="about-editorial-header">
                       <span className="about-values-mobile-point">03</span>
-                      <h3 className="about-editorial-title">{CORE_VALUES[2].title}</h3>
+                      <h3 className="about-editorial-title">{coreValues[2].title}</h3>
                     </div>
-                    <p className="about-editorial-desc">{CORE_VALUES[2].desc}</p>
+                    <p className="about-editorial-desc">{coreValues[2].desc}</p>
                   </div>
                 </Reveal>
 
@@ -136,9 +136,9 @@ export function AboutValuesMap() {
                   <div className="about-editorial-item">
                     <div className="about-editorial-header">
                       <span className="about-values-mobile-point">05</span>
-                      <h3 className="about-editorial-title">{CORE_VALUES[4].title}</h3>
+                      <h3 className="about-editorial-title">{coreValues[4].title}</h3>
                     </div>
-                    <p className="about-editorial-desc">{CORE_VALUES[4].desc}</p>
+                    <p className="about-editorial-desc">{coreValues[4].desc}</p>
                   </div>
                 </Reveal>
               </div>
@@ -203,9 +203,9 @@ export function AboutValuesMap() {
                   <div className="about-editorial-item">
                     <div className="about-editorial-header">
                       <span className="about-values-mobile-point">02</span>
-                      <h3 className="about-editorial-title">{CORE_VALUES[1].title}</h3>
+                      <h3 className="about-editorial-title">{coreValues[1].title}</h3>
                     </div>
-                    <p className="about-editorial-desc">{CORE_VALUES[1].desc}</p>
+                    <p className="about-editorial-desc">{coreValues[1].desc}</p>
                   </div>
                 </Reveal>
 
@@ -214,9 +214,9 @@ export function AboutValuesMap() {
                   <div className="about-editorial-item">
                     <div className="about-editorial-header">
                       <span className="about-values-mobile-point">04</span>
-                      <h3 className="about-editorial-title">{CORE_VALUES[3].title}</h3>
+                      <h3 className="about-editorial-title">{coreValues[3].title}</h3>
                     </div>
-                    <p className="about-editorial-desc">{CORE_VALUES[3].desc}</p>
+                    <p className="about-editorial-desc">{coreValues[3].desc}</p>
                   </div>
                 </Reveal>
 
@@ -225,9 +225,9 @@ export function AboutValuesMap() {
                   <div className="about-editorial-item">
                     <div className="about-editorial-header">
                       <span className="about-values-mobile-point">06</span>
-                      <h3 className="about-editorial-title">{CORE_VALUES[5].title}</h3>
+                      <h3 className="about-editorial-title">{coreValues[5].title}</h3>
                     </div>
-                    <p className="about-editorial-desc">{CORE_VALUES[5].desc}</p>
+                    <p className="about-editorial-desc">{coreValues[5].desc}</p>
                   </div>
                 </Reveal>
               </div>

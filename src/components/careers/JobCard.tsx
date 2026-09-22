@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner';
 import type { JobDto } from '../../features/recruitment/types';
 import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 import { Reveal } from '../shared/Reveal';
 
 export type JobItem = JobDto;
@@ -28,7 +29,7 @@ type JobCardProps = {
 };
 
 export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProps) {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const [copied, setCopied] = useState(false);
   const ArrowIcon = lang === 'ar' ? ArrowLeft : ArrowRight;
 
@@ -50,13 +51,13 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
   const title =
     lang === 'en' && job.title_en
       ? job.title_en
-      : job.title_ar || job.title || (lang === 'ar' ? 'وظيفة شاغرة' : 'Open Position');
+      : job.title_ar || job.title || t(ui.recruitment.openPosition);
 
-  const department = job.department || (lang === 'ar' ? 'مجموعة شركات الإيمان' : 'Al-Eman Group');
+  const department = job.department || t(ui.recruitment.alemanGroup);
   const DeptIcon = getDeptIcon(department);
-  const location = job.location || (lang === 'ar' ? 'جمهورية مصر العربية' : 'Egypt');
-  const jobType = job.employment_type_label || job.employment_type || (lang === 'ar' ? 'دوام كامل' : 'Full-Time');
-  const workType = job.work_type_label || job.work_type || (lang === 'ar' ? 'من المقر' : 'On-site');
+  const location = job.location || t(ui.recruitment.egyptLocation);
+  const jobType = job.employment_type_label || job.employment_type || t(ui.recruitment.fullTime);
+  const workType = job.work_type_label || job.work_type || t(ui.recruitment.onSite);
   const experience = job.experience_label;
   const deadline = job.deadline;
   const jobCode = job.job_code;
@@ -65,9 +66,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
   const summary =
     job.summary ||
     job.description ||
-    (lang === 'ar'
-      ? 'فرصة مهنية مميزة ضمن كوادر مجموعة شركات الإيمان وفق أحدث المعايير المهنية.'
-      : 'An exceptional career opportunity within Al-Eman Group.');
+    t(ui.recruitment.defaultJobSummary);
 
   // Responsibilities parsing
   const rawResponsibilities = job.responsibilities;
@@ -89,10 +88,10 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success(lang === 'ar' ? 'تم نسخ رابط الوظيفة بنجاح' : 'Job link copied to clipboard');
+      toast.success(t(ui.recruitment.linkCopied));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error(lang === 'ar' ? 'فشل نسخ الرابط' : 'Failed to copy link');
+      toast.error(t(ui.recruitment.linkCopyFailed));
     }
   };
 
@@ -123,7 +122,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
           <button
             type="button"
             onClick={handleShare}
-            aria-label={lang === 'ar' ? 'مشاركة رابط الوظيفة' : 'Share job link'}
+            aria-label={t(ui.recruitment.shareJob)}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-500 hover:bg-slate-50 hover:text-brand-600 hover:border-brand-200 transition shadow-2xs"
           >
             {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Share2 className="h-3.5 w-3.5" />}
@@ -138,7 +137,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
         </h3>
         {vacancies > 0 && (
           <span className="shrink-0 rounded-full bg-amber-50/90 px-3 py-1 text-xs font-black text-amber-800 border border-amber-200/60 shadow-2xs">
-            {vacancies} {lang === 'ar' ? 'شواغر متاحة' : 'openings'}
+            {vacancies} {t(ui.recruitment.vacanciesAvailable)}
           </span>
         )}
       </div>
@@ -175,7 +174,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
       {responsibilities.length > 0 && (
         <div className="mt-4 border-t border-slate-100 pt-4 flex-1">
           <span className="text-xs font-black text-slate-700 mb-2 block">
-            {lang === 'ar' ? 'أبرز المهام والمسؤوليات:' : 'Key Responsibilities:'}
+            {t(ui.recruitment.keyResponsibilities)}
           </span>
           <ul className="space-y-2">
             {responsibilities.slice(0, 3).map((item, idx) => (
@@ -193,12 +192,12 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
         {deadline ? (
           <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800">
             <Calendar className="h-4 w-4 text-amber-600 shrink-0" />
-            <span>{lang === 'ar' ? `آخر موعد للتقديم: ${deadline}` : `Deadline: ${deadline}`}</span>
+            <span>{`${t(ui.recruitment.deadlineLabel)} ${deadline}`}</span>
           </div>
         ) : (
           <div className="text-xs font-bold text-emerald-700 flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>{lang === 'ar' ? 'التقديم متاح حالياً' : 'Applications Open'}</span>
+            <span>{t(ui.recruitment.applicationsOpen)}</span>
           </div>
         )}
 
@@ -207,7 +206,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
           onClick={() => onApply(job)}
           className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 px-6 py-3 text-xs sm:text-sm font-black text-white shadow-sm transition hover:shadow active:scale-[0.98]"
         >
-          <span>{lang === 'ar' ? 'تقديم طلب الآن' : 'Apply Now'}</span>
+          <span>{t(ui.recruitment.applyNow)}</span>
           <ArrowIcon className="h-4 w-4" />
         </button>
       </div>

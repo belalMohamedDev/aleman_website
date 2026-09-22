@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon, CalendarIcon, ClockIcon } from 'lucide-react';
 import { articles, getArticle } from '../data/articles';
@@ -6,7 +5,6 @@ import { useLang } from '../i18n/LanguageContext';
 import { ui } from '../i18n/ui';
 import { Badge } from '../components/shared/Badge';
 import { EmptyState } from '../components/shared/EmptyState';
-import { PlaceholderNotice } from '../components/shared/PlaceholderNotice';
 import { ArticleCard } from '../components/articles/ArticleCard';
 
 export function ArticleDetail() {

@@ -9,12 +9,15 @@ import {
   EyeOffIcon,
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import { useLanguage } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 type AuthMode = 'phone' | 'email';
 type PhoneStep = 'input' | 'otp';
 
 export function AuthModal() {
   const { isAuthModalOpen, closeAuthModal, login, sendLoginOtp, verifyLoginOtp } = useAuth();
+  const { t, isRtl } = useLanguage();
 
   // Mode Toggle: Phone OTP vs Email & Password
   const [authMode, setAuthMode] = useState<AuthMode>('phone');
@@ -150,16 +153,16 @@ export function AuthModal() {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="relative z-10 w-full max-w-[420px] overflow-hidden rounded-[32px] bg-white shadow-2xl"
-          dir="rtl"
+          dir={isRtl ? 'rtl' : 'ltr'}
         >
           {/* ================= Noon-Style Yellow Visual Header ================= */}
           <div className="relative h-60 sm:h-64 w-full overflow-hidden bg-[#FED700] select-none">
-            {/* Close Button - Floating White Pill on Top Left */}
+            {/* Close Button - Floating White Pill */}
             <button
               type="button"
               onClick={closeAuthModal}
-              className="absolute top-3.5 left-3.5 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-md hover:bg-white hover:scale-110 active:scale-95 transition-all"
-              aria-label="إغلاق"
+              className={`absolute top-3.5 ${isRtl ? 'left-3.5' : 'right-3.5'} z-30 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-md hover:bg-white hover:scale-110 active:scale-95 transition-all`}
+              aria-label={t(ui.common.close)}
             >
               <XIcon className="h-4 w-4 stroke-[2.5]" />
             </button>
@@ -185,7 +188,7 @@ export function AuthModal() {
                 {/* 3D Feed Bag Popping Out */}
                 <img
                   src="/aleman_parallax_assets/bag-03-ducks.webp"
-                  alt="علف الإيمان"
+                  alt={t(ui.auth.altPoultryBag)}
                   className="absolute -top-3 h-32 sm:h-36 w-auto object-contain drop-shadow-xl -rotate-3"
                 />
               </motion.div>
@@ -200,7 +203,7 @@ export function AuthModal() {
               <div className="h-20 w-20 sm:h-22 sm:w-22 rounded-full bg-[#E5BE00] border border-yellow-300/70 flex items-center justify-center shadow-inner overflow-hidden p-2">
                 <img
                   src="/animal_cow.webp"
-                  alt="مواشي الإيمان"
+                  alt={t(ui.auth.altLivestockCow)}
                   className="max-h-full max-w-full object-contain drop-shadow-md"
                 />
               </div>
@@ -215,7 +218,7 @@ export function AuthModal() {
               <div className="h-20 w-20 sm:h-22 sm:w-22 rounded-full bg-[#E5BE00] border border-yellow-300/70 flex items-center justify-center shadow-inner overflow-hidden p-2">
                 <img
                   src="/animal_chicken.webp"
-                  alt="دواجن الإيمان"
+                  alt={t(ui.auth.altPoultryChicken)}
                   className="max-h-full max-w-full object-contain drop-shadow-md"
                 />
               </div>
@@ -230,7 +233,7 @@ export function AuthModal() {
               <div className="h-18 w-18 sm:h-20 sm:w-20 rounded-full bg-[#E5BE00] border border-yellow-300/70 flex items-center justify-center shadow-inner overflow-hidden p-2">
                 <img
                   src="/animal_duck.webp"
-                  alt="بط الإيمان"
+                  alt={t(ui.auth.altDuck)}
                   className="max-h-full max-w-full object-contain drop-shadow-sm"
                 />
               </div>
@@ -245,7 +248,7 @@ export function AuthModal() {
               <div className="h-16 w-16 sm:h-18 sm:w-18 rounded-full bg-[#E5BE00] border-2 border-yellow-300/80 flex items-center justify-center shadow-md overflow-hidden p-1">
                 <img
                   src="/feed_pellets_3d.webp"
-                  alt="حبيبات العلف الذهبية"
+                  alt={t(ui.auth.altFeedPellets)}
                   className="max-h-full max-w-full object-contain drop-shadow-md scale-105"
                 />
               </div>
@@ -260,7 +263,7 @@ export function AuthModal() {
               <div className="h-18 w-18 sm:h-20 sm:w-20 rounded-full bg-[#E5BE00] border border-yellow-300/70 flex items-center justify-center shadow-inner overflow-hidden p-2">
                 <img
                   src="/animal_rabbit.webp"
-                  alt="أرانب الإيمان"
+                  alt={t(ui.auth.altRabbit)}
                   className="max-h-full max-w-full object-contain drop-shadow-md"
                 />
               </div>
@@ -272,10 +275,10 @@ export function AuthModal() {
             {/* Greeting Header */}
             <div className="text-center mb-5">
               <h2 className="text-2xl sm:text-[26px] font-black text-[#112D1C] tracking-tight">
-                هلا لنبدأ
+                {t(ui.auth.greetingTitle)}
               </h2>
               <p className="text-xs font-semibold text-slate-500 mt-1">
-                سجّل دخولك لمتابعة سلتك وطلبات الأعلاف مباشرة
+                {t(ui.auth.greetingSubtitle)}
               </p>
             </div>
 
@@ -291,7 +294,7 @@ export function AuthModal() {
                   }`}
               >
                 <SmartphoneIcon className="h-3.5 w-3.5" />
-                <span>رقم الهاتف (OTP)</span>
+                <span>{t(ui.auth.phoneTab)}</span>
                 {authMode === 'phone' && (
                   <motion.div
                     layoutId="auth-tab-pill"
@@ -309,7 +312,7 @@ export function AuthModal() {
                   }`}
               >
                 <MailIcon className="h-3.5 w-3.5" />
-                <span>البريد الإلكتروني</span>
+                <span>{t(ui.auth.emailTab)}</span>
                 {authMode === 'email' && (
                   <motion.div
                     layoutId="auth-tab-pill"
@@ -341,11 +344,11 @@ export function AuthModal() {
                           required
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
-                          placeholder="مثال: 01012345678"
-                          dir="rtl"
-                          className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3.5 pr-10 pl-4 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none transition shadow-2xs"
+                          placeholder={t(ui.auth.phoneInputPlaceholder)}
+                          dir={isRtl ? 'rtl' : 'ltr'}
+                          className={`w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3.5 ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none transition shadow-2xs`}
                         />
-                        <div className="absolute top-1/2 -translate-y-1/2 right-3.5 text-slate-400 pointer-events-none">
+                        <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-3.5' : 'left-3.5'} text-slate-400 pointer-events-none`}>
                           <SmartphoneIcon className="h-4 w-4" />
                         </div>
                       </div>
@@ -353,9 +356,9 @@ export function AuthModal() {
                       <button
                         type="submit"
                         disabled={isSubmitting || !phoneNumber.trim()}
-                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 hover:from-brand-600 hover:to-brand-500 active:scale-[0.99] disabled:opacity-50 text-white font-black text-sm shadow-md shadow-brand-900/20 transition-all mt-3"
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 hover:from-brand-600 hover:to-brand-500 active:scale-[0.99] disabled:opacity-50 text-white font-black text-sm shadow-md shadow-brand-900/20 transition-all mt-3 cursor-pointer"
                       >
-                        {isSubmitting ? 'جاري الإرسال…' : 'متابعة'}
+                        {isSubmitting ? t(ui.auth.sendingOtp) : t(ui.auth.continueBtn)}
                       </button>
                     </form>
                   ) : (
@@ -363,15 +366,15 @@ export function AuthModal() {
                     <form onSubmit={handleVerifyOtp} className="space-y-4">
                       <div className="rounded-xl bg-brand-50/80 p-3 border border-brand-100 flex items-center justify-between text-xs">
                         <div>
-                          <span className="text-slate-500">أُرسل الرمز إلى </span>
-                          <span className="font-bold text-brand-900 dir-ltr inline-block mr-1">{phoneNumber}</span>
+                          <span className="text-slate-500">{t(ui.auth.otpSentTo)} </span>
+                          <span className="font-bold text-brand-900 dir-ltr inline-block mx-1">{phoneNumber}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => setPhoneStep('input')}
-                          className="font-bold text-brand-700 hover:underline"
+                          className="font-bold text-brand-700 hover:underline cursor-pointer"
                         >
-                          تعديل
+                          {t(ui.auth.editPhoneBtn)}
                         </button>
                       </div>
 
@@ -393,28 +396,27 @@ export function AuthModal() {
                       <div className="flex items-center justify-between text-xs pt-0.5">
                         {countdown > 0 ? (
                           <span className="text-slate-400 font-medium">
-                            إعادة الإرسال بعد ({countdown} ثانية)
+                            {t(ui.auth.resendCountdown).replace('{count}', String(countdown))}
                           </span>
                         ) : (
                           <button
                             type="button"
                             onClick={handleResendOtp}
                             disabled={isSubmitting}
-                            className="inline-flex items-center gap-1.5 font-bold text-brand-700 hover:underline"
+                            className="inline-flex items-center gap-1.5 font-bold text-brand-700 hover:underline cursor-pointer"
                           >
                             <RefreshCwIcon className={`h-3.5 w-3.5 ${isSubmitting ? 'animate-spin' : ''}`} />
-                            <span>إعادة إرسال الرمز</span>
+                            <span>{t(ui.auth.resendCode)}</span>
                           </button>
                         )}
-                        {/* <span className="text-[11px] text-slate-400">صلاحية الرمز 5 دقائق</span> */}
                       </div>
 
                       <button
                         type="submit"
                         disabled={isSubmitting || otpCode.trim().length < 6}
-                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 hover:from-brand-600 hover:to-brand-500 active:scale-[0.99] disabled:opacity-50 text-white font-black text-sm shadow-md shadow-brand-900/20 transition-all mt-3"
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 hover:from-brand-600 hover:to-brand-500 active:scale-[0.99] disabled:opacity-50 text-white font-black text-sm shadow-md shadow-brand-900/20 transition-all mt-3 cursor-pointer"
                       >
-                        {isSubmitting ? 'جاري التحقق…' : 'تأكيد ودخول'}
+                        {isSubmitting ? t(ui.auth.verifyingOtp) : t(ui.auth.confirmAndEnter)}
                       </button>
                     </form>
                   )}
@@ -436,11 +438,11 @@ export function AuthModal() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="البريد الإلكتروني"
-                      dir="rtl"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3.5 pr-10 pl-4 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none transition shadow-2xs"
+                      placeholder={t(ui.auth.emailPlaceholder)}
+                      dir={isRtl ? 'rtl' : 'ltr'}
+                      className={`w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3.5 ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none transition shadow-2xs`}
                     />
-                    <div className="absolute top-1/2 -translate-y-1/2 right-3.5 text-slate-400 pointer-events-none">
+                    <div className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'right-3.5' : 'left-3.5'} text-slate-400 pointer-events-none`}>
                       <MailIcon className="h-4 w-4" />
                     </div>
                   </div>
@@ -451,14 +453,14 @@ export function AuthModal() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="كلمة المرور"
-                      dir="rtl"
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3.5 pr-4 pl-10 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none transition shadow-2xs"
+                      placeholder={t(ui.auth.passwordPlaceholder)}
+                      dir={isRtl ? 'rtl' : 'ltr'}
+                      className={`w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3.5 ${isRtl ? 'pr-4 pl-10' : 'pl-4 pr-10'} text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none transition shadow-2xs`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute top-1/2 -translate-y-1/2 left-3.5 text-slate-400 hover:text-slate-600 p-1"
+                      className={`absolute top-1/2 -translate-y-1/2 ${isRtl ? 'left-3.5' : 'right-3.5'} text-slate-400 hover:text-slate-600 p-1 cursor-pointer`}
                       tabIndex={-1}
                     >
                       {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
@@ -468,9 +470,9 @@ export function AuthModal() {
                   <button
                     type="submit"
                     disabled={isSubmitting || !email || !password}
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 hover:from-brand-600 hover:to-brand-500 active:scale-[0.99] disabled:opacity-50 text-white font-black text-sm shadow-md shadow-brand-900/20 transition-all mt-3"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 hover:from-brand-600 hover:to-brand-500 active:scale-[0.99] disabled:opacity-50 text-white font-black text-sm shadow-md shadow-brand-900/20 transition-all mt-3 cursor-pointer"
                   >
-                    {isSubmitting ? 'جاري المعالجة…' : 'متابعة'}
+                    {isSubmitting ? t(ui.auth.processing) : t(ui.auth.continueBtn)}
                   </button>
                 </motion.form>
               )}
@@ -481,3 +483,4 @@ export function AuthModal() {
     </AnimatePresence>
   );
 }
+

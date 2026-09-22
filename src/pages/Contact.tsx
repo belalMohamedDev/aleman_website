@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLang } from '../i18n/LanguageContext';
 import { ui } from '../i18n/ui';
 import { PageHeader } from '../components/shared/PageHeader';

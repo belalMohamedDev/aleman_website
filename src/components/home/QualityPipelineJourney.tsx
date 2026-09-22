@@ -1,12 +1,13 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 import { qualitySteps } from '../../data/qualitySteps';
 import { Reveal } from '../shared/Reveal';
 import './quality-pipeline.css';
 
 export function QualityPipelineJourney() {
-  const { t } = useLang();
+  const { t, isRtl } = useLang();
   const journeyRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -29,7 +30,7 @@ export function QualityPipelineJourney() {
   const step06 = qualitySteps[5];
 
   return (
-    <div ref={journeyRef} className="quality-spiral-section" dir="rtl">
+    <div ref={journeyRef} className="quality-spiral-section" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Ambient subtle glow */}
       <div className="quality-spiral-ambient-glow" aria-hidden="true" />
 
@@ -52,7 +53,7 @@ export function QualityPipelineJourney() {
               >
                 <img
                   src="/quality_lab_showcase.webp"
-                  alt="معمل فحص وضبط جودة الأعلاف - مجموعة شركات الايمان"
+                  alt={t(ui.home.qualityLabImageAlt)}
                   loading="lazy"
                   decoding="async"
                   className="quality-visual-standalone-img"

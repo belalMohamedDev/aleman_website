@@ -5,35 +5,35 @@ import { ui } from '../../i18n/ui';
 import { Reveal } from '../shared/Reveal';
 import './trust-section.css';
 
-const TRUST_EDITORIAL_POINTS = [
-  {
-    id: 'quality',
-    number: '01',
-    title: 'فحص معملي صارم بنسبة 100%',
-    desc: 'معامل تحليل متطورة لفحص كل دفعة بدقة متناهية والتأكد من نسب البروتين وخلوها من السموم الفطرية.'
-  },
-  {
-    id: 'experience',
-    number: '02',
-    title: 'خبرة صناعية تتجاوز 33 عاماً',
-    desc: 'إرث عريق وفريق تغذية متخصص في ابتكار تركيبات غذائية علمية تخدم كبرى مزارع مصر.'
-  },
-  {
-    id: 'packaging',
-    number: '03',
-    title: 'تعبئة آلية فائقة الحماية',
-    desc: 'خطوط تعبئة روبوتية محكمة تمنع وصول الرطوبة وتحافظ على حيوية وتجانس الحبيبات حتى المزرعة.'
-  },
-  {
-    id: 'sectors',
-    number: '04',
-    title: 'تغطية متكاملة لـ 4 قطاعات إنتاجية',
-    desc: 'أعلاف متخصصة للدواجن، الماشية، الأرانب، والبط تحقق أعلى معدل تحويل غذائي وأعلى ربحية للمربي.'
-  }
-];
-
 export function TrustMetrics() {
-  const { t } = useLang();
+  const { t, isRtl } = useLang();
+
+  const trustEditorialPoints = [
+    {
+      id: 'quality',
+      number: '01',
+      title: t(ui.home.trustPoints.p1Title),
+      desc: t(ui.home.trustPoints.p1Desc),
+    },
+    {
+      id: 'experience',
+      number: '02',
+      title: t(ui.home.trustPoints.p2Title),
+      desc: t(ui.home.trustPoints.p2Desc),
+    },
+    {
+      id: 'packaging',
+      number: '03',
+      title: t(ui.home.trustPoints.p3Title),
+      desc: t(ui.home.trustPoints.p3Desc),
+    },
+    {
+      id: 'sectors',
+      number: '04',
+      title: t(ui.home.trustPoints.p4Title),
+      desc: t(ui.home.trustPoints.p4Desc),
+    },
+  ];
   const containerRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -57,7 +57,7 @@ export function TrustMetrics() {
 
 
   return (
-    <section ref={containerRef} className="trust-section" aria-labelledby="trust-section-title">
+    <section ref={containerRef} dir={isRtl ? 'rtl' : 'ltr'} className="trust-section" aria-labelledby="trust-section-title">
       {/* Ambient background glows */}
       <div className="trust-ambient-glow" aria-hidden="true" />
       <div className="trust-ambient-glow-left" aria-hidden="true" />
@@ -85,7 +85,7 @@ export function TrustMetrics() {
 
               {/* Explanatory Lead */}
               <p className="mt-6 text-base font-medium leading-[1.85] text-ink-muted sm:text-lg sm:leading-[1.9]">
-                نلتزم بتقديم أعلاف متوازنة وعالية النقاء ترتكز على أسس علمية دقيقة، وتخضع لمراقبة صارمة في جميع مراحل التصنيع لضمان أقصى إنتاجية وحماية لمزارعكم.
+                {t(ui.home.trustDescription)}
               </p>
             </Reveal>
 
@@ -97,9 +97,9 @@ export function TrustMetrics() {
                   <div className="trust-editorial-item">
                     <div className="trust-editorial-header">
                       <span className="trust-mobile-point">01</span>
-                      <h3 className="trust-editorial-title">{TRUST_EDITORIAL_POINTS[0].title}</h3>
+                      <h3 className="trust-editorial-title">{trustEditorialPoints[0].title}</h3>
                     </div>
-                    <p className="trust-editorial-desc">{TRUST_EDITORIAL_POINTS[0].desc}</p>
+                    <p className="trust-editorial-desc">{trustEditorialPoints[0].desc}</p>
                   </div>
                 </Reveal>
 
@@ -107,9 +107,9 @@ export function TrustMetrics() {
                   <div className="trust-editorial-item">
                     <div className="trust-editorial-header">
                       <span className="trust-mobile-point">03</span>
-                      <h3 className="trust-editorial-title">{TRUST_EDITORIAL_POINTS[2].title}</h3>
+                      <h3 className="trust-editorial-title">{trustEditorialPoints[2].title}</h3>
                     </div>
-                    <p className="trust-editorial-desc">{TRUST_EDITORIAL_POINTS[2].desc}</p>
+                    <p className="trust-editorial-desc">{trustEditorialPoints[2].desc}</p>
                   </div>
                 </Reveal>
               </div>
@@ -137,22 +137,22 @@ export function TrustMetrics() {
                 </svg>
 
                 {/* Point Node 01 (loops toward Item 01 on right) */}
-                <div className="trust-point-node trust-point-1" title="نقطة 1">
+                <div className="trust-point-node trust-point-1" title="01">
                   <span>01</span>
                 </div>
 
                 {/* Point Node 02 (loops toward Item 02 on left) */}
-                <div className="trust-point-node trust-point-2" title="نقطة 2">
+                <div className="trust-point-node trust-point-2" title="02">
                   <span>02</span>
                 </div>
 
                 {/* Point Node 03 (loops toward Item 03 on right) */}
-                <div className="trust-point-node trust-point-3" title="نقطة 3">
+                <div className="trust-point-node trust-point-3" title="03">
                   <span>03</span>
                 </div>
 
                 {/* Point Node 04 (loops toward Item 04 on left) */}
-                <div className="trust-point-node trust-point-4" title="نقطة 4">
+                <div className="trust-point-node trust-point-4" title="04">
                   <span>04</span>
                 </div>
               </div>
@@ -163,9 +163,9 @@ export function TrustMetrics() {
                   <div className="trust-editorial-item">
                     <div className="trust-editorial-header">
                       <span className="trust-mobile-point">02</span>
-                      <h3 className="trust-editorial-title">{TRUST_EDITORIAL_POINTS[1].title}</h3>
+                      <h3 className="trust-editorial-title">{trustEditorialPoints[1].title}</h3>
                     </div>
-                    <p className="trust-editorial-desc">{TRUST_EDITORIAL_POINTS[1].desc}</p>
+                    <p className="trust-editorial-desc">{trustEditorialPoints[1].desc}</p>
                   </div>
                 </Reveal>
 
@@ -173,9 +173,9 @@ export function TrustMetrics() {
                   <div className="trust-editorial-item">
                     <div className="trust-editorial-header">
                       <span className="trust-mobile-point">04</span>
-                      <h3 className="trust-editorial-title">{TRUST_EDITORIAL_POINTS[3].title}</h3>
+                      <h3 className="trust-editorial-title">{trustEditorialPoints[3].title}</h3>
                     </div>
-                    <p className="trust-editorial-desc">{TRUST_EDITORIAL_POINTS[3].desc}</p>
+                    <p className="trust-editorial-desc">{trustEditorialPoints[3].desc}</p>
                   </div>
                 </Reveal>
               </div>
@@ -209,7 +209,7 @@ export function TrustMetrics() {
               >
                 <img
                   src="/aleman_parallax_assets/bag-02-cattle.webp"
-                  alt="شيكارة علف مواشي الإيمان"
+                  alt={t(ui.home.heroBags.cattleFattening)}
                   loading="lazy"
                   decoding="async"
                   className="trust-float-left"
@@ -226,7 +226,7 @@ export function TrustMetrics() {
               >
                 <img
                   src="/aleman_parallax_assets/bag-01-ducks.webp"
-                  alt="شيكارة علف بط الإيمان"
+                  alt={t(ui.home.heroBags.poultryHome)}
                   loading="lazy"
                   decoding="async"
                   className="trust-float-right"
@@ -244,7 +244,7 @@ export function TrustMetrics() {
               >
                 <img
                   src="/aleman_parallax_assets/bag-05-broiler.webp"
-                  alt="شيكارة علف دواجن تسمين الإيمان"
+                  alt={t(ui.home.heroBags.broilerSuper)}
                   loading="lazy"
                   decoding="async"
                   className="trust-float-center"

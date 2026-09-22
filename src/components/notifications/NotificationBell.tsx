@@ -10,26 +10,28 @@ import {
 } from 'lucide-react';
 import { useNotifications } from '../../features/notifications/useNotifications';
 import type { NotificationItem } from '../../features/notifications/types';
+import { useLang } from '../../i18n/LanguageContext';
+import { ui } from '../../i18n/ui';
 
 interface NotificationBellProps {
   isAuthenticated: boolean;
   isTransparent?: boolean;
 }
 
-function formatTimeAgo(dateString: string): string {
+function formatTimeAgo(dateString: string, lang: 'ar' | 'en'): string {
   try {
     const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffInSeconds < 60) return 'الآن';
+    if (diffInSeconds < 60) return lang === 'ar' ? 'الآن' : 'Just now';
     const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) return `منذ ${diffInMinutes} د`;
+    if (diffInMinutes < 60) return lang === 'ar' ? `منذ ${diffInMinutes} د` : `${diffInMinutes}m ago`;
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `منذ ${diffInHours} س`;
+    if (diffInHours < 24) return lang === 'ar' ? `منذ ${diffInHours} س` : `${diffInHours}h ago`;
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `منذ ${diffInDays} يوم`;
-    return date.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric' });
+    if (diffInDays < 7) return lang === 'ar' ? `منذ ${diffInDays} يوم` : `${diffInDays}d ago`;
+    return date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric' });
   } catch {
     return '';
   }
@@ -62,6 +64,7 @@ function getNotificationIcon(title: string, body: string) {
 }
 
 export function NotificationBell({ isAuthenticated, isTransparent = false }: NotificationBellProps) {
+  const { t, lang } = useLang();
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<'all' | 'unread'>('all');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -123,7 +126,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
           ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
           : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white'
           }`}
-        aria-label="الإشعارات"
+        aria-label={t(ui.notifications.title)}
         aria-expanded={isOpen}
       >
         <BellIcon className="h-4 w-4" />
@@ -142,34 +145,13 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
           {/* Header */}
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm sm:text-base font-black text-ink">الإشعارات</h3>
+              <h3 className="text-sm sm:text-base font-black text-ink">{t(ui.notifications.title)}</h3>
               {unreadCount > 0 && (
                 <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-black text-brand-700">
-                  {unreadCount} جديد
+                  {unreadCount} {t(ui.notifications.newBadge)}
                 </span>
               )}
             </div>
-
-            {/* <div className="flex items-center gap-1.5">
-              {unreadCount > 0 && (
-                <button
-                  type="button"
-                  onClick={markAllAsRead}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-brand-600 transition px-2 py-1 rounded-lg hover:bg-slate-50"
-                  title="تحديد الكل كمقروء"
-                >
-                  <CheckCheckIcon className="h-3.5 w-3.5" />
-                  <span>تحديد الكل</span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
-              >
-                <XIcon className="h-4 w-4" />
-              </button>
-            </div> */}
           </div>
 
           {/* Filter Tabs */}
@@ -182,7 +164,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
                 : 'text-slate-500 hover:bg-slate-50'
                 }`}
             >
-              الكل ({notifications.length})
+              {t(ui.notifications.filterAll)} ({notifications.length})
             </button>
             <button
               type="button"
@@ -192,7 +174,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
                 : 'text-slate-500 hover:bg-slate-50'
                 }`}
             >
-              غير المقروءة ({unreadCount})
+              {t(ui.notifications.filterUnread)} ({unreadCount})
             </button>
           </div>
 
@@ -200,22 +182,22 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
           <div className="max-h-[380px] overflow-y-auto no-scrollbar divide-y divide-slate-50 pr-0.5 mt-1 -mx-2 px-2">
             {isLoading && notifications.length === 0 ? (
               <div className="py-8 text-center text-xs font-semibold text-slate-400">
-                جاري تحميل الإشعارات...
+                {t(ui.notifications.loading)}
               </div>
             ) : filteredNotifications.length === 0 ? (
               <div className="py-6 text-center space-y-2">
                 <div className="mx-auto w-36 h-36 relative flex items-center justify-center mb-2">
                   <img
                     src="/aleman_parallax_assets/notification.webp"
-                    alt="لا توجد إشعارات حالياً"
+                    alt={t(ui.notifications.emptyTitle)}
                     className="w-full h-full object-contain filter drop-shadow-md animate-in fade-in zoom-in-95 duration-300"
                     loading="lazy"
                     decoding="async"
                   />
                 </div>
-                <p className="text-xs font-black text-slate-800">لا توجد إشعارات حالياً</p>
+                <p className="text-xs font-black text-slate-800">{t(ui.notifications.emptyTitle)}</p>
                 <p className="text-[11px] font-medium text-slate-400 max-w-[220px] mx-auto leading-relaxed">
-                  ستتلقى إشعارات فورية هنا فور حدوث أي تحديث على طلباتك
+                  {t(ui.notifications.emptyDesc)}
                 </p>
               </div>
             ) : (
@@ -248,7 +230,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
                         </h4>
                         <span className="text-[10px] text-slate-400 font-medium shrink-0 flex items-center gap-0.5">
                           <ClockIcon className="h-2.5 w-2.5" />
-                          <span>{formatTimeAgo(item.createdAt)}</span>
+                          <span>{formatTimeAgo(item.createdAt, lang)}</span>
                         </span>
                       </div>
 

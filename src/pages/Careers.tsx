@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { JobItem } from '../components/careers/JobCard';
 import { useLang } from '../i18n/LanguageContext';
+import { ui } from '../i18n/ui';
 import { JobCard } from '../components/careers/JobCard';
 import { ApplicationModal } from '../components/careers/ApplicationModal';
 import { ApplicationTrackingModal } from '../components/careers/ApplicationTrackingModal';
@@ -19,7 +20,7 @@ import { useJobs, useRecruitmentLookups } from '../features/recruitment/useRecru
 import type { JobDto } from '../features/recruitment/types';
 
 export function Careers() {
-  const { lang } = useLang();
+  const { lang, isRtl, t } = useLang();
   const [activeJob, setActiveJob] = useState<JobItem | null>(null);
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
 
@@ -56,16 +57,13 @@ export function Careers() {
     const generalJob: JobDto = {
       id: 0,
       job_code: 'GENERAL-APP',
-      title: lang === 'ar' ? 'طلب توظيف عام (قاعدة الكفاءات)' : 'General Application (Talent Pool)',
+      title: t(ui.recruitment.generalAppTitle),
       title_ar: 'طلب توظيف عام (قاعدة الكفاءات)',
       title_en: 'General Application (Talent Pool)',
-      department: lang === 'ar' ? 'جميع الإدارات' : 'All Departments',
-      location: lang === 'ar' ? 'مصر' : 'Egypt',
+      department: t(ui.recruitment.allDepartments),
+      location: t(ui.recruitment.egyptLocation),
       employment_type: 'Full-Time',
-      summary:
-        lang === 'ar'
-          ? 'التقديم المباشر في قاعدة كفاءات مجموعة شركات الإيمان للتواصل عند توفر شواغر مناسبة.'
-          : 'Direct submission into Al-Eman talent pool for future suitable vacancies.',
+      summary: t(ui.recruitment.generalAppSummary),
     };
     setActiveJob(generalJob);
   };
@@ -73,7 +71,7 @@ export function Careers() {
   const activeDept = filters.dept || 'all';
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-canvas" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Main Section - Matching Products.tsx Compact Layout */}
       <section className="mx-auto max-w-[1440px] px-4 pt-24 pb-12 md:px-8 md:pt-28 md:pb-16">
         {/* Compact Header & Search Bar */}
@@ -82,18 +80,11 @@ export function Careers() {
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-xl sm:text-2xl font-black text-ink">
-                  {lang === 'ar' ? 'الوظائف والفرص الشاغرة' : 'Careers & Open Positions'}
+                  {t(ui.recruitment.careersHeading)}
                 </h1>
-                {/* {!loading && (
-                  <span className="rounded-full bg-brand-50 border border-brand-100 px-2.5 py-0.5 text-xs font-black text-brand-700">
-                    {jobs.length} {lang === 'ar' ? 'وظيفة متاحة' : 'openings'}
-                  </span>
-                )} */}
               </div>
               <p className="text-xs text-slate-500 font-semibold mt-1">
-                {lang === 'ar'
-                  ? 'استعرض الشواغر المتاحة في مصانعنا ومعاملنا ومكاتبنا وقدم طلبك مباشرة إلكترونياً.'
-                  : 'Explore open vacancies across our factories, labs, and offices and apply directly.'}
+                {t(ui.recruitment.careersSubtitle)}
               </p>
             </div>
 
@@ -105,7 +96,7 @@ export function Careers() {
                   type="text"
                   value={filters.q || ''}
                   onChange={handleSearchChange}
-                  placeholder={lang === 'ar' ? 'ابحث بالمسمى أو القسم...' : 'Search jobs or title...'}
+                  placeholder={t(ui.recruitment.searchPlaceholderCareers)}
                   className="w-full rounded-2xl border border-slate-200 bg-white py-2.5 ltr:pl-10 rtl:pr-10 ltr:pr-8 rtl:pl-8 text-xs font-bold text-ink placeholder:text-slate-400 focus:border-brand-500 focus:outline-none shadow-xs"
                 />
                 {filters.q && (
@@ -125,7 +116,7 @@ export function Careers() {
                 className="inline-flex items-center gap-2 rounded-2xl border border-brand-200 bg-brand-50 hover:bg-brand-100 px-4 py-2.5 text-xs font-black text-brand-800 transition shadow-xs"
               >
                 <ClipboardCheck className="h-4 w-4 text-brand-600" />
-                <span>{lang === 'ar' ? 'متابعة حالة طلب' : 'Track Application'}</span>
+                <span>{t(ui.recruitment.trackApplicationShort)}</span>
               </button>
             </div>
           </div>
@@ -141,7 +132,7 @@ export function Careers() {
                     : 'bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100'
                   }`}
               >
-                {lang === 'ar' ? 'جميع الأقسام' : 'All Departments'}
+                {t(ui.recruitment.allDepartments)}
               </button>
 
               {lookups.departments.map((d) => (
@@ -165,7 +156,7 @@ export function Careers() {
                 onChange={handleTypeChange}
                 className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none focus:border-brand-500 shadow-xs"
               >
-                <option value="">{lang === 'ar' ? 'نوع الدوام: الكل' : 'All Types'}</option>
+                <option value="">{t(ui.recruitment.allTypesFilter)}</option>
                 {lookups.employment_types.map((type) => (
                   <option key={type.key} value={type.key}>
                     {lang === 'en' ? type.name_en : type.name_ar}
@@ -179,7 +170,7 @@ export function Careers() {
                   onClick={handleResetFilters}
                   className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 hover:bg-rose-100 transition"
                 >
-                  {lang === 'ar' ? 'إلغاء الفلاتر' : 'Clear'}
+                  {t(ui.recruitment.clearFilters)}
                 </button>
               )}
             </div>
@@ -211,7 +202,7 @@ export function Careers() {
         {error && !loading && (
           <div className="mb-8 rounded-3xl border border-amber-200 bg-amber-50/80 p-6 text-sm text-amber-900 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
             <div>
-              <span className="font-black text-base block">{lang === 'ar' ? 'تعذر جلب الوظائف' : 'Connection Error'}</span>
+              <span className="font-black text-base block">{t(ui.recruitment.connErrorTitle)}</span>
               <span className="text-xs text-amber-800 mt-1 block">{error}</span>
             </div>
             <button
@@ -220,7 +211,7 @@ export function Careers() {
               className="inline-flex items-center gap-2 rounded-xl bg-amber-200/80 px-4 py-2 font-black text-amber-900 hover:bg-amber-300 transition text-xs shadow-xs shrink-0"
             >
               <RefreshCw className="h-3.5 w-3.5" />
-              <span>{lang === 'ar' ? 'إعادة المحاولة' : 'Retry'}</span>
+              <span>{t(ui.recruitment.retryBtn)}</span>
             </button>
           </div>
         )}
@@ -232,12 +223,10 @@ export function Careers() {
               <Briefcase className="h-7 w-7" />
             </div>
             <h3 className="mt-4 text-lg font-black text-ink">
-              {lang === 'ar' ? 'لا توجد وظائف مطابقة للبحث حالياً' : 'No matching vacancies found'}
+              {t(ui.recruitment.noJobsFound)}
             </h3>
             <p className="mt-1 text-xs text-slate-500 font-medium">
-              {lang === 'ar'
-                ? 'جرّب تعديل كلمات البحث أو تصفح قسم آخر، أو قدّم في قاعدة الكفاءات العامة.'
-                : 'Try adjusting your search filters or submit your resume into our talent pool.'}
+              {t(ui.recruitment.noJobsFoundDesc)}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <button
@@ -245,14 +234,14 @@ export function Careers() {
                 onClick={handleResetFilters}
                 className="rounded-full bg-slate-100 hover:bg-slate-200 px-5 py-2.5 text-xs font-black text-slate-800 transition"
               >
-                {lang === 'ar' ? 'عرض جميع الوظائف' : 'View All Jobs'}
+                {t(ui.recruitment.viewAllJobs)}
               </button>
               <button
                 type="button"
                 onClick={handleOpenGeneralApply}
                 className="rounded-full bg-gold-500 hover:bg-gold-600 px-5 py-2.5 text-xs font-black text-white transition shadow-sm"
               >
-                {lang === 'ar' ? 'تقديم في قاعدة الكفاءات' : 'Submit to Talent Pool'}
+                {t(ui.recruitment.submitToTalentPool)}
               </button>
             </div>
           </div>
@@ -283,13 +272,11 @@ export function Careers() {
                     <div className="flex items-center gap-2 mb-2 text-brand-700">
                       <ClipboardCheck className="h-4 w-4" />
                       <span className="text-xs font-black">
-                        {lang === 'ar' ? 'متابعة طلب توظيف سابق' : 'Track Existing Application'}
+                        {t(ui.recruitment.trackExistingTitle)}
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                      {lang === 'ar'
-                        ? 'هل قدمت على إحدى وظائفنا سابقاً؟ استعلم عن مرحلة طلبك برقم الطلب أو الرقم القومي.'
-                        : 'Already applied? Check your application stage anytime using your application number or National ID.'}
+                      {t(ui.recruitment.trackExistingDesc)}
                     </p>
                     <button
                       type="button"
@@ -297,7 +284,7 @@ export function Careers() {
                       className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-brand-200 bg-brand-50 hover:bg-brand-100 py-3 text-xs font-black text-brand-800 transition shadow-xs"
                     >
                       <ClipboardCheck className="h-4 w-4 text-brand-600" />
-                      <span>{lang === 'ar' ? 'الاستعلام عن حالة الطلب' : 'Track Application Status'}</span>
+                      <span>{t(ui.recruitment.trackStatusBtn)}</span>
                     </button>
                   </div>
 
@@ -306,21 +293,21 @@ export function Careers() {
                     <div className="flex items-center gap-2 mb-3 text-brand-700">
                       <HelpCircle className="h-4 w-4" />
                       <span className="text-xs font-black">
-                        {lang === 'ar' ? 'إرشادات ونصائح للتقديم' : 'Application Tips'}
+                        {t(ui.recruitment.applicationTipsTitle)}
                       </span>
                     </div>
                     <ul className="space-y-3 text-xs text-slate-600 font-medium leading-relaxed">
                       <li className="flex items-start gap-2">
                         <FileCheck2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span>{lang === 'ar' ? 'تأكد من كتابة الاسم ثلاثياً أو رباعياً والرقم القومي بدقة (14 رقماً).' : 'Enter full name and exact 14-digit National ID.'}</span>
+                        <span>{t(ui.recruitment.tip1)}</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <FileCheck2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span>{lang === 'ar' ? 'يُفضل إرفاق السيرة الذاتية بصيغة PDF لتسهيل المراجعة الفنية.' : 'Attach your resume in PDF format.'}</span>
+                        <span>{t(ui.recruitment.tip2)}</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <FileCheck2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span>{lang === 'ar' ? 'احفظ رقم الطلب (APP-XXXX) بعد الإرسال لمتابعة مراحله.' : 'Save your Application ID to track its status.'}</span>
+                        <span>{t(ui.recruitment.tip3)}</span>
                       </li>
                     </ul>
                   </div>
