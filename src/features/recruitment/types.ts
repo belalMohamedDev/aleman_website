@@ -89,9 +89,23 @@ export type RecruitmentLookups = {
   experience_levels: ExperienceLevelLookup[];
 };
 
+export type WorkExperienceItem = {
+  company: string;
+  job: string;
+  from: string;
+  to: string;
+};
+
+export type TrainingCourseItem = {
+  name: string;
+  date: string;
+  duration: string;
+};
+
 export type JobApplicationPayload = {
   applicant_name: string;
   national_id: string;
+  birth_date?: string;
   phone: string;
   email?: string;
   governorate: string;
@@ -107,9 +121,19 @@ export type JobApplicationPayload = {
   job_code?: string;
   applied_position?: string;
   years_experience?: string;
+  is_driver?: boolean | number;
+  license_type?: string;
+  is_smoker?: boolean | number;
+  has_surgeries?: boolean | number;
+  surgery_types?: string;
+  has_relatives?: boolean | number;
+  relatives_info?: string;
+  experiences?: WorkExperienceItem[];
+  courses?: TrainingCourseItem[];
   notes?: string;
   photoFile?: File | null;
   cvFile?: File | null;
+  certFiles?: File[];
 };
 
 export type JobApplicationResult = {

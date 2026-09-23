@@ -84,10 +84,8 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
             </div>
 
             {/* Search Input */}
-            <form onSubmit={handleSearch} className="mt-6">
-              <label htmlFor="track-query" className="block text-sm font-bold text-ink mb-1.5">
-                {t(ui.recruitment.trackQueryHeading)}
-              </label>
+            <form onSubmit={handleSearch} className="mt-0">
+
               <div className="relative flex items-center">
                 <input
                   id="track-query"
@@ -168,14 +166,14 @@ export function ApplicationTrackingModal({ isOpen, onClose }: ApplicationTrackin
                   </div>
                 </div>
 
-                {result.notes && (
+                {/* {result.notes && (
                   <div className="mt-4 rounded-xl bg-white p-3.5 border border-slate-100 text-xs text-ink-muted">
                     <span className="font-bold text-slate-700 block mb-1">
                       {t(ui.recruitment.hrNotes)}
                     </span>
                     {result.notes}
                   </div>
-                )}
+                )} */}
               </div>
             )}
           </motion.div>

@@ -198,11 +198,32 @@ export const recruitmentService = {
     if (payload.years_experience) formData.append('years_experience', payload.years_experience);
     if (payload.notes) formData.append('notes', payload.notes);
 
+    if (payload.birth_date) formData.append('birth_date', payload.birth_date.trim());
+    if (payload.is_driver !== undefined) formData.append('is_driver', payload.is_driver ? '1' : '0');
+    if (payload.license_type) formData.append('license_type', payload.license_type.trim());
+    if (payload.is_smoker !== undefined) formData.append('is_smoker', payload.is_smoker ? '1' : '0');
+    if (payload.has_surgeries !== undefined) formData.append('has_surgeries', payload.has_surgeries ? '1' : '0');
+    if (payload.surgery_types) formData.append('surgery_types', payload.surgery_types.trim());
+    if (payload.has_relatives !== undefined) formData.append('has_relatives', payload.has_relatives ? '1' : '0');
+    if (payload.relatives_info) formData.append('relatives_info', payload.relatives_info.trim());
+
+    if (payload.experiences && payload.experiences.length > 0) {
+      formData.append('experiences', JSON.stringify(payload.experiences));
+    }
+    if (payload.courses && payload.courses.length > 0) {
+      formData.append('courses', JSON.stringify(payload.courses));
+    }
+
     if (payload.cvFile) {
       formData.append('cv', payload.cvFile, payload.cvFile.name);
     }
     if (payload.photoFile) {
       formData.append('photo', payload.photoFile, payload.photoFile.name);
+    }
+    if (payload.certFiles && payload.certFiles.length > 0) {
+      payload.certFiles.forEach((cert) => {
+        formData.append('certs[]', cert, cert.name);
+      });
     }
 
     const response = await fetch(RECRUITMENT_API_BASE, {

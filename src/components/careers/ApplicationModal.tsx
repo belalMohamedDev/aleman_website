@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   UploadIcon,
@@ -10,6 +10,11 @@ import {
   FileTextIcon,
   ImageIcon,
   SendIcon,
+  PlusIcon,
+  Trash2Icon,
+  FilesIcon,
+  SparklesIcon,
+  InfoIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { JobItem } from './JobCard';
@@ -17,21 +22,30 @@ import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
 import { Field, controlClass } from '../shared/Field';
 import { useJobApplication, useRecruitmentLookups } from '../../features/recruitment/useRecruitment';
-import type { JobApplicationPayload } from '../../features/recruitment/types';
+import type {
+  JobApplicationPayload,
+  WorkExperienceItem,
+  TrainingCourseItem,
+} from '../../features/recruitment/types';
+import {
+  isHigherEducation,
+  extractBirthDateFromNationalId,
+} from '../../features/recruitment/nationalIdUtils';
+import './application-modal.css';
 
 type ApplicationModalProps = {
   job: JobItem | null;
   onClose: () => void;
 };
 
-type Errors = Partial<Record<keyof JobApplicationPayload | 'general', string>>;
+type Errors = Partial<Record<keyof JobApplicationPayload | 'general' | 'photo', string>>;
 
 export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
   const { t, lang, isRtl } = useLang();
   const { lookups } = useRecruitmentLookups();
   const { submitting, result, error: apiError, submit, reset } = useJobApplication();
 
-  // Form state
+  // Section 1: Personal Info
   const [name, setName] = useState('');
   const [nationalId, setNationalId] = useState('');
   const [phone, setPhone] = useState('');
@@ -40,32 +54,62 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
   const [address, setAddress] = useState('');
   const [maritalStatus, setMaritalStatus] = useState('أعزب');
   const [militaryStatus, setMilitaryStatus] = useState('أدى الخدمة العسكرية');
+
+  // Section 2: Education Info
   const [qualification, setQualification] = useState('بكالوريوس');
   const [qualificationType, setQualificationType] = useState('');
   const [university, setUniversity] = useState('');
-  const [yearsExperience, setYearsExperience] = useState('');
-  const [notes, setNotes] = useState('');
+  const [graduationYear, setGraduationYear] = useState('');
+  const [grade, setGrade] = useState('');
 
-  // Files state
-  const [cvFile, setCvFile] = useState<File | null>(null);
+  // Section 3: Job & Experience Info
+  const [yearsExperience, setYearsExperience] = useState('');
+  const [experiences, setExperiences] = useState<WorkExperienceItem[]>([]);
+  const [courses, setCourses] = useState<TrainingCourseItem[]>([]);
+
+  // Section 4: Additional Details
+  const [isDriver, setIsDriver] = useState(false);
+  const [licenseType, setLicenseType] = useState('');
+  const [isSmoker, setIsSmoker] = useState(false);
+  const [hasSurgeries, setHasSurgeries] = useState(false);
+  const [surgeryTypes, setSurgeryTypes] = useState('');
+  const [hasRelatives, setHasRelatives] = useState(false);
+  const [relativesInfo, setRelativesInfo] = useState('');
+
+  // Section 5: Attachments & Notes
+  const [notes, setNotes] = useState('');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [certFiles, setCertFiles] = useState<File[]>([]);
+
   const [errors, setErrors] = useState<Errors>({});
   const [copiedAppNo, setCopiedAppNo] = useState(false);
 
   const cvInputRef = React.useRef<HTMLInputElement>(null);
   const photoInputRef = React.useRef<HTMLInputElement>(null);
+  const certsInputRef = React.useRef<HTMLInputElement>(null);
 
   // Derive job title and details
   const jobTitle = job
     ? typeof job.title === 'object' && job.title !== null
       ? lang === 'en' ? (job.title as any).en : (job.title as any).ar
       : (lang === 'en' && job.title_en
-          ? job.title_en
-          : job.title_ar || job.title || '')
+        ? job.title_en
+        : job.title_ar || job.title || '')
     : '';
 
   const jobId = job && 'id' in job ? job.id : undefined;
   const jobCode = job && 'job_code' in job ? job.job_code : undefined;
+
+  // Auto-calculated Birth Date from National ID
+  const calculatedBirthDate = useMemo(() => {
+    return extractBirthDateFromNationalId(nationalId);
+  }, [nationalId]);
+
+  // Is current degree classified as higher education?
+  const higherEduRequired = useMemo(() => {
+    return isHigherEducation(qualification);
+  }, [qualification]);
 
   // Keybindings and scroll locking
   useEffect(() => {
@@ -87,8 +131,52 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
     setErrors({});
     if (cvInputRef.current) cvInputRef.current.value = '';
     if (photoInputRef.current) photoInputRef.current.value = '';
+    if (certsInputRef.current) certsInputRef.current.value = '';
     onClose();
   }
+
+  // Experience handlers
+  const handleAddExperience = () => {
+    setExperiences((prev) => [...prev, { company: '', job: '', from: '', to: '' }]);
+  };
+
+  const handleUpdateExperience = (
+    index: number,
+    field: keyof WorkExperienceItem,
+    val: string
+  ) => {
+    setExperiences((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: val } : item))
+    );
+  };
+
+  const handleRemoveExperience = (index: number) => {
+    setExperiences((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Course handlers
+  const handleAddCourse = () => {
+    setCourses((prev) => [...prev, { name: '', date: '', duration: '' }]);
+  };
+
+  const handleUpdateCourse = (
+    index: number,
+    field: keyof TrainingCourseItem,
+    val: string
+  ) => {
+    setCourses((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: val } : item))
+    );
+  };
+
+  const handleRemoveCourse = (index: number) => {
+    setCourses((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Certificate file removal
+  const handleRemoveCert = (index: number) => {
+    setCertFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   function validate(): boolean {
     const next: Errors = {};
@@ -122,25 +210,37 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
       next.address = t(ui.common.required);
     }
 
-    if (!cvFile) {
-      next.cvFile = t(ui.recruitment.errCvRequired);
+    // Dynamic requirement: if degree is university / higher education, major and uni are required
+    if (higherEduRequired) {
+      if (!qualificationType.trim()) {
+        next.qualification_type = t(ui.recruitment.errQualificationTypeRequired);
+      }
+      if (!university.trim()) {
+        next.university = t(ui.recruitment.errUniversityRequired);
+      }
+    }
+
+    // Photo is mandatory
+    if (!photoFile) {
+      next.photo = t(ui.recruitment.errPhotoRequired);
     } else {
+      const allowedImgExts = ['jpg', 'jpeg', 'png', 'webp'];
+      const ext = photoFile.name.split('.').pop()?.toLowerCase();
+      if (!ext || !allowedImgExts.includes(ext)) {
+        next.photo = t(ui.recruitment.errPhotoFormat);
+      } else if (photoFile.size > 5 * 1024 * 1024) {
+        next.photo = t(ui.recruitment.errPhotoSize);
+      }
+    }
+
+    // CV validation
+    if (cvFile) {
       const allowedExts = ['pdf', 'doc', 'docx'];
       const ext = cvFile.name.split('.').pop()?.toLowerCase();
       if (!ext || !allowedExts.includes(ext)) {
         next.cvFile = t(ui.recruitment.errCvFormat);
       } else if (cvFile.size > 10 * 1024 * 1024) {
         next.cvFile = t(ui.recruitment.errCvSize);
-      }
-    }
-
-    if (photoFile) {
-      const allowedImgExts = ['jpg', 'jpeg', 'png', 'webp'];
-      const ext = photoFile.name.split('.').pop()?.toLowerCase();
-      if (!ext || !allowedImgExts.includes(ext)) {
-        next.general = t(ui.recruitment.errPhotoFormat);
-      } else if (photoFile.size > 5 * 1024 * 1024) {
-        next.general = t(ui.recruitment.errPhotoSize);
       }
     }
 
@@ -157,9 +257,15 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
     }
 
     try {
+      const validExperiences = experiences.filter(
+        (exp) => exp.company.trim() || exp.job.trim()
+      );
+      const validCourses = courses.filter((c) => c.name.trim());
+
       const payload: JobApplicationPayload = {
         applicant_name: name.trim(),
         national_id: nationalId.trim(),
+        birth_date: calculatedBirthDate || undefined,
         phone: phone.trim(),
         email: email.trim() || undefined,
         governorate: governorate.trim(),
@@ -169,13 +275,25 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
         qualification: qualification.trim(),
         qualification_type: qualificationType.trim() || undefined,
         university: university.trim() || undefined,
-        years_experience: yearsExperience || undefined,
-        notes: notes || undefined,
+        graduation_year: graduationYear.trim() || undefined,
+        grade: grade.trim() || undefined,
         job_id: jobId,
         job_code: jobCode,
         applied_position: jobTitle,
-        cvFile,
+        years_experience: yearsExperience.trim() || undefined,
+        is_driver: isDriver ? 1 : 0,
+        license_type: isDriver && licenseType.trim() ? licenseType.trim() : undefined,
+        is_smoker: isSmoker ? 1 : 0,
+        has_surgeries: hasSurgeries ? 1 : 0,
+        surgery_types: hasSurgeries && surgeryTypes.trim() ? surgeryTypes.trim() : undefined,
+        has_relatives: hasRelatives ? 1 : 0,
+        relatives_info: hasRelatives && relativesInfo.trim() ? relativesInfo.trim() : undefined,
+        experiences: validExperiences.length > 0 ? validExperiences : undefined,
+        courses: validCourses.length > 0 ? validCourses : undefined,
+        notes: notes.trim() || undefined,
         photoFile,
+        cvFile,
+        certFiles: certFiles.length > 0 ? certFiles : undefined,
       };
 
       const res = await submit(payload);
@@ -183,7 +301,8 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
         description: `${t(ui.recruitment.appNumberLabel)} ${res.application_number}`,
       });
     } catch (err: any) {
-      const msg = err?.message || (lang === 'ar' ? 'حدث خطأ أثناء إرسال الطلب' : 'Submission failed');
+      const msg =
+        err?.message || (lang === 'ar' ? 'حدث خطأ أثناء إرسال الطلب' : 'Submission failed');
       toast.error(msg);
     }
   }
@@ -199,7 +318,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
     <AnimatePresence>
       {job ? (
         <motion.div
-          className="fixed inset-0 z-[70] flex items-end justify-center p-0 sm:items-center sm:p-6"
+          className="fixed inset-0 z-[70] flex items-end justify-center p-0 sm:items-center sm:p-4 lg:p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -211,7 +330,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
             aria-hidden="true"
           />
 
-          {/* Modal Card / Bottom Sheet */}
+          {/* Modal Card */}
           <motion.div
             role="dialog"
             aria-modal="true"
@@ -221,10 +340,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-            onScroll={(e) => {
-              e.currentTarget.scrollTop = 0;
-            }}
-            className="relative flex h-[90vh] sm:h-auto sm:max-h-[88vh] w-full max-w-2xl flex-col rounded-t-[28px] sm:rounded-[28px] bg-white shadow-2xl overflow-hidden"
+            className="relative flex h-[92vh] sm:h-auto sm:max-h-[88vh] w-full max-w-3xl flex-col rounded-t-[28px] sm:rounded-[28px] bg-white shadow-2xl overflow-hidden border border-slate-100"
           >
             {/* Mobile Drag Indicator */}
             <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-slate-200 sm:hidden" />
@@ -256,7 +372,7 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
               </button>
             </div>
 
-            {/* Modal Body - Scrollable with NO ugly scrollbar */}
+            {/* Modal Body */}
             <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6 sm:px-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {result ? (
                 /* Success State Screen */
@@ -322,28 +438,39 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                     </div>
                   )}
 
-                  {/* Section 1: Basic Information */}
-                  <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 space-y-4">
-                    <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-[10px] font-black text-white">
-                        1
-                      </span>
-                      <h4 className="text-xs font-black text-ink">
+                  {/* Section 1: Personal Information */}
+                  <div className="app-form-section space-y-4">
+                    <div className="app-section-header">
+                      <span className="app-section-badge">1</span>
+                      <h4 className="app-section-title">
                         {t(ui.recruitment.personalAndContactInfo)}
                       </h4>
                     </div>
 
                     <div className="grid gap-3">
-                      <Field id="app-name" label={t(ui.careers.formName)} required error={errors.applicant_name}>
+                      {/* Full Name */}
+                      <Field
+                        id="app-name"
+                        label={t(ui.recruitment.applicantNameLabel)}
+                        required
+                        error={errors.applicant_name}
+                      >
                         <input
                           id="app-name"
                           value={name}
-                          placeholder={t(ui.recruitment.namePlaceholder)}
+                          placeholder={t(ui.recruitment.nameQuadPlaceholder)}
                           onChange={(e) => setName(e.target.value)}
                           className={`${controlClass} bg-white shadow-xs`}
                         />
                       </Field>
 
+                      {/* Quad Name Helper Note */}
+                      {/* <div className="app-helper-box">
+                        <SparklesIcon className="h-3.5 w-3.5 shrink-0" />
+                        <span>{t(ui.recruitment.nameQuadHint)}</span>
+                      </div> */}
+
+                      {/* National ID & Birth Date */}
                       <div className="grid gap-3 sm:grid-cols-2">
                         <Field
                           id="app-nid"
@@ -362,6 +489,25 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                           />
                         </Field>
 
+                        <Field
+                          id="app-birth"
+                          label={t(ui.recruitment.birthDateLabel)}
+                          hint={t(ui.recruitment.birthDatePlaceholder)}
+                        >
+                          <input
+                            id="app-birth"
+                            type="text"
+                            readOnly
+                            disabled
+                            value={calculatedBirthDate || ''}
+                            placeholder={t(ui.recruitment.birthDatePlaceholder)}
+                            className={`${controlClass} bg-slate-100/80 font-mono text-slate-700 cursor-not-allowed`}
+                          />
+                        </Field>
+                      </div>
+
+                      {/* Phone & Email */}
+                      <div className="grid gap-3 sm:grid-cols-2">
                         <Field id="app-phone" label={t(ui.careers.formPhone)} required error={errors.phone}>
                           <input
                             id="app-phone"
@@ -372,10 +518,13 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                             className={`${controlClass} bg-white font-mono shadow-xs`}
                           />
                         </Field>
-                      </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <Field id="app-email" label={t(ui.careers.formEmail)} hint={t(ui.common.optional)} error={errors.email}>
+                        <Field
+                          id="app-email"
+                          label={t(ui.careers.formEmail)}
+                          hint={t(ui.common.optional)}
+                          error={errors.email}
+                        >
                           <input
                             id="app-email"
                             type="email"
@@ -385,7 +534,10 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                             className={`${controlClass} bg-white shadow-xs`}
                           />
                         </Field>
+                      </div>
 
+                      {/* Governorate & Address */}
+                      <div className="grid gap-3 sm:grid-cols-3">
                         <Field id="app-gov" label={t(ui.recruitment.governorateLabel)} required>
                           <select
                             id="app-gov"
@@ -400,18 +552,26 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                             ))}
                           </select>
                         </Field>
+
+                        <div className="sm:col-span-2">
+                          <Field
+                            id="app-address"
+                            label={t(ui.recruitment.detailedAddress)}
+                            required
+                            error={errors.address}
+                          >
+                            <input
+                              id="app-address"
+                              value={address}
+                              placeholder={t(ui.recruitment.addressPlaceholder)}
+                              onChange={(e) => setAddress(e.target.value)}
+                              className={`${controlClass} bg-white shadow-xs`}
+                            />
+                          </Field>
+                        </div>
                       </div>
 
-                      <Field id="app-address" label={t(ui.recruitment.detailedAddress)} required error={errors.address}>
-                        <input
-                          id="app-address"
-                          value={address}
-                          placeholder={t(ui.recruitment.addressPlaceholder)}
-                          onChange={(e) => setAddress(e.target.value)}
-                          className={`${controlClass} bg-white shadow-xs`}
-                        />
-                      </Field>
-
+                      {/* Marital & Military Status */}
                       <div className="grid gap-3 sm:grid-cols-2">
                         <Field id="app-marital" label={t(ui.recruitment.maritalStatusLabel)} required>
                           <select
@@ -446,13 +606,11 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                     </div>
                   </div>
 
-                  {/* Section 2: Qualifications & Experience */}
-                  <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 space-y-4">
-                    <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-[10px] font-black text-white">
-                        2
-                      </span>
-                      <h4 className="text-xs font-black text-ink">
+                  {/* Section 2: Education & Academic Qualifications */}
+                  <div className="app-form-section space-y-4">
+                    <div className="app-section-header">
+                      <span className="app-section-badge">2</span>
+                      <h4 className="app-section-title">
                         {t(ui.recruitment.educationAndExperience)}
                       </h4>
                     </div>
@@ -474,7 +632,14 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                           </select>
                         </Field>
 
-                        <Field id="app-qual-type" label={t(ui.recruitment.qualificationTypeLabel)} hint={t(ui.common.optional)}>
+                        {/* Specialization: Required for higher edu, optional for others */}
+                        <Field
+                          id="app-qual-type"
+                          label={t(ui.recruitment.qualificationTypeLabel)}
+                          required={higherEduRequired}
+                          hint={!higherEduRequired ? t(ui.common.optional) : undefined}
+                          error={errors.qualification_type}
+                        >
                           <input
                             id="app-qual-type"
                             value={qualificationType}
@@ -485,44 +650,422 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                         </Field>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <Field id="app-uni" label={t(ui.recruitment.universityLabel)} hint={t(ui.common.optional)}>
-                          <input
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        {/* University: Required for higher edu, optional for others */}
+                        <div className="sm:col-span-1">
+                          <Field
                             id="app-uni"
-                            value={university}
-                            placeholder={t(ui.recruitment.universityPlaceholder)}
-                            onChange={(e) => setUniversity(e.target.value)}
-                            className={`${controlClass} bg-white shadow-xs`}
+                            label={t(ui.recruitment.universityLabel)}
+                            required={higherEduRequired}
+                            hint={!higherEduRequired ? t(ui.common.optional) : undefined}
+                            error={errors.university}
+                          >
+                            <input
+                              id="app-uni"
+                              value={university}
+                              placeholder={t(ui.recruitment.universityPlaceholder)}
+                              onChange={(e) => setUniversity(e.target.value)}
+                              className={`${controlClass} bg-white shadow-xs`}
+                            />
+                          </Field>
+                        </div>
+
+                        {/* Graduation Year */}
+                        <Field
+                          id="app-grad-year"
+                          label={t(ui.recruitment.graduationYearLabel)}
+                          hint={t(ui.common.optional)}
+                        >
+                          <input
+                            id="app-grad-year"
+                            value={graduationYear}
+                            placeholder={t(ui.recruitment.graduationYearPlaceholder)}
+                            maxLength={4}
+                            onChange={(e) => setGraduationYear(e.target.value.replace(/\D/g, ''))}
+                            className={`${controlClass} bg-white font-mono shadow-xs`}
                           />
                         </Field>
 
-                        <Field id="app-exp" label={t(ui.recruitment.yearsExperienceLabel)} hint={t(ui.common.optional)}>
-                          <input
-                            id="app-exp"
-                            value={yearsExperience}
-                            placeholder={t(ui.recruitment.yearsExpPlaceholder)}
-                            onChange={(e) => setYearsExperience(e.target.value)}
+                        {/* Grade / GPA */}
+                        <Field id="app-grade" label={t(ui.recruitment.gradeLabel)} hint={t(ui.common.optional)}>
+                          <select
+                            id="app-grade"
+                            value={grade}
+                            onChange={(e) => setGrade(e.target.value)}
                             className={`${controlClass} bg-white shadow-xs`}
-                          />
+                          >
+                            <option value="">{t(ui.recruitment.gradeSelectPlaceholder)}</option>
+                            {lookups.grades.map((gr) => (
+                              <option key={gr} value={gr}>
+                                {gr}
+                              </option>
+                            ))}
+                          </select>
                         </Field>
                       </div>
                     </div>
                   </div>
 
-                  {/* Section 3: Attachments & Notes */}
-                  <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-5 space-y-4">
-                    <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-[10px] font-black text-white">
-                        3
-                      </span>
-                      <h4 className="text-xs font-black text-ink">
+                  {/* Section 3: Job & Experience Details */}
+                  <div className="app-form-section space-y-4">
+                    <div className="app-section-header">
+                      <span className="app-section-badge">3</span>
+                      <h4 className="app-section-title">
+                        {t(ui.recruitment.jobAndExperienceSection)}
+                      </h4>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {/* Applied Position */}
+                      <Field id="app-position" label={t(ui.recruitment.appliedPositionLabel)} required>
+                        <input
+                          id="app-position"
+                          readOnly
+                          disabled
+                          value={jobTitle}
+                          className={`${controlClass} bg-slate-100 font-bold text-slate-800 cursor-not-allowed`}
+                        />
+                      </Field>
+
+                      {/* Years of Experience */}
+                      <Field
+                        id="app-exp"
+                        label={t(ui.recruitment.yearsExperienceLabel)}
+                        hint={t(ui.common.optional)}
+                      >
+                        <input
+                          id="app-exp"
+                          value={yearsExperience}
+                          placeholder={t(ui.recruitment.yearsExpPlaceholder)}
+                          onChange={(e) => setYearsExperience(e.target.value)}
+                          className={`${controlClass} bg-white shadow-xs`}
+                        />
+                      </Field>
+                    </div>
+
+                    {/* Previous Work Experiences List */}
+                    <div className="pt-2 border-t border-slate-100 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700">
+                          {t(ui.recruitment.previousExperiencesLabel)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleAddExperience}
+                          className="app-add-btn"
+                        >
+                          <PlusIcon className="h-3.5 w-3.5" />
+                          <span>{t(ui.recruitment.addExperienceBtn)}</span>
+                        </button>
+                      </div>
+
+                      {experiences.length > 0 && (
+                        <div className="space-y-2.5">
+                          {experiences.map((exp, idx) => (
+                            <div key={idx} className="app-dynamic-card">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-[11px] font-bold text-slate-400">
+                                  #{idx + 1}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveExperience(idx)}
+                                  className="text-slate-400 hover:text-rose-600 transition"
+                                  title={t(ui.recruitment.removeExperience)}
+                                >
+                                  <Trash2Icon className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                              <div className="grid gap-2 sm:grid-cols-2">
+                                <input
+                                  value={exp.company}
+                                  placeholder={t(ui.recruitment.companyNamePlaceholder)}
+                                  onChange={(e) =>
+                                    handleUpdateExperience(idx, 'company', e.target.value)
+                                  }
+                                  className={`${controlClass} text-xs bg-slate-50`}
+                                />
+                                <input
+                                  value={exp.job}
+                                  placeholder={t(ui.recruitment.jobRolePlaceholder)}
+                                  onChange={(e) =>
+                                    handleUpdateExperience(idx, 'job', e.target.value)
+                                  }
+                                  className={`${controlClass} text-xs bg-slate-50`}
+                                />
+                                <input
+                                  value={exp.from}
+                                  placeholder={t(ui.recruitment.fromYearPlaceholder)}
+                                  onChange={(e) =>
+                                    handleUpdateExperience(idx, 'from', e.target.value)
+                                  }
+                                  className={`${controlClass} text-xs bg-slate-50 font-mono`}
+                                />
+                                <input
+                                  value={exp.to}
+                                  placeholder={t(ui.recruitment.toYearPlaceholder)}
+                                  onChange={(e) =>
+                                    handleUpdateExperience(idx, 'to', e.target.value)
+                                  }
+                                  className={`${controlClass} text-xs bg-slate-50 font-mono`}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Training Courses List */}
+                    <div className="pt-2 border-t border-slate-100 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700">
+                          {t(ui.recruitment.trainingCoursesLabel)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleAddCourse}
+                          className="app-add-btn"
+                        >
+                          <PlusIcon className="h-3.5 w-3.5" />
+                          <span>{t(ui.recruitment.addCourseBtn)}</span>
+                        </button>
+                      </div>
+
+                      {courses.length > 0 && (
+                        <div className="space-y-2.5">
+                          {courses.map((course, idx) => (
+                            <div key={idx} className="app-dynamic-card">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-[11px] font-bold text-slate-400">
+                                  #{idx + 1}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveCourse(idx)}
+                                  className="text-slate-400 hover:text-rose-600 transition"
+                                  title={t(ui.recruitment.removeCourse)}
+                                >
+                                  <Trash2Icon className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                              <div className="grid gap-2 sm:grid-cols-3">
+                                <input
+                                  value={course.name}
+                                  placeholder={t(ui.recruitment.courseNamePlaceholder)}
+                                  onChange={(e) =>
+                                    handleUpdateCourse(idx, 'name', e.target.value)
+                                  }
+                                  className={`${controlClass} text-xs bg-slate-50 sm:col-span-1`}
+                                />
+                                <input
+                                  value={course.date}
+                                  placeholder={t(ui.recruitment.courseDatePlaceholder)}
+                                  onChange={(e) =>
+                                    handleUpdateCourse(idx, 'date', e.target.value)
+                                  }
+                                  className={`${controlClass} text-xs bg-slate-50 font-mono`}
+                                />
+                                <input
+                                  value={course.duration}
+                                  placeholder={t(ui.recruitment.courseDurationPlaceholder)}
+                                  onChange={(e) =>
+                                    handleUpdateCourse(idx, 'duration', e.target.value)
+                                  }
+                                  className={`${controlClass} text-xs bg-slate-50`}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Section 4: Additional Information (Checkboxes) */}
+                  <div className="app-form-section space-y-4">
+                    <div className="app-section-header">
+                      <span className="app-section-badge">4</span>
+                      <h4 className="app-section-title">
+                        {t(ui.recruitment.additionalInfoSection)}
+                      </h4>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {/* Driver's License */}
+                      <div>
+                        <label className={`app-checkbox-tile ${isDriver ? 'is-checked' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={isDriver}
+                            onChange={(e) => setIsDriver(e.target.checked)}
+                          />
+                          <span className="text-xs font-bold text-slate-800">
+                            {t(ui.recruitment.isDriverLabel)}
+                          </span>
+                        </label>
+                        {isDriver && (
+                          <div className="mt-2 pl-2">
+                            <input
+                              value={licenseType}
+                              placeholder={t(ui.recruitment.licenseTypePlaceholder)}
+                              onChange={(e) => setLicenseType(e.target.value)}
+                              className={`${controlClass} text-xs bg-white shadow-xs`}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Smoker */}
+                      <div>
+                        <label className={`app-checkbox-tile ${isSmoker ? 'is-checked' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={isSmoker}
+                            onChange={(e) => setIsSmoker(e.target.checked)}
+                          />
+                          <span className="text-xs font-bold text-slate-800">
+                            {t(ui.recruitment.isSmokerLabel)}
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Surgeries */}
+                      <div>
+                        <label className={`app-checkbox-tile ${hasSurgeries ? 'is-checked' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={hasSurgeries}
+                            onChange={(e) => setHasSurgeries(e.target.checked)}
+                          />
+                          <span className="text-xs font-bold text-slate-800">
+                            {t(ui.recruitment.hasSurgeriesLabel)}
+                          </span>
+                        </label>
+                        {hasSurgeries && (
+                          <div className="mt-2 pl-2">
+                            <input
+                              value={surgeryTypes}
+                              placeholder={t(ui.recruitment.surgeryTypesPlaceholder)}
+                              onChange={(e) => setSurgeryTypes(e.target.value)}
+                              className={`${controlClass} text-xs bg-white shadow-xs`}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Relatives in the Company */}
+                      <div>
+                        <label className={`app-checkbox-tile ${hasRelatives ? 'is-checked' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={hasRelatives}
+                            onChange={(e) => setHasRelatives(e.target.checked)}
+                          />
+                          <span className="text-xs font-bold text-slate-800">
+                            {t(ui.recruitment.hasRelativesLabel)}
+                          </span>
+                        </label>
+                        {hasRelatives && (
+                          <div className="mt-2 pl-2">
+                            <input
+                              value={relativesInfo}
+                              placeholder={t(ui.recruitment.relativesInfoPlaceholder)}
+                              onChange={(e) => setRelativesInfo(e.target.value)}
+                              className={`${controlClass} text-xs bg-white shadow-xs`}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 5: Attachments & Notes */}
+                  <div className="app-form-section space-y-4">
+                    <div className="app-section-header">
+                      <span className="app-section-badge">5</span>
+                      <h4 className="app-section-title">
                         {t(ui.recruitment.attachmentsAndResume)}
                       </h4>
                     </div>
 
                     <div className="grid gap-3 sm:grid-cols-2">
+                      {/* Personal Photo (Required *) */}
+                      <Field
+                        id="app-photo"
+                        label={t(ui.recruitment.photoRequiredLabel)}
+                        hint={t(ui.recruitment.photoRequiredHint)}
+                        required
+                        error={errors.photo}
+                      >
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => photoInputRef.current?.click()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              photoInputRef.current?.click();
+                            }
+                          }}
+                          className={`relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center text-sm transition shadow-xs outline-none ${photoFile
+                              ? 'border-emerald-300 bg-emerald-50/40'
+                              : errors.photo
+                                ? 'border-rose-300 bg-rose-50/20 hover:border-rose-400'
+                                : 'border-slate-200 bg-white hover:border-brand-400 hover:bg-brand-50/30'
+                            }`}
+                        >
+                          {photoFile ? (
+                            <div className="flex w-full items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 truncate min-w-0 text-slate-700 font-bold">
+                                <ImageIcon className="h-5 w-5 shrink-0 text-emerald-600" />
+                                <span className="truncate text-xs">{photoFile.name}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPhotoFile(null);
+                                  if (photoInputRef.current) photoInputRef.current.value = '';
+                                }}
+                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"
+                                title={t(ui.recruitment.removePhoto)}
+                              >
+                                <XIcon className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <ImageIcon className="h-5 w-5 text-brand-600" />
+                              <span className="text-xs font-bold text-slate-700">
+                                {t(ui.recruitment.uploadPhotoBtn)}
+                              </span>
+                              <span className="text-[10px] text-slate-400 font-medium">
+                                JPG, PNG (حتى 5MB)
+                              </span>
+                            </>
+                          )}
+                          <input
+                            ref={photoInputRef}
+                            id="app-photo"
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              setPhotoFile(file);
+                            }}
+                          />
+                        </div>
+                      </Field>
+
                       {/* CV Upload */}
-                      <Field id="app-cv" label={t(ui.careers.formCv)} hint={t(ui.careers.formCvHint)} required error={errors.cvFile}>
+                      <Field
+                        id="app-cv"
+                        label={t(ui.careers.formCv)}
+                        hint={t(ui.careers.formCvHint)}
+                        error={errors.cvFile}
+                      >
                         <div
                           role="button"
                           tabIndex={0}
@@ -533,11 +1076,10 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                               cvInputRef.current?.click();
                             }
                           }}
-                          className={`relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center text-sm transition shadow-xs outline-none ${
-                            cvFile
+                          className={`relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center text-sm transition shadow-xs outline-none ${cvFile
                               ? 'border-brand-300 bg-brand-50/50'
-                              : 'border-brand-200 bg-white hover:border-brand-400 hover:bg-brand-50/40'
-                          }`}
+                              : 'border-slate-200 bg-white hover:border-brand-400 hover:bg-brand-50/40'
+                            }`}
                         >
                           {cvFile ? (
                             <div className="flex w-full items-center justify-between gap-2">
@@ -564,7 +1106,9 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                               <span className="text-xs font-bold text-brand-800">
                                 {t(ui.recruitment.uploadCvBtn)}
                               </span>
-                              <span className="text-[10px] text-slate-400 font-medium">PDF, DOCX (حتى 10MB)</span>
+                              <span className="text-[10px] text-slate-400 font-medium">
+                                PDF, DOCX (حتى 10MB)
+                              </span>
                             </>
                           )}
                           <input
@@ -580,69 +1124,83 @@ export function ApplicationModal({ job, onClose }: ApplicationModalProps) {
                           />
                         </div>
                       </Field>
+                    </div>
 
-                      {/* Photo Upload */}
-                      <Field id="app-photo" label={t(ui.recruitment.photoOptional)} hint="JPG, PNG">
+                    {/* Multiple Certificates Upload */}
+                    <div>
+                      <Field
+                        id="app-certs"
+                        label={t(ui.recruitment.certificatesLabel)}
+                        hint={t(ui.recruitment.certificatesHint)}
+                      >
                         <div
                           role="button"
                           tabIndex={0}
-                          onClick={() => photoInputRef.current?.click()}
+                          onClick={() => certsInputRef.current?.click()}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
-                              photoInputRef.current?.click();
+                              certsInputRef.current?.click();
                             }
                           }}
-                          className={`relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center text-sm transition shadow-xs outline-none ${
-                            photoFile
-                              ? 'border-emerald-300 bg-emerald-50/40'
-                              : 'border-slate-200 bg-white hover:border-slate-300'
-                          }`}
+                          className="flex cursor-pointer items-center justify-between rounded-xl border border-dashed border-slate-300 bg-white p-3 hover:border-brand-500 transition shadow-xs"
                         >
-                          {photoFile ? (
-                            <div className="flex w-full items-center justify-between gap-2">
-                              <div className="flex items-center gap-2 truncate min-w-0 text-slate-700 font-bold">
-                                <ImageIcon className="h-5 w-5 shrink-0 text-emerald-600" />
-                                <span className="truncate text-xs">{photoFile.name}</span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setPhotoFile(null);
-                                  if (photoInputRef.current) photoInputRef.current.value = '';
-                                }}
-                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 transition"
-                                title={t(ui.recruitment.removePhoto)}
-                              >
-                                <XIcon className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-                          ) : (
-                            <>
-                              <ImageIcon className="h-5 w-5 text-slate-400" />
-                              <span className="text-xs font-bold text-slate-700">
-                                {t(ui.recruitment.uploadPhotoBtn)}
-                              </span>
-                              <span className="text-[10px] text-slate-400 font-medium">JPG, PNG (حتى 5MB)</span>
-                            </>
+                          <div className="flex items-center gap-2">
+                            <FilesIcon className="h-4 w-4 text-brand-600" />
+                            <span className="text-xs font-bold text-slate-700">
+                              {t(ui.recruitment.uploadCertificatesBtn)}
+                            </span>
+                          </div>
+                          {certFiles.length > 0 && (
+                            <span className="text-[11px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">
+                              {certFiles.length} {t(ui.recruitment.filesSelected)}
+                            </span>
                           )}
                           <input
-                            ref={photoInputRef}
-                            id="app-photo"
+                            ref={certsInputRef}
+                            id="app-certs"
                             type="file"
-                            accept="image/png,image/jpeg,image/webp"
+                            multiple
+                            accept=".pdf,.jpg,.jpeg,.png"
                             className="hidden"
                             onChange={(e) => {
-                              const file = e.target.files?.[0] || null;
-                              setPhotoFile(file);
+                              const files = Array.from(e.target.files || []);
+                              if (files.length > 0) {
+                                setCertFiles((prev) => [...prev, ...files].slice(0, 6));
+                              }
                             }}
                           />
                         </div>
+
+                        {/* Selected Certificates Chips */}
+                        {certFiles.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {certFiles.map((f, idx) => (
+                              <div key={idx} className="app-file-chip">
+                                <span className="truncate max-w-[180px]">{f.name}</span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveCert(idx);
+                                  }}
+                                  className="text-slate-400 hover:text-rose-600"
+                                >
+                                  <XIcon className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </Field>
                     </div>
 
-                    <Field id="app-message" label={t(ui.careers.formMessage)} hint={t(ui.common.optional)}>
+                    {/* Additional Notes */}
+                    <Field
+                      id="app-message"
+                      label={t(ui.careers.formMessage)}
+                      hint={t(ui.common.optional)}
+                    >
                       <textarea
                         id="app-message"
                         rows={2}
