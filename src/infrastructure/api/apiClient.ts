@@ -1,4 +1,4 @@
-import { decryptPayload } from '../security/encryption';
+import { decryptPayload, createRequestSignature } from '../security/encryption';
 
 const RAW_BASE_URL = ((import.meta as any).env?.VITE_API_URL as string) || '';
 const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
@@ -100,10 +100,14 @@ export async function apiClient<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
+  const { timestamp, signature } = await createRequestSignature();
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'X-Client-Type': 'web',
     'X-Encrypted-Response': '1',
+    'X-App-Time': timestamp,
+    'X-App-Signature': signature,
     ...(options.headers as Record<string, string>),
   };
 

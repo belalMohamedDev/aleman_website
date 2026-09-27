@@ -49,3 +49,13 @@ export async function decryptPayload<T = any>(base64Data: string): Promise<T> {
     throw err;
   }
 }
+
+export async function createRequestSignature(): Promise<{ timestamp: string; signature: string }> {
+  const timestamp = Date.now().toString();
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${timestamp}:${ENCRYPTION_KEY}`);
+  const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const signature = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  return { timestamp, signature };
+}
