@@ -12,12 +12,12 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://alemanapp.runasp.net',
+        target: 'https://alemanapp.runasp.net',
         changeOrigin: true,
         secure: false,
       },
       '/images': {
-        target: 'http://alemanapp.runasp.net',
+        target: 'https://alemanapp.runasp.net',
         changeOrigin: true,
         secure: false,
       },

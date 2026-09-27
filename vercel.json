@@ -29,11 +29,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "http://alemanapp.runasp.net/api/$1"
+      "destination": "https://alemanapp.runasp.net/api/$1"
     },
     {
       "source": "/images/(.*)",
-      "destination": "http://alemanapp.runasp.net/images/$1"
+      "destination": "https://alemanapp.runasp.net/images/$1"
     },
     {
       "source": "/modules/recruitment/(.*)",
