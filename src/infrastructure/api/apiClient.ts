@@ -24,9 +24,11 @@ export function resolveApiUrl(endpoint: string): string {
 export function resolveMediaUrl(path?: string | null): string {
   if (!path) return '/hero_farm_bg.webp';
 
-  // Strip backend host if returned by API, routing through local proxy instead
-  if (path.includes('runasp.net/images/')) {
-    return `/images/${path.split('runasp.net/images/')[1]}`;
+  // If path contains /images/, always normalize to relative /images/...
+  // This automatically strips ANY backend domain (runasp, custom server, etc.)
+  const imagesIndex = path.indexOf('/images/');
+  if (imagesIndex !== -1) {
+    return path.slice(imagesIndex);
   }
 
   if (path.startsWith('http://') || path.startsWith('https://')) {

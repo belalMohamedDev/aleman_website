@@ -9,6 +9,10 @@
       "destination": "http://alemanapp.runasp.net/images/$1"
     },
     {
+      "source": "/modules/recruitment/(.*)",
+      "destination": "https://www.alemanfeed.com/modules/recruitment/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

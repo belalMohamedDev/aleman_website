@@ -8,9 +8,7 @@ import type {
   ApplicationTrackingResult,
 } from './types';
 
-const RECRUITMENT_API_BASE =
-  ((import.meta as any).env?.VITE_RECRUITMENT_API_URL as string) ||
-  'https://www.alemanfeed.com/modules/recruitment/api_jobs.php';
+const RECRUITMENT_API_BASE = '/modules/recruitment/api_jobs.php';
 
 // Fallback lookup values in case API server is unreachable
 export const DEFAULT_LOOKUPS: RecruitmentLookups = {
