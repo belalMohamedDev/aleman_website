@@ -1,16 +1,14 @@
+import { decryptPayload } from '../security/encryption';
+
 const RAW_BASE_URL = ((import.meta as any).env?.VITE_API_URL as string) || '';
 const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 export function resolveApiUrl(endpoint: string): string {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-  // If the frontend is loaded over HTTPS, browsers block calls to insecure HTTP (Mixed Content).
-  // In that case, use relative path so Vercel proxy rewrite handles it seamlessly over HTTPS.
-  if (
-    typeof window !== 'undefined' &&
-    window.location.protocol === 'https:' &&
-    BASE_URL.startsWith('http://')
-  ) {
+  // In browser environment, always use relative URLs so all requests route through
+  // Vite proxy (dev) or Vercel rewrites (prod) without leaking backend hostname to DevTools
+  if (typeof window !== 'undefined') {
     return cleanEndpoint;
   }
 
@@ -103,6 +101,7 @@ export async function apiClient<T>(
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'X-Client-Type': 'web',
+    'X-Encrypted-Response': '1',
     ...(options.headers as Record<string, string>),
   };
 
@@ -153,5 +152,10 @@ export async function apiClient<T>(
     return null as T;
   }
 
-  return response.json();
+  const data = await response.json();
+  if (data && typeof data === 'object' && data.encrypted && data.payload) {
+    return (await decryptPayload<T>(data.payload));
+  }
+
+  return data as T;
 }
