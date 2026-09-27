@@ -135,20 +135,6 @@ export function Footer() {
                 <YoutubeIcon className="h-5 w-5" aria-hidden="true" />
               </a>
             </div>
-
-            {/* <div className="mt-6 flex items-center gap-2" role="group" aria-label={t(ui.nav.language)}>
-              {(['ar', 'en'] as const).map((code) => (
-                <button
-                  key={code}
-                  type="button"
-                  onClick={() => setLang(code)}
-                  className={`focus-ring rounded-pill px-3.5 py-1.5 text-xs font-bold transition ${lang === code ? 'bg-gold-500 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'
-                    }`}
-                >
-                  {code === 'ar' ? 'العربية' : 'English'}
-                </button>
-              ))}
-            </div> */}
           </div>
         </div>
 

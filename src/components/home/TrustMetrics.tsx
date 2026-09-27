@@ -89,7 +89,7 @@ export function TrustMetrics() {
               </p>
             </Reveal>
 
-            {/* Editorial Pillars with Central Spiral Track & Points (الخط الحلزوني ونقاط البوينت) */}
+            {/* Editorial Pillars with Central Spiral Track & Points */}
             <div className="trust-editorial-split">
               {/* Right Column in RTL: Items 01 & 03 */}
               <div className="trust-editorial-col-right">
@@ -114,7 +114,7 @@ export function TrustMetrics() {
                 </Reveal>
               </div>
 
-              {/* Center Spiral Track & Minimalist Point Nodes (الخط الحلزوني الرمادي ونقاط الترقيم) */}
+              {/* Center Spiral Track & Minimalist Point Nodes */}
               <div id="trust-spiral-track" className="trust-spiral-track" aria-hidden="true">
                 <svg className="trust-spiral-svg" viewBox="0 0 90 560" fill="none" preserveAspectRatio="none">
                   {/* Soft ambient background curve */}
@@ -199,7 +199,7 @@ export function TrustMetrics() {
                 aria-hidden="true"
               />
 
-              {/* Sack 1: Left Back - Cattle Feed (علف مواشي تسمين) */}
+              {/* Sack 1: Left Back - Cattle Feed */}
               <motion.div
                 className="trust-layer-left"
                 style={{
@@ -216,7 +216,7 @@ export function TrustMetrics() {
                 />
               </motion.div>
 
-              {/* Sack 2: Right Back - Duck / Poultry Feed (علف بط الإيمان) */}
+              {/* Sack 2: Right Back - Duck / Poultry Feed */}
               <motion.div
                 className="trust-layer-right"
                 style={{
@@ -233,7 +233,7 @@ export function TrustMetrics() {
                 />
               </motion.div>
 
-              {/* Sack 3: Center Hero Foreground - Broiler Poultry Feed (علف دواجن تسمين الإيمان) */}
+              {/* Sack 3: Center Hero Foreground - Broiler Poultry Feed */}
               <motion.div
                 className="trust-layer-center"
                 style={{

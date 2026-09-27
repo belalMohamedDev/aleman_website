@@ -126,7 +126,6 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
             </div>
           </div>
 
-          {/* 4. رقم هاتف السائق */}
           <div className="relative">
             <input
               type="tel"
@@ -165,7 +164,6 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
             </div>
           </div>
 
-          {/* 6. ملاحظات إضافية */}
           <div>
             <input
               type="text"
@@ -177,7 +175,6 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
             />
           </div>
 
-          {/* 7. تعيين كافتراضي */}
           <label className="flex items-center gap-2.5 cursor-pointer pt-1">
             <input
               type="checkbox"
@@ -190,7 +187,6 @@ export function VehicleModal({ isOpen, onClose, onSubmit }: VehicleModalProps) {
             </span>
           </label>
 
-          {/* 8. زر الإضافة */}
           <div className="pt-3">
             <button
               type="submit"

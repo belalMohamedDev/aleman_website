@@ -13,8 +13,7 @@ import {
   PlusIcon,
   Trash2Icon,
   FilesIcon,
-  SparklesIcon,
-  InfoIcon,
+
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { JobItem } from './JobCard';

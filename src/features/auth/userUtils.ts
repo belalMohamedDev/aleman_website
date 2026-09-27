@@ -1,7 +1,7 @@
 import type { User } from './types';
 
 /**
- * Checks if a user is classified as a Sub-Customer (عميل فرعي / من صغار التجار)
+ * Checks if a user is classified as a Sub-Customer
  */
 export function isSubCustomer(user: User | null): boolean {
   if (!user) return false;

@@ -107,7 +107,7 @@ export function OrderCard({ order, onViewDetails, onCancelOrder, showCustomerNam
     }
   };
 
-  // Weight display (e.g. 0.025 طن)
+  // Weight display (e.g. 0.025 tons)
   const getWeightDisplay = () => {
     if (order.totalWeightTons !== undefined && order.totalWeightTons !== null && order.totalWeightTons > 0) {
       return `${order.totalWeightTons} ${t(ui.cart.tonUnit)}`;

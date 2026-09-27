@@ -243,9 +243,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
 
               {isBankTransfer ? (
                 isSub ? (
-                  /* مسار التحويل البنكي للعميل الفرعي: 6 خطوات */
                   <>
-                    {/* Step 1: تقديم طلب العميل الفرعي */}
+                    {/* Step 1 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div className="h-8 w-8 rounded-full bg-[#00875a] text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
                         <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -256,7 +255,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 2: موافقة واعتماد التاجر الرئيسي */}
+                    {/* Step 2 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isMerchantApproved
@@ -282,7 +281,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 3: مراجعة واعتماد إدارة المصنع */}
+                    {/* Step 3 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isFactoryApproved || isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
@@ -310,7 +309,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 4: سداد ورفع إيصال التحويل البنكي */}
+                    {/* Step 4 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
@@ -347,7 +346,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 5: مراجعة وتأكيد السداد من المالية */}
+                    {/* Step 5 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isProcessing || isShipped || isDelivered
@@ -384,7 +383,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 6: خرج للتوصيل أو جاهز للتحميل */}
+                    {/* Step 6 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered
@@ -424,9 +423,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     </div>
                   </>
                 ) : (
-                  /* مسار التحويل البنكي للتاجر الرئيسي المباشر: 5 خطوات تماماً كما في التصميم */
                   <>
-                    {/* Step 1: تقديم الطلب للمصنع */}
+                    {/* Step 1 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div className="h-8 w-8 rounded-full bg-[#00875a] text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
                         <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -436,7 +434,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 2: مراجعة واعتماد إدارة المصنع */}
+                    {/* Step 2 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isApproved || isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
@@ -467,7 +465,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 3: سداد ورفع إيصال التحويل البنكي */}
+                    {/* Step 3 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isReceiptUploaded || Number(order.status) === 12 || isProcessing || isShipped || isDelivered
@@ -504,7 +502,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 4: مراجعة وتأكيد السداد من المالية */}
+                    {/* Step 4 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isProcessing || isShipped || isDelivered
@@ -541,7 +539,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                       </div>
                     </div>
 
-                    {/* Step 5: خرج للتوصيل بشاحنة المصنع أو الاستلام من المصنع */}
+                    {/* Step 5 */}
                     <div className="relative flex items-start gap-4 z-10">
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered
@@ -582,9 +580,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   </>
                 )
               ) : isSub ? (
-                /* مسار التاجر الفرعي الدفع عند الاستلام: 4 خطوات */
                 <>
-                  {/* Step 1: تقديم طلب العميل الفرعي */}
+                  {/* Step 1 */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div className="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
                       <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -595,7 +592,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     </div>
                   </div>
 
-                  {/* Step 2: موافقة واعتماد التاجر الرئيسي */}
+                  {/* Step 2 */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
                       className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isMerchantApproved
@@ -621,7 +618,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     </div>
                   </div>
 
-                  {/* Step 3: اعتماد وتأكيد إدارة المصنع */}
+                  {/* Step 3 */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
                       className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isFactoryApproved
@@ -647,7 +644,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     </div>
                   </div>
 
-                  {/* Step 4: خروج الشحنة أو الاستلام من المصنع */}
+                  {/* Step 4 */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
                       className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered
@@ -680,9 +677,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   </div>
                 </>
               ) : (
-                /* مسار التاجر الرئيسي الدفع عند الاستلام: 3 خطوات */
                 <>
-                  {/* Step 1: تقديم الطلب للمصنع */}
+                  {/* Step 1 */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div className="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs ring-4 ring-white">
                       <CheckIcon className="h-4 w-4 stroke-[3]" />
@@ -693,7 +689,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     </div>
                   </div>
 
-                  {/* Step 2: تم تأكيد واعتماد الطلب (موافقة المصنع فقط) */}
+                  {/* Step 2 */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
                       className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isApproved || isProcessing || isShipped || isDelivered
@@ -721,7 +717,7 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                     </div>
                   </div>
 
-                  {/* Step 3: خروج الشحنة أو الاستلام من المصنع */}
+                  {/* Step 3 */}
                   <div className="relative flex items-start gap-4 z-10">
                     <div
                       className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ring-4 ring-white transition ${isDelivered

@@ -76,10 +76,10 @@ export function About() {
         </div>
       </section>
 
-      {/* Facts & Figures Bar (حقائق وأرقام مع أنيميشن وتأثيرات بصرية) */}
+      {/* Facts & Figures Bar */}
       <AboutStats />
 
-      {/* Company History & Journey (تاريخ شركة الإيمان مع صورة المجمع عند الغروب) */}
+      {/* Company History & Journey */}
       <section className="mx-auto max-w-[1400px] px-4 md:px-8 pt-8 sm:pt-10 md:pt-14 pb-8 md:pb-12">
         <div className="grid gap-8 lg:gap-12 lg:grid-cols-12 items-center">
           {/* Text Content */}
@@ -144,52 +144,15 @@ export function About() {
 
 
 
-      {/* Connected Mission & Core Values Journey Map (خريطة المسار الحلزوني المتصلة لمهمتنا وقيمنا) */}
+      {/* Connected Mission & Core Values Journey Map */}
       <div className="about-journey-wrapper relative">
         <AboutMissionMap />
         <AboutValuesMap />
         <AboutMissionValuesBridge />
       </div>
 
-      {/* Why Choose Us (لماذا تختار أعلاف الإيمان) */}
+      {/* Why Choose Us */}
       <AboutWhyUs />
-
-      {/* CTA Footer Section */}
-      {/* <section className="mx-auto max-w-[1400px] px-4 md:px-8 pt-20 md:pt-28">
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="rounded-3xl bg-brand-900 text-white p-8 sm:p-12 lg:p-14 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-lift"
-        >
-          <div className="space-y-2 max-w-xl">
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-black">
-              جاهزون لتلبية احتياجات مزرعتك بأعلى جودة
-            </h3>
-            <p className="text-xs sm:text-sm text-emerald-200 font-medium">
-              اطلب طلبيتك الآن مباشرة بالأطنان أو تواصل مع فريق الاستشارات الفنية والتغذوية.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              to="/products"
-              className="inline-flex items-center gap-2 rounded-2xl bg-[#f97316] hover:bg-[#ea580c] px-6 py-4 text-xs sm:text-sm font-black text-white shadow-lift transition-all hover:scale-105 active:scale-95"
-            >
-              <span>تصفح قائمة الأعلاف</span>
-              <Back className="h-4 w-4" />
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-4 text-xs sm:text-sm font-black text-white backdrop-blur-md transition-all active:scale-95"
-            >
-              <PhoneCallIcon className="h-4 w-4" />
-              <span>تواصل مع الإدارة</span>
-            </Link>
-          </div>
-        </motion.div>
-      </section> */}
     </div>
   );
 }

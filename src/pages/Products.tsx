@@ -44,9 +44,6 @@ export function Products() {
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-black text-ink">{t(ui.products.catalogHeading)}</h1>
-              {/* <span className="rounded-full bg-brand-50 border border-brand-100 px-2.5 py-0.5 text-xs font-black text-brand-700">
-                {allProducts.length} منتج
-              </span> */}
             </div>
             <p className="text-xs text-slate-500 font-semibold mt-1">
               {t(ui.products.catalogSubheading)}

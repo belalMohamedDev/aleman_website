@@ -74,7 +74,7 @@
 }
 
 /* ==========================================================================
-   Spiral Track & Point Nodes (الخط الحلزوني المتباعد ونقاط البوينت 3D)
+   Spiral Track & Point Nodes
    ========================================================================== */
 .trust-editorial-split {
   position: relative;
@@ -392,10 +392,10 @@
 }
 
 /* ==========================================================================
-   3-Sack Product Trio Showcase (التكوين الهرمي الفاخر لـ 3 شكاير)
+   3-Sack Product Trio Showcase
    ========================================================================== */
 
-/* Sack 1: Left Sack Wrapper (Cattle Feed - أحمر) */
+/* Sack 1: Left Sack Wrapper (Cattle Feed) */
 .trust-layer-left {
   position: absolute;
   bottom: 36px;
@@ -458,7 +458,7 @@
   }
 }
 
-/* Sack 2: Right Sack Wrapper (Ducks Feed - أخضر/ذهبي) */
+/* Sack 2: Right Sack Wrapper (Ducks Feed) */
 .trust-layer-right {
   position: absolute;
   bottom: 36px;
@@ -521,7 +521,7 @@
   }
 }
 
-/* Sack 3: Center Hero Foreground Sack (Broiler Feed - أصفر/أزرق) */
+/* Sack 3: Center Hero Foreground Sack (Broiler Feed) */
 .trust-layer-center {
   position: absolute;
   left: 50%;

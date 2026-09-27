@@ -24,6 +24,7 @@ import { Tools } from './pages/Tools';
 import { FeedPrices } from './pages/FeedPrices';
 import { Contact } from './pages/Contact';
 import { Profile } from './pages/Profile';
+import { initAntiInspect } from './infrastructure/security/antiInspect';
 
 function Shell() {
   const { dir } = useLang();
@@ -79,6 +80,10 @@ function Shell() {
 }
 
 export function App() {
+  useEffect(() => {
+    return initAntiInspect();
+  }, []);
+
   return (
     <LanguageProvider>
       <AuthProvider>

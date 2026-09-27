@@ -7,7 +7,7 @@ export interface CartItem {
   packageWeightKg: number;
   unitPrice: number;
   pricePerTon: number;
-  quantity: number; // number of bags (شكائر)
+  quantity: number; // number of bags
   subtotal: number;
   totalWeightKg: number;
   totalWeightTons: number;

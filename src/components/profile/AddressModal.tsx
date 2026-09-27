@@ -68,7 +68,6 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
-          {/* 1. المدينة / المحافظة */}
           <div className="relative">
             <input
               type="text"
@@ -84,7 +83,6 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
             </div>
           </div>
 
-          {/* 2. المركز / الحي */}
           <div className="relative">
             <input
               type="text"
@@ -99,7 +97,6 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
             </div>
           </div>
 
-          {/* 3. الشارع أو العنوان بالتفصيل */}
           <div className="relative">
             <input
               type="text"
@@ -115,7 +112,6 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
             </div>
           </div>
 
-          {/* 4. ملاحظات إضافية للتسليم */}
           <div className="relative">
             <input
               type="text"
@@ -130,7 +126,6 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
             </div>
           </div>
 
-          {/* 5. تعيين كافتراضي */}
           <label className="flex items-center gap-2.5 cursor-pointer pt-1">
             <input
               type="checkbox"
@@ -143,7 +138,6 @@ export function AddressModal({ isOpen, onClose, onSubmit }: AddressModalProps) {
             </span>
           </label>
 
-          {/* 6. زر الحفظ */}
           <div className="pt-3">
             <button
               type="submit"

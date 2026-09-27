@@ -23,17 +23,21 @@ export function resolveApiUrl(endpoint: string): string {
   return `${BASE_URL}${cleanEndpoint}`;
 }
 
-const API_ORIGIN = BASE_URL ? BASE_URL.replace(/\/api\/?$/, '') : '';
-
 export function resolveMediaUrl(path?: string | null): string {
   if (!path) return '/hero_farm_bg.webp';
+
+  // Strip backend host if returned by API, routing through local proxy instead
+  if (path.includes('runasp.net/images/')) {
+    return `/images/${path.split('runasp.net/images/')[1]}`;
+  }
+
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
+
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   if (cleanPath.startsWith('/images/')) {
-    const origin = API_ORIGIN || 'http://alemanapp.runasp.net';
-    return `${origin}${cleanPath}`;
+    return cleanPath;
   }
   return cleanPath;
 }

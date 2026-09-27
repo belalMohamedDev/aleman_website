@@ -36,7 +36,7 @@ export function QualityPipelineJourney() {
 
       {/* Main 2-Column Responsive Layout: Right: Visual Showcase | Left: 6-Step Spiral Pipeline */}
       <div className="quality-journey-grid">
-        {/* Right Column in RTL: Quality Visual Stage (كادر صورة الجودة والمعمل الحديث) */}
+        {/* Right Column in RTL: Quality Visual Stage */}
         <div className="quality-visual-col">
           <Reveal delay={0.05}>
             <div className="quality-visual-stage">

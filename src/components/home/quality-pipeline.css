@@ -100,7 +100,7 @@
 
 @media (min-width: 1024px) {
   .quality-visual-stage {
-    padding-top: 6.5rem; /* تنزيل الصورة لتتوسط تماماً مع منتصف مراحل الجودة الستة */
+    padding-top: 6.5rem;
   }
 }
 
@@ -433,7 +433,7 @@
   }
 }
 
-/* Editorial Item (نصوص انسيابية راقية وثابتة) */
+/* Editorial Item */
 .quality-editorial-item {
   position: relative;
   display: flex;
