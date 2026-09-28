@@ -5,12 +5,9 @@
 
 export function initAntiInspect(): () => void {
   const handleContextMenu = (e: MouseEvent) => {
-    const target = e.target as HTMLElement | null;
-    // Allow context menu on inputs/textareas for normal copy/paste UX
-    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
-      return;
-    }
     e.preventDefault();
+    e.stopPropagation();
+    return false;
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,11 +40,22 @@ export function initAntiInspect(): () => void {
     }
   };
 
-  window.addEventListener('contextmenu', handleContextMenu);
+  window.addEventListener('contextmenu', handleContextMenu, true);
+  document.addEventListener('contextmenu', handleContextMenu, true);
   window.addEventListener('keydown', handleKeyDown, true);
 
+  // Mute console output in production
+  if (import.meta.env?.PROD) {
+    const noop = () => {};
+    window.console.log = noop;
+    window.console.info = noop;
+    window.console.warn = noop;
+    window.console.debug = noop;
+  }
+
   return () => {
-    window.removeEventListener('contextmenu', handleContextMenu);
+    window.removeEventListener('contextmenu', handleContextMenu, true);
+    document.removeEventListener('contextmenu', handleContextMenu, true);
     window.removeEventListener('keydown', handleKeyDown, true);
   };
 }
