@@ -151,6 +151,14 @@ export function Profile() {
     }
   };
 
+  const handleOrderUpdated = (updatedOrder: OrderResponse) => {
+    setModalOrder(updatedOrder);
+    myOrdersHook.loadOrders();
+    if (!isSub) {
+      merchantOrdersHook.loadOrders();
+    }
+  };
+
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
       openAuthModal();
@@ -323,6 +331,7 @@ export function Profile() {
       <OrderDetailModal
         order={modalOrder}
         onClose={handleCloseModal}
+        onOrderUpdated={handleOrderUpdated}
       />
     </div>
   );

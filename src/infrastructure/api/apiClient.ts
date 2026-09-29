@@ -111,6 +111,10 @@ export async function apiClient<T>(
     ...(options.headers as Record<string, string>),
   };
 
+  if (options.body instanceof FormData) {
+    delete headers['Content-Type'];
+  }
+
   const url = resolveApiUrl(endpoint);
 
   let response = await fetch(url, {

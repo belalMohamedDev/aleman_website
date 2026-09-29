@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   XIcon,
   PackageIcon,
@@ -19,18 +19,46 @@ import { useAuth } from '../../features/auth/AuthContext';
 import { isSubCustomer as checkIsSubCustomer } from '../../features/auth/userUtils';
 import { toast } from 'sonner';
 import { resolveMediaUrl } from '../../infrastructure/api/apiClient';
+import { profileOrderService } from '../../features/profile/orderService';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
 
 interface OrderDetailModalProps {
   order: OrderResponse | null;
   onClose: () => void;
+  onOrderUpdated?: (order: OrderResponse) => void;
 }
 
-export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
+export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated }: OrderDetailModalProps) {
+  const [internalOrder, setInternalOrder] = useState<OrderResponse | null>(initialOrder);
+
+  useEffect(() => {
+    setInternalOrder(initialOrder);
+  }, [initialOrder]);
+
+  const order = internalOrder || initialOrder;
+
+  const hasExistingReceipt = Boolean(
+    order?.paymentReceiptUrl ||
+    Number(order?.status) === OrderStatus.PendingPaymentApproval ||
+    Number(order?.status) === 12
+  );
+
   const [receiptFileName, setReceiptFileName] = useState<string>('');
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
-  const [isReceiptUploaded, setIsReceiptUploaded] = useState(false);
+  const [isReceiptUploaded, setIsReceiptUploaded] = useState(hasExistingReceipt);
+
+  useEffect(() => {
+    if (order) {
+      setIsReceiptUploaded(
+        Boolean(
+          order.paymentReceiptUrl ||
+          Number(order.status) === OrderStatus.PendingPaymentApproval ||
+          Number(order.status) === 12
+        )
+      );
+    }
+  }, [order?.paymentReceiptUrl, order?.status]);
 
   if (!order) return null;
 
@@ -77,16 +105,30 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
     toast.success(`${label} ${t(ui.common.copiedSuccess)}`);
   };
 
-  const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReceiptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setReceiptFileName(file.name);
-      setIsUploadingReceipt(true);
-      setTimeout(() => {
-        setIsUploadingReceipt(false);
-        setIsReceiptUploaded(true);
-        toast.success(t(ui.orders.receiptUploadedSuccess));
-      }, 1000);
+    if (!file || !order) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('حجم الملف كبير جداً، الحد الأقصى المسموح 10 ميجابايت');
+      return;
+    }
+
+    setReceiptFileName(file.name);
+    setIsUploadingReceipt(true);
+    try {
+      const updatedOrder = await profileOrderService.uploadReceipt(order.id, file);
+      setInternalOrder(updatedOrder);
+      setIsReceiptUploaded(true);
+      toast.success(t(ui.orders.receiptUploadedSuccess));
+      if (onOrderUpdated) {
+        onOrderUpdated(updatedOrder);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'تعذر رفع إيصال التحويل، يرجى المحاولة مرة أخرى');
+    } finally {
+      setIsUploadingReceipt(false);
+      e.target.value = '';
     }
   };
 
@@ -863,26 +905,50 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                   رفع صورة أو ملف إيصال التحويل البنكي:
                 </label>
                 {isReceiptUploaded ? (
-                  <div className="rounded-2xl bg-white border border-emerald-300 p-4 flex items-center justify-between gap-3">
+                  <div className="rounded-2xl bg-white border border-emerald-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-2 text-xs font-black text-emerald-800">
                       <FileCheckIcon className="h-5 w-5 text-emerald-600 shrink-0" />
                       <span>
                         تم استلام إيصال التحويل بنجاح {receiptFileName ? `(${receiptFileName})` : ''} وجاري مراجعته
                       </span>
                     </div>
-                    <label className="cursor-pointer text-xs text-brand-700 font-bold hover:underline shrink-0">
-                      تغيير الملف
-                      <input type="file" accept="image/*,.pdf" onChange={handleReceiptUpload} className="hidden" />
-                    </label>
+                    <div className="flex items-center gap-3 shrink-0">
+                      {order.paymentReceiptUrl && (
+                        <a
+                          href={resolveMediaUrl(order.paymentReceiptUrl)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-emerald-700 font-bold underline hover:text-emerald-900"
+                        >
+                          معاينة الإيصال
+                        </a>
+                      )}
+                      <label className="cursor-pointer text-xs text-brand-700 font-bold hover:underline shrink-0">
+                        {isUploadingReceipt ? 'جاري الرفع…' : 'تغيير الملف'}
+                        <input
+                          type="file"
+                          accept="image/*,.pdf"
+                          onChange={handleReceiptUpload}
+                          disabled={isUploadingReceipt}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                   </div>
                 ) : (
                   <label className="cursor-pointer border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-2xl p-4 bg-white flex flex-col items-center justify-center gap-1.5 transition text-center">
                     <UploadCloudIcon className="h-6 w-6 text-emerald-600" />
                     <span className="text-xs font-black text-emerald-950">
-                      {isUploadingReceipt ? 'جاري رفع الإيصال…' : 'اضغط لاختيار أو تصوير إيصال التحويل البنكي'}
+                      {isUploadingReceipt ? 'جاري رفع الإيصال إلى السيرفر…' : 'اضغط لاختيار أو تصوير إيصال التحويل البنكي'}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-medium">يدعم الصور بصيغة JPG, PNG أو ملف PDF</span>
-                    <input type="file" accept="image/*,.pdf" onChange={handleReceiptUpload} className="hidden" />
+                    <span className="text-[10px] text-slate-400 font-medium">يدعم الصور بصيغة JPG, PNG أو ملف PDF (حتى 10MB)</span>
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handleReceiptUpload}
+                      disabled={isUploadingReceipt}
+                      className="hidden"
+                    />
                   </label>
                 )}
               </div>

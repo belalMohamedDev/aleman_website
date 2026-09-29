@@ -71,4 +71,14 @@ export const profileOrderService = {
       method: 'POST',
     });
   },
+
+  async uploadReceipt(orderId: number, file: File): Promise<OrderResponse> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    return apiClient<OrderResponse>(`/api/Orders/${orderId}/receipt`, {
+      method: 'POST',
+      body: formData,
+    });
+  },
 };
