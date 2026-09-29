@@ -25,10 +25,9 @@ type JobCardProps = {
   job: JobItem;
   index?: number;
   onApply: (job: JobItem) => void;
-  isWide?: boolean;
 };
 
-export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProps) {
+export function JobCard({ job, index = 0, onApply }: JobCardProps) {
   const { lang, t } = useLang();
   const [copied, setCopied] = useState(false);
   const ArrowIcon = lang === 'ar' ? ArrowLeft : ArrowRight;
@@ -98,9 +97,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
   return (
     <Reveal
       delay={index * 0.08}
-      className={`group relative flex flex-col rounded-3xl border border-slate-100 bg-white p-6 sm:p-7 shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1 ${
-        isWide ? 'h-full' : 'h-full'
-      }`}
+      className="group relative flex flex-col rounded-3xl border border-slate-100 bg-white p-6 sm:p-7 shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1 h-full"
     >
       {/* Top Bar: Department + Job Code + Share */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100/80 pb-4">
@@ -188,7 +185,7 @@ export function JobCard({ job, index = 0, onApply, isWide = false }: JobCardProp
       )}
 
       {/* Bottom Footer: Deadline + Apply Button */}
-      <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="mt-auto pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {deadline ? (
           <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800">
             <Calendar className="h-4 w-4 text-amber-600 shrink-0" />

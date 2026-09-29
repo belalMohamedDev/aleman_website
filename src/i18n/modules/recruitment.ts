@@ -10,7 +10,7 @@ export const recruitment = {
   searchPlaceholder: L('ابحث بالمسمى الوظيفي أو الكود…', 'Search by job title or code…'),
   searchPlaceholderCareers: L('ابحث بالمسمى أو القسم...', 'Search jobs or title...'),
   trackApplicationBtn: L('متابعة حالة طلب سابق', 'Track Application Status'),
-  trackApplicationShort: L('متابعة حالة طلب', 'Track Application'),
+  trackApplicationShort: L('متابعة حالة طلبك السابق', 'Track Application Status'),
   generalApplyPrompt: L('لم تجد الوظيفة المناسبة؟ انضم إلى قاعدة الكفاءات', 'Didn’t find the right role? Join our talent pool'),
   generalApplyBtn: L('تقديم طلب عام', 'Submit General Application'),
   allDepartments: L('جميع الأقسام', 'All Departments'),

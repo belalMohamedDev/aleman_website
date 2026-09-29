@@ -1,6 +1,6 @@
 import { decryptPayload, createRequestSignature } from '../security/encryption';
 
-const RAW_BASE_URL = ((import.meta as any).env?.VITE_API_URL as string) || '';
+const RAW_BASE_URL = (import.meta.env.VITE_API_URL as string) || '';
 const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 export function resolveApiUrl(endpoint: string): string {
