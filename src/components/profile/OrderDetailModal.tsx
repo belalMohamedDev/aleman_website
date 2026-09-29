@@ -30,13 +30,15 @@ interface OrderDetailModalProps {
 }
 
 export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated }: OrderDetailModalProps) {
-  const [internalOrder, setInternalOrder] = useState<OrderResponse | null>(initialOrder);
+  const { user } = useAuth();
+  const { t, isRtl, lang } = useLanguage();
+  const [updatedOrder, setUpdatedOrder] = useState<OrderResponse | null>(null);
 
   useEffect(() => {
-    setInternalOrder(initialOrder);
-  }, [initialOrder]);
+    setUpdatedOrder(null);
+  }, [initialOrder?.id]);
 
-  const order = internalOrder || initialOrder;
+  const order = updatedOrder && updatedOrder.id === initialOrder?.id ? updatedOrder : initialOrder;
 
   const hasExistingReceipt = Boolean(
     order?.paymentReceiptUrl ||
@@ -60,10 +62,8 @@ export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated 
     }
   }, [order?.paymentReceiptUrl, order?.status]);
 
-  if (!order) return null;
-
-  const { user } = useAuth();
-  const { t, isRtl, lang } = useLanguage();
+  // If parent passed null, close modal immediately on the very first click
+  if (!initialOrder || !order) return null;
   const isBankTransfer =
     order.paymentMethod === PaymentMethod.BankTransfer ||
     order.paymentMethod === 3 ||
@@ -118,7 +118,7 @@ export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated 
     setIsUploadingReceipt(true);
     try {
       const updatedOrder = await profileOrderService.uploadReceipt(order.id, file);
-      setInternalOrder(updatedOrder);
+      setUpdatedOrder(updatedOrder);
       setIsReceiptUploaded(true);
       toast.success(t(ui.orders.receiptUploadedSuccess));
       if (onOrderUpdated) {
@@ -848,54 +848,6 @@ export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated 
 
                 <div className="h-10 w-10 rounded-2xl bg-emerald-600/15 text-emerald-700 flex items-center justify-center shrink-0">
                   <CreditCardIcon className="h-5 w-5" />
-                </div>
-              </div>
-
-              {/* Bank Accounts Info */}
-              <div className="space-y-2.5">
-                <p className="text-xs font-bold text-emerald-900">حسابات مجموعة شركات الايمان المعتمدة للتحويل:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-2xl bg-white p-3 border border-emerald-200/70 space-y-1">
-                    <span className="font-extrabold text-slate-700 block">البنك الأهلي المصري</span>
-                    <div className="flex items-center justify-between font-mono font-bold text-ink">
-                      <span>19800012345678</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard('19800012345678', 'رقم الحساب')}
-                        className="text-slate-400 hover:text-brand-600"
-                      >
-                        <CopyIcon className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl bg-white p-3 border border-emerald-200/70 space-y-1">
-                    <span className="font-extrabold text-slate-700 block">بنك مصر</span>
-                    <div className="flex items-center justify-between font-mono font-bold text-ink">
-                      <span>20100098765432</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard('20100098765432', 'رقم الحساب')}
-                        className="text-slate-400 hover:text-brand-600"
-                      >
-                        <CopyIcon className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl bg-white p-3 border border-emerald-200/70 space-y-1 sm:col-span-2">
-                    <span className="font-extrabold text-slate-700 block">فودافون كاش / إنستاباي (InstaPay)</span>
-                    <div className="flex items-center justify-between font-mono font-bold text-ink">
-                      <span>01020304050</span>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard('01020304050', 'رقم إنستاباي')}
-                        className="text-slate-400 hover:text-brand-600"
-                      >
-                        <CopyIcon className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </div>
 

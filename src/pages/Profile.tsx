@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -30,6 +30,7 @@ export function Profile() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<ProfileTabType>('orders');
   const [modalOrder, setModalOrder] = useState<OrderResponse | null>(null);
+  const closedOrderParamRef = useRef<string | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const isSub = isSubCustomer(user);
@@ -50,7 +51,12 @@ export function Profile() {
 
   // Synchronize modal with targetOrderParam from URL (e.g. from Notifications)
   useEffect(() => {
-    if (!targetOrderParam || !isAuthenticated) return;
+    if (!targetOrderParam) {
+      closedOrderParamRef.current = null;
+      return;
+    }
+    if (!isAuthenticated) return;
+    if (closedOrderParamRef.current === targetOrderParam) return;
 
     const normalizedTarget = targetOrderParam.trim().toLowerCase();
 
@@ -136,12 +142,12 @@ export function Profile() {
 
   const handleSelectOrder = (order: OrderResponse) => {
     setModalOrder(order);
-    const nextParams = new URLSearchParams(searchParams);
-    nextParams.set('order', order.orderNumber);
-    setSearchParams(nextParams, { replace: true });
   };
 
   const handleCloseModal = () => {
+    if (targetOrderParam) {
+      closedOrderParamRef.current = targetOrderParam;
+    }
     setModalOrder(null);
     if (searchParams.has('order') || searchParams.has('orderNumber')) {
       const nextParams = new URLSearchParams(searchParams);
@@ -328,11 +334,13 @@ export function Profile() {
       </div>
 
       {/* Central Order Details Modal (handles notifications, direct links, and card clicks) */}
-      <OrderDetailModal
-        order={modalOrder}
-        onClose={handleCloseModal}
-        onOrderUpdated={handleOrderUpdated}
-      />
+      {modalOrder && (
+        <OrderDetailModal
+          order={modalOrder}
+          onClose={handleCloseModal}
+          onOrderUpdated={handleOrderUpdated}
+        />
+      )}
     </div>
   );
 }
