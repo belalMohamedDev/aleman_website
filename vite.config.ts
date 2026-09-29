@@ -21,6 +21,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/uploads': {
+        target: 'https://alemanapp.runasp.net',
+        changeOrigin: true,
+        secure: false,
+      },
       '/modules/recruitment': {
         target: 'https://www.alemanfeed.com',
         changeOrigin: true,

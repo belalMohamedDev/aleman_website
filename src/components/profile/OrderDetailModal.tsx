@@ -12,6 +12,8 @@ import {
   FileCheckIcon,
   ShoppingBagIcon,
   ClockIcon,
+  ExternalLinkIcon,
+  EyeIcon,
 } from 'lucide-react';
 import type { OrderResponse } from '../../features/profile/types';
 import { ORDER_STATUS_META, OrderStatus, OrderType, PaymentMethod } from '../../features/profile/types';
@@ -49,6 +51,7 @@ export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated 
   const [receiptFileName, setReceiptFileName] = useState<string>('');
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
   const [isReceiptUploaded, setIsReceiptUploaded] = useState(hasExistingReceipt);
+  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
   useEffect(() => {
     if (order) {
@@ -864,16 +867,27 @@ export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated 
                         تم استلام إيصال التحويل بنجاح {receiptFileName ? `(${receiptFileName})` : ''} وجاري مراجعته
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       {order.paymentReceiptUrl && (
-                        <a
-                          href={resolveMediaUrl(order.paymentReceiptUrl)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs text-emerald-700 font-bold underline hover:text-emerald-900"
-                        >
-                          معاينة الإيصال
-                        </a>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setShowReceiptPreview(true)}
+                            className="inline-flex items-center gap-1 text-xs text-emerald-700 font-bold hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100/80 px-2.5 py-1 rounded-lg border border-emerald-200 transition cursor-pointer"
+                          >
+                            <EyeIcon className="h-3.5 w-3.5" />
+                            <span>معاينة الإيصال</span>
+                          </button>
+                          <a
+                            href={resolveMediaUrl(order.paymentReceiptUrl)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="p-1 text-emerald-600 hover:text-emerald-800 transition rounded-md hover:bg-emerald-50"
+                            title="فتح الرابط في صفحة مستقلة"
+                          >
+                            <ExternalLinkIcon className="h-3.5 w-3.5" />
+                          </a>
+                        </div>
                       )}
                       <label className="cursor-pointer text-xs text-brand-700 font-bold hover:underline shrink-0">
                         {isUploadingReceipt ? 'جاري الرفع…' : 'تغيير الملف'}
@@ -1091,6 +1105,69 @@ export function OrderDetailModal({ order: initialOrder, onClose, onOrderUpdated 
           </div>
         </div>
       </div>
+
+      {/* Receipt Preview Lightbox Modal */}
+      {showReceiptPreview && order.paymentReceiptUrl && (
+        <div
+          className="fixed inset-0 z-70 flex items-center justify-center bg-black/80 p-4 sm:p-6 backdrop-blur-sm animate-in fade-in duration-150"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowReceiptPreview(false);
+          }}
+        >
+          <div
+            className="relative max-w-2xl w-full bg-white rounded-3xl p-4 sm:p-5 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <FileCheckIcon className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-ink">معاينة إيصال التحويل البنكي</h3>
+                  <p className="text-[11px] text-slate-400 font-mono">#{order.orderNumber}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={resolveMediaUrl(order.paymentReceiptUrl)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition"
+                >
+                  <ExternalLinkIcon className="h-3.5 w-3.5" />
+                  <span>فتح في تبويب مستقل</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowReceiptPreview(false)}
+                  className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
+                  aria-label="إغلاق المعاينة"
+                >
+                  <XIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto flex items-center justify-center bg-slate-50/80 rounded-2xl p-2 min-h-[300px]">
+              {order.paymentReceiptUrl.toLowerCase().endsWith('.pdf') ? (
+                <iframe
+                  src={resolveMediaUrl(order.paymentReceiptUrl)}
+                  className="w-full h-[65vh] rounded-xl border border-slate-200"
+                  title="Receipt PDF"
+                />
+              ) : (
+                <img
+                  src={resolveMediaUrl(order.paymentReceiptUrl)}
+                  alt="إيصال التحويل"
+                  className="max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-xs"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

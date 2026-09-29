@@ -36,6 +36,10 @@
       "destination": "https://alemanapp.runasp.net/images/$1"
     },
     {
+      "source": "/uploads/(.*)",
+      "destination": "https://alemanapp.runasp.net/uploads/$1"
+    },
+    {
       "source": "/modules/recruitment/(.*)",
       "destination": "https://www.alemanfeed.com/modules/recruitment/$1"
     },

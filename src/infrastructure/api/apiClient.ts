@@ -31,14 +31,17 @@ export function resolveMediaUrl(path?: string | null): string {
     return path.slice(imagesIndex);
   }
 
+  // If path contains /uploads/, always normalize to relative /uploads/...
+  const uploadsIndex = path.indexOf('/uploads/');
+  if (uploadsIndex !== -1) {
+    return path.slice(uploadsIndex);
+  }
+
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
 
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  if (cleanPath.startsWith('/images/')) {
-    return cleanPath;
-  }
   return cleanPath;
 }
 

@@ -9,7 +9,6 @@ import {
   ArrowLeftIcon,
   PackageCheckIcon,
   AlertTriangleIcon,
-  ShieldCheckIcon,
   ShoppingBagIcon,
 } from 'lucide-react';
 
@@ -177,9 +176,8 @@ export function Cart() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                       transition={{ duration: 0.22 }}
-                      className={`group relative bg-white rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-card transition-all duration-300 overflow-hidden flex flex-col justify-between ${
-                        isItemDeleting ? 'opacity-40 pointer-events-none' : ''
-                      }`}
+                      className={`group relative bg-white rounded-2xl border border-slate-200/80 shadow-2xs hover:shadow-card transition-all duration-300 overflow-hidden flex flex-col justify-between ${isItemDeleting ? 'opacity-40 pointer-events-none' : ''
+                        }`}
                     >
                       {/* Image Section */}
                       <div className="relative bg-gradient-to-b from-brand-50/25 via-slate-50/40 to-white p-3 flex items-center justify-center h-36 sm:h-40 w-full overflow-hidden">
@@ -241,11 +239,10 @@ export function Cart() {
                                   handleRemoveItem(item.id);
                                 }
                               }}
-                              className={`h-6 w-6 rounded-md flex items-center justify-center transition active:scale-90 ${
-                                item.quantity === 1
+                              className={`h-6 w-6 rounded-md flex items-center justify-center transition active:scale-90 ${item.quantity === 1
                                   ? 'text-red-500 hover:bg-red-50'
                                   : 'text-slate-600 hover:bg-white hover:text-slate-900'
-                              }`}
+                                }`}
                               aria-label={item.quantity === 1 ? t(ui.cart.removeItem) : t(ui.products.decreaseQuantity)}
                             >
                               {item.quantity === 1 ? (
@@ -349,13 +346,6 @@ export function Cart() {
                 <Arrow className="h-5 w-5" />
               </button>
 
-              {/* Trust Badges */}
-              <div className="pt-3 border-t border-slate-100 space-y-2 text-xs font-bold text-slate-500">
-                <div className="flex items-center gap-2">
-                  <ShieldCheckIcon className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-                  <span>{t(ui.cart.secureTransactions)}</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
