@@ -13,11 +13,12 @@ interface OrdersTabProps {
   statusFilter?: OrderStatus | undefined;
   onSelectStatus?: (status: OrderStatus | undefined) => void;
   onCancelOrder: (id: number) => void;
+  onSelectOrder?: (order: OrderResponse) => void;
 }
 
 type TabType = 'current' | 'previous';
 
-export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) {
+export function OrdersTab({ orders, isLoading, onCancelOrder, onSelectOrder }: OrdersTabProps) {
   const { t, isRtl } = useLanguage();
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('current');
@@ -185,7 +186,7 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
             <OrderCard
               key={order.id}
               order={order}
-              onViewDetails={setSelectedOrder}
+              onViewDetails={onSelectOrder || setSelectedOrder}
               onCancelOrder={onCancelOrder}
             />
           ))}
@@ -193,10 +194,12 @@ export function OrdersTab({ orders, isLoading, onCancelOrder }: OrdersTabProps) 
       )}
 
       {/* Details Modal */}
-      <OrderDetailModal
-        order={selectedOrder}
-        onClose={() => setSelectedOrder(null)}
-      />
+      {!onSelectOrder && (
+        <OrderDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 }

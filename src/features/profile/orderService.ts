@@ -62,6 +62,10 @@ export const profileOrderService = {
     return apiClient<OrderResponse>(`/api/Orders/${id}`);
   },
 
+  async getOrderByNumber(orderNumber: string): Promise<OrderResponse> {
+    return apiClient<OrderResponse>(`/api/Orders/by-number/${orderNumber}`);
+  },
+
   async cancelOrder(id: number): Promise<void> {
     return apiClient<void>(`/api/Orders/${id}/cancel`, {
       method: 'POST',

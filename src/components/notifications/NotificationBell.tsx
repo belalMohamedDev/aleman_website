@@ -63,6 +63,44 @@ function getNotificationIcon(title: string, body: string) {
   };
 }
 
+export function extractOrderNumberFromNotification(notification: NotificationItem): string | null {
+  // 1. Try parsing notification.data if present
+  if (notification.data) {
+    try {
+      const parsed = typeof notification.data === 'string' ? JSON.parse(notification.data) : notification.data;
+      if (parsed && typeof parsed === 'object') {
+        const val =
+          parsed.orderNumber ||
+          parsed.order_number ||
+          parsed.OrderNumber ||
+          parsed.orderId ||
+          parsed.order_id ||
+          parsed.OrderId;
+        if (val) {
+          const str = String(val).trim();
+          const match = str.match(/ORD-[A-Za-z0-9-]+/i);
+          return match ? match[0] : str;
+        }
+      } else if (typeof parsed === 'string') {
+        const match = parsed.match(/ORD-[A-Za-z0-9-]+/i);
+        if (match) return match[0];
+      }
+    } catch {
+      const match = String(notification.data).match(/ORD-[A-Za-z0-9-]+/i);
+      if (match) return match[0];
+    }
+  }
+
+  // 2. Try regex extraction from notification.body or notification.title
+  const combined = `${notification.body || ''} ${notification.title || ''}`;
+  const match = combined.match(/ORD-[A-Za-z0-9-]+/i);
+  if (match) {
+    return match[0];
+  }
+
+  return null;
+}
+
 export function NotificationBell({ isAuthenticated, isTransparent = false }: NotificationBellProps) {
   const { t, lang } = useLang();
   const [isOpen, setIsOpen] = useState(false);
@@ -106,8 +144,13 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
     }
     setIsOpen(false);
 
-    // Navigate to profile orders
-    navigate('/profile');
+    // Extract order number from notification data or body/title
+    const orderNumber = extractOrderNumberFromNotification(notification);
+    if (orderNumber) {
+      navigate(`/profile?order=${encodeURIComponent(orderNumber)}`);
+    } else {
+      navigate('/profile');
+    }
   };
 
   return (
@@ -237,6 +280,18 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
                       <p className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">
                         {item.body}
                       </p>
+
+                      {extractOrderNumberFromNotification(item) && (
+                        <div className="mt-1.5 flex items-center gap-1.5">
+                          <span className="inline-flex items-center gap-1 rounded-md bg-brand-50 border border-brand-200/80 px-2 py-0.5 font-mono text-[10px] font-black text-brand-800">
+                            <PackageIcon className="h-2.5 w-2.5 text-brand-600" />
+                            <span>{extractOrderNumberFromNotification(item)}</span>
+                          </span>
+                          <span className="text-[10px] font-bold text-brand-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {lang === 'ar' ? 'عرض تفاصيل الطلب ←' : 'View order details →'}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Unread indicator dot */}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PlusIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '../features/auth/AuthContext';
 import { isSubCustomer } from '../features/auth/userUtils';
 import { useAddresses } from '../features/profile/useAddresses';
@@ -8,7 +9,8 @@ import { useVehicles } from '../features/profile/useVehicles';
 import { useMyOrders } from '../features/profile/useMyOrders';
 import { useMerchantOrders } from '../features/profile/useMerchantOrders';
 import { useCustomers } from '../features/profile/useCustomers';
-import type { ProfileTabType } from '../features/profile/types';
+import { profileOrderService } from '../features/profile/orderService';
+import type { ProfileTabType, OrderResponse } from '../features/profile/types';
 
 import { ProfileSidebar } from '../components/profile/ProfileSidebar';
 import { OrdersTab } from '../components/profile/OrdersTab';
@@ -16,14 +18,18 @@ import { MerchantOrdersTab } from '../components/profile/MerchantOrdersTab';
 import { CustomersTab } from '../components/profile/CustomersTab';
 import { AddressesTab } from '../components/profile/AddressesTab';
 import { VehiclesTab } from '../components/profile/VehiclesTab';
+import { OrderDetailModal } from '../components/profile/OrderDetailModal';
 import { useLanguage } from '../i18n/LanguageContext';
 import { ui } from '../i18n/ui';
 
 export function Profile() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const targetOrderParam = searchParams.get('order') || searchParams.get('orderNumber');
   const { user, isAuthenticated, isLoading: isAuthLoading, openAuthModal } = useAuth();
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<ProfileTabType>('orders');
+  const [modalOrder, setModalOrder] = useState<OrderResponse | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const isSub = isSubCustomer(user);
@@ -41,6 +47,109 @@ export function Profile() {
       setActiveTab('orders');
     }
   }, [isSub, activeTab]);
+
+  // Synchronize modal with targetOrderParam from URL (e.g. from Notifications)
+  useEffect(() => {
+    if (!targetOrderParam || !isAuthenticated) return;
+
+    const normalizedTarget = targetOrderParam.trim().toLowerCase();
+
+    // 1. Check in already loaded My Orders
+    const inMyOrders = myOrdersHook.orders.find(
+      (o) => o.orderNumber?.toLowerCase() === normalizedTarget || String(o.id) === normalizedTarget
+    );
+    if (inMyOrders) {
+      setActiveTab('orders');
+      setModalOrder(inMyOrders);
+      return;
+    }
+
+    // 2. Check in already loaded Merchant Orders
+    const inMerchantOrders = merchantOrdersHook.orders.find(
+      (o) => o.orderNumber?.toLowerCase() === normalizedTarget || String(o.id) === normalizedTarget
+    );
+    if (inMerchantOrders) {
+      setActiveTab('merchant-orders');
+      setModalOrder(inMerchantOrders);
+      return;
+    }
+
+    // If order lists are still loading, wait for them
+    if (myOrdersHook.isLoading || merchantOrdersHook.isLoading) {
+      return;
+    }
+
+    // 3. Not in current in-memory lists, fetch from API directly
+    let isMounted = true;
+    toast.loading(t(ui.profile.loadingOrders) || 'جاري تحميل تفاصيل الطلب...', { id: 'fetch-order' });
+
+    profileOrderService
+      .getOrderByNumber(targetOrderParam)
+      .then((fetched) => {
+        if (!isMounted || !fetched) return;
+        toast.dismiss('fetch-order');
+        const isSubOrder = Boolean(fetched.parentMerchantId || fetched.parentMerchantName);
+        if (isSubOrder && !isSub) {
+          setActiveTab('merchant-orders');
+        } else {
+          setActiveTab('orders');
+        }
+        setModalOrder(fetched);
+      })
+      .catch(() => {
+        if (/^\d+$/.test(targetOrderParam)) {
+          profileOrderService
+            .getOrderById(Number(targetOrderParam))
+            .then((fetched) => {
+              if (!isMounted || !fetched) return;
+              toast.dismiss('fetch-order');
+              const isSubOrder = Boolean(fetched.parentMerchantId || fetched.parentMerchantName);
+              if (isSubOrder && !isSub) {
+                setActiveTab('merchant-orders');
+              } else {
+                setActiveTab('orders');
+              }
+              setModalOrder(fetched);
+            })
+            .catch(() => {
+              if (isMounted) toast.error('تعذر العثور على الطلب المطلوب', { id: 'fetch-order' });
+            });
+        } else {
+          if (isMounted) toast.error('تعذر العثور على الطلب المطلوب', { id: 'fetch-order' });
+        }
+      });
+
+    return () => {
+      isMounted = false;
+      toast.dismiss('fetch-order');
+    };
+  }, [
+    targetOrderParam,
+    myOrdersHook.orders,
+    merchantOrdersHook.orders,
+    myOrdersHook.isLoading,
+    merchantOrdersHook.isLoading,
+    isAuthenticated,
+    isSub,
+    t,
+  ]);
+
+  const handleSelectOrder = (order: OrderResponse) => {
+    setModalOrder(order);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('order', order.orderNumber);
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const handleCloseModal = () => {
+    setModalOrder(null);
+    if (searchParams.has('order') || searchParams.has('orderNumber')) {
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('order');
+      nextParams.delete('orderNumber');
+      setSearchParams(nextParams, { replace: true });
+    }
+  };
 
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
@@ -154,6 +263,7 @@ export function Profile() {
                 statusFilter={myOrdersHook.statusFilter}
                 onSelectStatus={myOrdersHook.setStatusFilter}
                 onCancelOrder={myOrdersHook.cancelOrder}
+                onSelectOrder={handleSelectOrder}
               />
             )}
 
@@ -165,6 +275,7 @@ export function Profile() {
                 onSelectStatus={merchantOrdersHook.setStatusFilter}
                 searchTerm={merchantOrdersHook.searchTerm}
                 onSearchChange={merchantOrdersHook.setSearchTerm}
+                onSelectOrder={handleSelectOrder}
               />
             )}
 
@@ -207,6 +318,12 @@ export function Profile() {
           </main>
         </div>
       </div>
+
+      {/* Central Order Details Modal (handles notifications, direct links, and card clicks) */}
+      <OrderDetailModal
+        order={modalOrder}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }

@@ -4,8 +4,6 @@ import {
   ClipboardCheck,
   Briefcase,
   RefreshCw,
-  FileCheck2,
-  HelpCircle,
   X,
 } from 'lucide-react';
 import type { JobItem } from '../components/careers/JobCard';

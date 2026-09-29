@@ -14,6 +14,7 @@ interface MerchantOrdersTabProps {
   onSelectStatus?: (status: OrderStatus | undefined) => void;
   searchTerm: string;
   onSearchChange: (val: string) => void;
+  onSelectOrder?: (order: OrderResponse) => void;
 }
 
 type TabType = 'current' | 'previous';
@@ -23,6 +24,7 @@ export function MerchantOrdersTab({
   isLoading,
   searchTerm,
   onSearchChange,
+  onSelectOrder,
 }: MerchantOrdersTabProps) {
   const { t, isRtl } = useLanguage();
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
@@ -177,7 +179,7 @@ export function MerchantOrdersTab({
             <OrderCard
               key={order.id}
               order={order}
-              onViewDetails={setSelectedOrder}
+              onViewDetails={onSelectOrder || setSelectedOrder}
               showCustomerName
             />
           ))}
@@ -185,10 +187,12 @@ export function MerchantOrdersTab({
       )}
 
       {/* Details Modal */}
-      <OrderDetailModal
-        order={selectedOrder}
-        onClose={() => setSelectedOrder(null)}
-      />
+      {!onSelectOrder && (
+        <OrderDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 }
