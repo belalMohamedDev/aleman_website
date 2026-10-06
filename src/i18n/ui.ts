@@ -17,6 +17,7 @@ import { distributors } from './modules/distributors';
 import { articles, articleCategories } from './modules/articles';
 import { contact, requestTypes } from './modules/contact';
 import { quality, footer, floating } from './modules/layout';
+import { wishlist } from './modules/wishlist';
 import { L } from './utils';
 
 // Backward compatible legacy careers block combined with new recruitment definitions
@@ -54,6 +55,7 @@ export const ui = {
   products,
   categories,
   cart,
+  wishlist,
   checkout,
   orders,
   profile,

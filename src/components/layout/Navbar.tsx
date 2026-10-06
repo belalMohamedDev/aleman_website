@@ -8,18 +8,21 @@ import {
   ShoppingBagIcon,
   UserIcon,
   LogOutIcon,
+  HeartIcon,
 } from 'lucide-react';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
 import { MobileMenu } from './MobileMenu';
 import { LOGO_URL, primaryNav, secondaryNav } from '../../data/navigation';
 import { useCart } from '../../features/cart/CartContext';
+import { useWishlist } from '../../features/wishlist/WishlistContext';
 import { useAuth } from '../../features/auth/AuthContext';
 import { NotificationBell } from '../notifications/NotificationBell';
 
 export function Navbar() {
   const { t, lang, toggle } = useLang();
   const { totalItemsCount } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const { user, isAuthenticated, openAuthModal, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -190,27 +193,53 @@ export function Navbar() {
           )}
         </nav>
 
-        {/* Action Controls (Language, Auth, Cart, Contact CTA) */}
+        {/* Action Controls (The 3 Icons first, then User, Language, Contact CTA) */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Language Switcher */}
-          <button
-            type="button"
-            onClick={toggle}
-            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${isDarkHeroNav
-              ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-              : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 shadow-xs'
-              }`}
-            aria-label={t(ui.nav.language)}
-          >
-            <Globe className="h-3.5 w-3.5 opacity-80" />
-            <span>{lang === 'ar' ? 'English' : 'عربي'}</span>
-          </button>
-
           {/* Notifications Bell */}
           <NotificationBell
             isAuthenticated={isAuthenticated}
             isTransparent={isDarkHeroNav}
           />
+
+          {/* Wishlist Link -> Direct to Wishlist Page (Only visible when authenticated) */}
+          {isAuthenticated && (
+            <Link
+              to="/wishlist"
+              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isDarkHeroNav
+                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
+                }`}
+              aria-label={t(ui.wishlist.title)}
+              title={t(ui.wishlist.title)}
+            >
+              <HeartIcon className="h-4 w-4" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#f97316] px-1 text-[11px] font-black text-white shadow-md animate-in zoom-in-75">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+          )}
+
+          {/* Shopping Cart Link -> Direct to Cart Page (Only visible when authenticated) */}
+          {isAuthenticated && (
+            <Link
+              to="/cart"
+              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isDarkHeroNav
+                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
+                }`}
+              aria-label={t(ui.cart.title)}
+              title={t(ui.cart.title)}
+            >
+              <ShoppingBagIcon className="h-4 w-4" />
+              {totalItemsCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#f97316] px-1 text-[11px] font-black text-white shadow-md animate-in zoom-in-75">
+                  {totalItemsCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* User Account / Auth Button */}
           {isAuthenticated ? (
@@ -286,25 +315,19 @@ export function Navbar() {
             </button>
           )}
 
-          {/* Shopping Cart Link -> Direct to Cart Page (Only visible when authenticated) */}
-          {isAuthenticated && (
-            <Link
-              to="/cart"
-              className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isDarkHeroNav
-                ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
-                }`}
-              aria-label={t(ui.cart.title)}
-              title={t(ui.cart.title)}
-            >
-              <ShoppingBagIcon className="h-4 w-4" />
-              {totalItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#f97316] px-1 text-[11px] font-black text-white shadow-md animate-in zoom-in-75">
-                  {totalItemsCount}
-                </span>
-              )}
-            </Link>
-          )}
+          {/* Language Switcher */}
+          <button
+            type="button"
+            onClick={toggle}
+            className={`focus-ring hidden h-10 items-center gap-1.5 rounded-full border px-3 text-xs font-bold transition sm:flex ${isDarkHeroNav
+              ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+              : 'border-slate-200 bg-white/80 text-ink-soft hover:border-brand-300 hover:text-brand-600 shadow-xs'
+              }`}
+            aria-label={t(ui.nav.language)}
+          >
+            <Globe className="h-3.5 w-3.5 opacity-80" />
+            <span>{lang === 'ar' ? 'English' : 'عربي'}</span>
+          </button>
 
           {/* Contact CTA Button */}
           <Link

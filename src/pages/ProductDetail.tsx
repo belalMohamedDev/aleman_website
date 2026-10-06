@@ -10,12 +10,14 @@ import {
   CheckCircle2Icon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  HeartIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { productService } from '../features/products/productService';
 import type { Product as LiveProductType, ProductPackage, Category } from '../features/products/types';
 import { getProductImages } from '../features/products/types';
 import { useCart } from '../features/cart/CartContext';
+import { useWishlist } from '../features/wishlist/WishlistContext';
 import { useAuth } from '../features/auth/AuthContext';
 import { getProduct } from '../data/products';
 import { CardSkeleton } from '../components/shared/Skeleton';
@@ -28,6 +30,7 @@ export function ProductDetail() {
   const { slug = '' } = useParams();
   const { t, isRtl } = useLang();
   const { addItem } = useCart();
+  const { toggle: toggleWishlist, isWishlisted } = useWishlist();
   const { isAuthenticated, openAuthModal } = useAuth();
 
   const [liveProduct, setLiveProduct] = useState<LiveProductType | null>(null);
@@ -44,6 +47,7 @@ export function ProductDetail() {
   const [direction, setDirection] = useState<number>(0);
 
   const isNumericId = !isNaN(Number(slug));
+  const isItemWishlisted = liveProduct ? isWishlisted(liveProduct.id) : false;
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(true);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -299,6 +303,24 @@ export function ProductDetail() {
 
             {/* Main Preview Container */}
             <div className="relative flex-1 w-full overflow-hidden rounded-3xl border border-slate-200/70 bg-canvas p-6 sm:p-8 flex flex-col items-center justify-center min-h-[380px] sm:min-h-[460px]">
+              {liveProduct && (
+                <button
+                  type="button"
+                  onClick={() => toggleWishlist(liveProduct.id, liveProduct.name)}
+                  aria-label={isItemWishlisted ? t(ui.wishlist.removeItem) : t(ui.wishlist.title)}
+                  className={`absolute top-4 ltr:right-4 rtl:left-4 z-20 flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-all duration-200 active:scale-90 ${
+                    isItemWishlisted
+                      ? 'bg-rose-500 text-white hover:bg-rose-600'
+                      : 'bg-white/90 text-slate-400 hover:text-rose-500 hover:bg-white'
+                  }`}
+                >
+                  <HeartIcon
+                    className="h-5 w-5"
+                    fill={isItemWishlisted ? 'currentColor' : 'none'}
+                    strokeWidth={isItemWishlisted ? 0 : 2}
+                  />
+                </button>
+              )}
               <div className="relative w-full flex-1 flex items-center justify-center py-2 min-h-[300px] sm:min-h-[380px] overflow-hidden">
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.img
@@ -506,43 +528,65 @@ export function ProductDetail() {
                     </div>
                   </div>
 
-                  {!isAuthenticated ? (
-                    <button
-                      type="button"
-                      onClick={openAuthModal}
-                      className="w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-6 text-sm font-black text-white shadow-md bg-brand-500 hover:bg-brand-600 transition-all hover:scale-[1.005] active:scale-95"
-                    >
-                      <ShoppingBagIcon className="h-5 w-5" />
-                      <span>{t(ui.auth.loginBtn)}</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleAddToCart}
-                      disabled={!selectedPackage || isAdding || isAdded}
-                      className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-6 text-base font-black text-white shadow-md transition-all ${
-                        isAdded
-                          ? 'bg-brand-700'
-                          : 'bg-brand-500 hover:bg-brand-600 shadow-brand-500/20 hover:scale-[1.005] active:scale-95 disabled:opacity-60'
-                      }`}
-                    >
-                      {isAdded ? (
-                        <>
-                          <CheckIcon className="h-5 w-5" />
-                          <span>{t(ui.products.addedToCart)}</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingBagIcon className="h-5 w-5" />
-                          <span>
-                            {unitMode === 'ton'
-                              ? `${t(ui.products.addToCart)} (${inputValue || 1} ${t(ui.common.ton)})`
-                              : `${t(ui.products.addToCart)} (${totalBags} ${t(ui.common.bag)})`}
-                          </span>
-                        </>
-                      )}
-                    </button>
-                  )}
+                  <div className="flex items-center gap-3">
+                    {!isAuthenticated ? (
+                      <button
+                        type="button"
+                        onClick={openAuthModal}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-2xl py-3.5 px-6 text-sm font-black text-white shadow-md bg-brand-500 hover:bg-brand-600 transition-all hover:scale-[1.005] active:scale-95"
+                      >
+                        <ShoppingBagIcon className="h-5 w-5" />
+                        <span>{t(ui.auth.loginBtn)}</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleAddToCart}
+                        disabled={!selectedPackage || isAdding || isAdded}
+                        className={`flex-1 flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-6 text-base font-black text-white shadow-md transition-all ${
+                          isAdded
+                            ? 'bg-brand-700'
+                            : 'bg-brand-500 hover:bg-brand-600 shadow-brand-500/20 hover:scale-[1.005] active:scale-95 disabled:opacity-60'
+                        }`}
+                      >
+                        {isAdded ? (
+                          <>
+                            <CheckIcon className="h-5 w-5" />
+                            <span>{t(ui.products.addedToCart)}</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingBagIcon className="h-5 w-5" />
+                            <span>
+                              {unitMode === 'ton'
+                                ? `${t(ui.products.addToCart)} (${inputValue || 1} ${t(ui.common.ton)})`
+                                : `${t(ui.products.addToCart)} (${totalBags} ${t(ui.common.bag)})`}
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    {liveProduct && (
+                      <button
+                        type="button"
+                        onClick={() => toggleWishlist(liveProduct.id, liveProduct.name)}
+                        className={`h-13 w-13 rounded-2xl border flex items-center justify-center transition-all duration-200 active:scale-90 shadow-2xs ${
+                          isItemWishlisted
+                            ? 'border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100'
+                            : 'border-slate-200 bg-white text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50/50'
+                        }`}
+                        title={isItemWishlisted ? t(ui.wishlist.removeItem) : t(ui.wishlist.title)}
+                        aria-label={isItemWishlisted ? t(ui.wishlist.removeItem) : t(ui.wishlist.title)}
+                      >
+                        <HeartIcon
+                          className="h-5 w-5"
+                          fill={isItemWishlisted ? 'currentColor' : 'none'}
+                          strokeWidth={isItemWishlisted ? 0 : 2}
+                        />
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

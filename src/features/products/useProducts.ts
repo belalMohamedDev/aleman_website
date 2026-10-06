@@ -4,7 +4,9 @@ import { productService } from './productService';
 import type { Category, Product } from './types';
 
 const SLUG_TO_KEYWORDS: Record<string, string[]> = {
-  poultry: ['دواجن', 'داجن', 'فراخ', 'دجاج', 'بياض', 'تسمين', 'poultry'],
+  poultry: ['دواجن', 'داجن', 'فراخ', 'دجاج', 'poultry'],
+  'poultry-laying': ['بياض', 'laying'],
+  'poultry-broiler': ['تسمين', 'broiler'],
   livestock: ['ماشية', 'مواشي', 'ابقار', 'أبقار', 'حلاب', 'عجول', 'livestock', 'cattle'],
   rabbit: ['ارانب', 'أرانب', 'ارنب', 'أرنب', 'rabbit'],
   duck: ['بط', 'بطة', 'duck'],

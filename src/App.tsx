@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { LanguageProvider, useLang } from './i18n/LanguageContext';
 import { AuthProvider } from './features/auth/AuthContext';
 import { CartProvider } from './features/cart/CartContext';
+import { WishlistProvider } from './features/wishlist/WishlistContext';
 import { CartDrawer } from './features/cart/CartDrawer';
 import { AuthModal } from './features/auth/AuthModal';
 import { Navbar } from './components/layout/Navbar';
@@ -15,6 +16,7 @@ import { Quality } from './pages/Quality';
 import { Products } from './pages/Products';
 import { ProductDetail } from './pages/ProductDetail';
 import { Cart } from './pages/Cart';
+import { Wishlist } from './pages/Wishlist';
 import { Checkout } from './pages/Checkout';
 import { OrderSuccess } from './pages/OrderSuccess';
 import { Articles } from './pages/Articles';
@@ -59,6 +61,7 @@ function Shell() {
           <Route path="/products" element={<Products />} />
           <Route path="/products/:slug" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
           <Route path="/articles" element={<Articles />} />
@@ -87,11 +90,13 @@ export function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <CartProvider>
-          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-            <Shell />
-          </BrowserRouter>
-        </CartProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <Shell />
+            </BrowserRouter>
+          </CartProvider>
+        </WishlistProvider>
       </AuthProvider>
     </LanguageProvider>
   );

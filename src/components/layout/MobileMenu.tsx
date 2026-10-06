@@ -99,18 +99,44 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                   </li>
                 )}
                 {isAuthenticated && (
-                  <li>
-                    <NavLink
-                      to="/profile"
-                      onClick={onClose}
-                      className={({ isActive }) =>
-                        `focus-ring block rounded-xl px-4 py-3 text-base font-bold transition ${isActive ? 'bg-brand-50 text-brand-600' : 'text-ink-soft hover:bg-brand-50/60'
-                        }`
-                      }
-                    >
-                      {t(ui.profile.profileAndOrders)}
-                    </NavLink>
-                  </li>
+                  <>
+                    <li>
+                      <NavLink
+                        to="/wishlist"
+                        onClick={onClose}
+                        className={({ isActive }) =>
+                          `focus-ring block rounded-xl px-4 py-3 text-base font-bold transition ${isActive ? 'bg-brand-50 text-brand-600' : 'text-ink-soft hover:bg-brand-50/60'
+                          }`
+                        }
+                      >
+                        {t(ui.wishlist.title)}
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/cart"
+                        onClick={onClose}
+                        className={({ isActive }) =>
+                          `focus-ring block rounded-xl px-4 py-3 text-base font-bold transition ${isActive ? 'bg-brand-50 text-brand-600' : 'text-ink-soft hover:bg-brand-50/60'
+                          }`
+                        }
+                      >
+                        {t(ui.cart.title)}
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/profile"
+                        onClick={onClose}
+                        className={({ isActive }) =>
+                          `focus-ring block rounded-xl px-4 py-3 text-base font-bold transition ${isActive ? 'bg-brand-50 text-brand-600' : 'text-ink-soft hover:bg-brand-50/60'
+                          }`
+                        }
+                      >
+                        {t(ui.profile.profileAndOrders)}
+                      </NavLink>
+                    </li>
+                  </>
                 )}
               </ul>
 

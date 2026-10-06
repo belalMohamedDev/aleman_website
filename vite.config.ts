@@ -31,7 +31,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-      '/aleman': {
+      '/aleman/': {
         target: 'https://10.0.2.199',
         changeOrigin: true,
         secure: false,

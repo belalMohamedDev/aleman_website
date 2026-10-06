@@ -21,6 +21,8 @@ export function Products() {
 
   const getCategoryDisplayName = (rawName: string) => {
     const lower = rawName.toLowerCase();
+    if (lower.includes('بياض') || lower.includes('laying')) return t(ui.categories.poultryLaying);
+    if (lower.includes('تسمين') || lower.includes('broiler')) return t(ui.categories.poultryBroiler);
     if (lower.includes('دواجن') || lower.includes('poultry')) return t(ui.categories.poultry);
     if (lower.includes('مواشي') || lower.includes('ماشية') || lower.includes('livestock') || lower.includes('cattle')) {
       return t(ui.categories.livestock);

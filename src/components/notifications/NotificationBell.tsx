@@ -167,7 +167,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
         }}
         className={`focus-ring relative flex h-10 w-10 items-center justify-center rounded-full border transition ${isTransparent
           ? 'border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-          : 'border-slate-200 bg-slate-50 text-ink-soft hover:border-brand-300 hover:text-brand-600 hover:bg-white'
+          : 'border-slate-200 bg-white/80 text-slate-700 hover:border-brand-300 hover:text-brand-600 shadow-xs'
           }`}
         aria-label={t(ui.notifications.title)}
         aria-expanded={isOpen}
@@ -176,7 +176,7 @@ export function NotificationBell({ isAuthenticated, isTransparent = false }: Not
 
         {/* Unread Count Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-black text-white shadow-md ring-2 ring-white animate-pulse">
+          <span className="absolute -top-1 -right-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#f97316] px-1 text-[11px] font-black text-white shadow-md animate-in zoom-in-75">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBagIcon, CheckIcon, PlusIcon, MinusIcon } from 'lucide-react';
+import { ShoppingBagIcon, CheckIcon, PlusIcon, MinusIcon, HeartIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Product, ProductPackage } from '../../features/products/types';
 import { getProductPrimaryImage } from '../../features/products/types';
 import { useCart } from '../../features/cart/CartContext';
+import { useWishlist } from '../../features/wishlist/WishlistContext';
 import { useAuth } from '../../features/auth/AuthContext';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
@@ -19,6 +20,7 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
   const navigate = useNavigate();
   const { t } = useLang();
   const { addItem } = useCart();
+  const { toggle: toggleWishlist, isWishlisted } = useWishlist();
   const { isAuthenticated, openAuthModal } = useAuth();
   const activePackages = product.packages?.filter((p) => p.isActive) || [];
   const [selectedPackage, setSelectedPackage] = useState<ProductPackage | null>(
@@ -28,6 +30,8 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
   const [inputValue, setInputValue] = useState<number | string>(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+
+  const wishlisted = isWishlisted(product.id);
 
   const bagsPerTon = selectedPackage?.weightKg ? Math.round(1000 / selectedPackage.weightKg) : 40;
 
@@ -88,6 +92,28 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
             (e.target as HTMLImageElement).src = '/image.webp';
           }}
         />
+
+        {/* Wishlist Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist(product.id, product.name);
+          }}
+          aria-label={wishlisted ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+          className={`absolute top-3 ltr:right-3 rtl:left-3 z-10 flex h-8 w-8 items-center justify-center rounded-full shadow-md transition-all duration-200 active:scale-90 ${
+            wishlisted
+              ? 'bg-red-500 text-white hover:bg-red-600'
+              : 'bg-white/90 text-slate-400 hover:text-red-500 hover:bg-white'
+          }`}
+        >
+          <HeartIcon
+            className="h-4 w-4"
+            fill={wishlisted ? 'currentColor' : 'none'}
+            strokeWidth={wishlisted ? 0 : 2}
+          />
+        </button>
       </Link>
 
       {/* Card Body */}

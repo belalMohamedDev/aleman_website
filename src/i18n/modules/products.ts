@@ -60,6 +60,8 @@ export const products = {
 
 export const categories = {
   poultry: L('أعلاف الدواجن', 'Poultry feed'),
+  poultryLaying: L('أعلاف دواجن البياض', 'Laying Poultry feed'),
+  poultryBroiler: L('أعلاف دواجن التسمين', 'Broiler Poultry feed'),
   livestock: L('أعلاف المواشي', 'Livestock feed'),
   rabbit: L('أعلاف الأرانب', 'Rabbit feed'),
   duck: L('أعلاف البط', 'Duck feed'),
