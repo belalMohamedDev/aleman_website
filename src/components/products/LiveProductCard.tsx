@@ -74,32 +74,22 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
       onClick={handleCardClick}
       className="group flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card hover:shadow-lift transition-all hover:-translate-y-1 cursor-pointer"
     >
-      {/* Product Image & Wishlist Button */}
-      <div className="relative bg-gradient-to-b from-brand-50/60 via-brand-50/30 to-slate-50/80 p-4 pt-6 pb-5 flex items-center justify-center h-64 sm:h-72 overflow-hidden">
-        <Link
-          to={`/products/${product.id}`}
-          className="w-full h-full flex items-center justify-center"
-        >
-          <img
-            src={primaryImage}
-            alt={product.name}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-auto max-h-[230px] sm:max-h-[255px] object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/image.webp';
-            }}
-          />
-        </Link>
-
-        {/* Wishlist Button */}
-        <WishlistButton
-          productId={product.id}
-          productName={product.name}
-          size="sm"
-          className="absolute top-3.5 ltr:right-3.5 rtl:left-3.5 z-10"
+      {/* Product Image */}
+      <Link
+        to={`/products/${product.id}`}
+        className="relative bg-gradient-to-b from-brand-50/60 via-brand-50/30 to-slate-50/80 p-4 pt-6 pb-5 flex items-center justify-center h-64 sm:h-72 overflow-hidden"
+      >
+        <img
+          src={primaryImage}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-auto max-h-[230px] sm:max-h-[255px] object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/image.webp';
+          }}
         />
-      </div>
+      </Link>
 
       {/* Card Body */}
       <div className="flex flex-1 flex-col p-4 sm:p-5 justify-between">
@@ -250,13 +240,13 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
             ) : null}
           </div>
 
-          <div className="w-full">
+          <div className="w-full flex items-center gap-2.5">
             {isAuthenticated ? (
               <button
                 type="button"
                 onClick={handleAddToCart}
                 disabled={!selectedPackage || isAdding || isAdded}
-                className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-4 text-xs sm:text-sm font-black transition-all ${
+                className={`flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl px-4 text-xs sm:text-sm font-black transition-all ${
                   isAdded
                     ? 'bg-brand-700 text-white'
                     : 'bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20 hover:scale-[1.01] active:scale-95 disabled:opacity-60'
@@ -280,12 +270,19 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
               <button
                 type="button"
                 onClick={openAuthModal}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 px-4 text-xs sm:text-sm font-black transition-all bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20 hover:scale-[1.01] active:scale-95"
+                className="flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl px-4 text-xs sm:text-sm font-black transition-all bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/20 hover:scale-[1.01] active:scale-95"
               >
                 <ShoppingBagIcon className="h-4 w-4 shrink-0" />
                 <span className="whitespace-nowrap">{t(ui.auth.loginBtn)}</span>
               </button>
             )}
+
+            <WishlistButton
+              productId={product.id}
+              productName={product.name}
+              size="card"
+              variant="action"
+            />
           </div>
         </div>
       </div>

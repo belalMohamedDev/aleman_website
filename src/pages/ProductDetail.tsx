@@ -300,14 +300,6 @@ export function ProductDetail() {
 
             {/* Main Preview Container */}
             <div className="relative flex-1 w-full overflow-hidden rounded-3xl border border-slate-200/70 bg-canvas p-6 sm:p-8 flex flex-col items-center justify-center min-h-[380px] sm:min-h-[460px]">
-              {liveProduct && (
-                <WishlistButton
-                  productId={liveProduct.id}
-                  productName={liveProduct.name}
-                  size="md"
-                  className="absolute top-4 ltr:right-4 rtl:left-4 z-20"
-                />
-              )}
               <div className="relative w-full flex-1 flex items-center justify-center py-2 min-h-[300px] sm:min-h-[380px] overflow-hidden">
                 <AnimatePresence mode="wait" custom={direction}>
                   <motion.img
@@ -520,7 +512,7 @@ export function ProductDetail() {
                       <button
                         type="button"
                         onClick={openAuthModal}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-2xl py-3.5 px-6 text-sm font-black text-white shadow-md bg-brand-500 hover:bg-brand-600 transition-all hover:scale-[1.005] active:scale-95"
+                        className="flex-1 h-14 flex items-center justify-center gap-2 rounded-2xl px-6 text-sm font-black text-white shadow-md bg-brand-500 hover:bg-brand-600 transition-all hover:scale-[1.005] active:scale-95"
                       >
                         <ShoppingBagIcon className="h-5 w-5" />
                         <span>{t(ui.auth.loginBtn)}</span>
@@ -530,7 +522,7 @@ export function ProductDetail() {
                         type="button"
                         onClick={handleAddToCart}
                         disabled={!selectedPackage || isAdding || isAdded}
-                        className={`flex-1 flex items-center justify-center gap-2.5 rounded-2xl py-3.5 px-6 text-base font-black text-white shadow-md transition-all ${
+                        className={`flex-1 h-14 flex items-center justify-center gap-2.5 rounded-2xl px-6 text-base font-black text-white shadow-md transition-all ${
                           isAdded
                             ? 'bg-brand-700'
                             : 'bg-brand-500 hover:bg-brand-600 shadow-brand-500/20 hover:scale-[1.005] active:scale-95 disabled:opacity-60'

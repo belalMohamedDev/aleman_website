@@ -8,7 +8,7 @@ import { ui } from '../../i18n/ui';
 export interface WishlistButtonProps {
   productId: number;
   productName: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'card';
   variant?: 'floating' | 'action';
   className?: string;
   stopPropagation?: boolean;
@@ -17,8 +17,8 @@ export interface WishlistButtonProps {
 export const WishlistButton = memo(function WishlistButton({
   productId,
   productName,
-  size = 'sm',
-  variant = 'floating',
+  size = 'card',
+  variant = 'action',
   className = '',
   stopPropagation = true,
 }: WishlistButtonProps) {
@@ -36,17 +36,19 @@ export const WishlistButton = memo(function WishlistButton({
 
   const label = wishlisted ? t(ui.wishlist.removeItem) : t(ui.wishlist.title);
 
-  // Sizing variants
+  // Sizing variants (using standard Tailwind sizes to guarantee exact rendering)
   const sizeClasses = {
-    sm: 'h-9 w-9 rounded-full',
-    md: 'h-11 w-11 rounded-full',
-    lg: 'h-13 w-13 rounded-2xl',
+    card: 'h-12 w-12 rounded-2xl shrink-0',
+    lg: 'h-14 w-14 rounded-2xl shrink-0',
+    md: 'h-11 w-11 rounded-2xl shrink-0',
+    sm: 'h-10 w-10 rounded-xl shrink-0',
   }[size];
 
   const iconSizes = {
+    card: 'h-5.5 w-5.5',
+    lg: 'h-6 w-6',
+    md: 'h-5 w-5',
     sm: 'h-4.5 w-4.5',
-    md: 'h-5.5 w-5.5',
-    lg: 'h-5.5 w-5.5',
   }[size];
 
   // Visual variants
@@ -56,18 +58,18 @@ export const WishlistButton = memo(function WishlistButton({
       ? 'bg-rose-50/95 backdrop-blur-md border border-rose-200/90 text-rose-500 shadow-xs hover:bg-rose-100/90 hover:border-rose-300 hover:text-rose-600'
       : 'bg-white/85 backdrop-blur-md border border-slate-200/70 text-slate-400 shadow-xs hover:bg-white hover:text-rose-500 hover:border-rose-200/90 hover:shadow-sm';
   } else {
-    // Action button variant (e.g., next to Add To Cart)
+    // Action button variant matching card control aesthetics
     variantClasses = wishlisted
-      ? 'border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-2xs'
-      : 'border border-slate-200 bg-white text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50/50 shadow-2xs';
+      ? 'border border-slate-200 bg-white text-rose-500 hover:border-slate-300 hover:bg-rose-50/40 shadow-2xs'
+      : 'border border-slate-200 bg-white text-slate-400 hover:text-rose-500 hover:border-slate-300 hover:bg-slate-50/80 shadow-2xs';
   }
 
   return (
     <motion.button
       type="button"
       onClick={handleClick}
-      whileTap={{ scale: 0.88 }}
-      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.92 }}
+      whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 400, damping: 20 }}
       title={label}
       aria-label={label}
@@ -82,7 +84,7 @@ export const WishlistButton = memo(function WishlistButton({
           className={`${iconSizes} transition-all duration-200 ${
             wishlisted
               ? 'fill-rose-500 text-rose-500 stroke-rose-500'
-              : 'fill-transparent text-slate-400 group-hover/wish:text-rose-500 group-hover/wish:fill-rose-50/60'
+              : 'fill-transparent text-slate-400 group-hover/wish:text-rose-500 group-hover/wish:fill-rose-50/50'
           }`}
           strokeWidth={wishlisted ? 0 : 2}
         />
