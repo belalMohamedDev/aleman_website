@@ -10,14 +10,13 @@ import {
   CheckCircle2Icon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  HeartIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { productService } from '../features/products/productService';
 import type { Product as LiveProductType, ProductPackage, Category } from '../features/products/types';
 import { getProductImages } from '../features/products/types';
 import { useCart } from '../features/cart/CartContext';
-import { useWishlist } from '../features/wishlist/WishlistContext';
+import { WishlistButton } from '../features/wishlist/WishlistButton';
 import { useAuth } from '../features/auth/AuthContext';
 import { getProduct } from '../data/products';
 import { CardSkeleton } from '../components/shared/Skeleton';
@@ -30,7 +29,6 @@ export function ProductDetail() {
   const { slug = '' } = useParams();
   const { t, isRtl } = useLang();
   const { addItem } = useCart();
-  const { toggle: toggleWishlist, isWishlisted } = useWishlist();
   const { isAuthenticated, openAuthModal } = useAuth();
 
   const [liveProduct, setLiveProduct] = useState<LiveProductType | null>(null);
@@ -47,7 +45,6 @@ export function ProductDetail() {
   const [direction, setDirection] = useState<number>(0);
 
   const isNumericId = !isNaN(Number(slug));
-  const isItemWishlisted = liveProduct ? isWishlisted(liveProduct.id) : false;
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(true);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -304,22 +301,12 @@ export function ProductDetail() {
             {/* Main Preview Container */}
             <div className="relative flex-1 w-full overflow-hidden rounded-3xl border border-slate-200/70 bg-canvas p-6 sm:p-8 flex flex-col items-center justify-center min-h-[380px] sm:min-h-[460px]">
               {liveProduct && (
-                <button
-                  type="button"
-                  onClick={() => toggleWishlist(liveProduct.id, liveProduct.name)}
-                  aria-label={isItemWishlisted ? t(ui.wishlist.removeItem) : t(ui.wishlist.title)}
-                  className={`absolute top-4 ltr:right-4 rtl:left-4 z-20 flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-all duration-200 active:scale-90 ${
-                    isItemWishlisted
-                      ? 'bg-rose-500 text-white hover:bg-rose-600'
-                      : 'bg-white/90 text-slate-400 hover:text-rose-500 hover:bg-white'
-                  }`}
-                >
-                  <HeartIcon
-                    className="h-5 w-5"
-                    fill={isItemWishlisted ? 'currentColor' : 'none'}
-                    strokeWidth={isItemWishlisted ? 0 : 2}
-                  />
-                </button>
+                <WishlistButton
+                  productId={liveProduct.id}
+                  productName={liveProduct.name}
+                  size="md"
+                  className="absolute top-4 ltr:right-4 rtl:left-4 z-20"
+                />
               )}
               <div className="relative w-full flex-1 flex items-center justify-center py-2 min-h-[300px] sm:min-h-[380px] overflow-hidden">
                 <AnimatePresence mode="wait" custom={direction}>
@@ -568,23 +555,12 @@ export function ProductDetail() {
                     )}
 
                     {liveProduct && (
-                      <button
-                        type="button"
-                        onClick={() => toggleWishlist(liveProduct.id, liveProduct.name)}
-                        className={`h-13 w-13 rounded-2xl border flex items-center justify-center transition-all duration-200 active:scale-90 shadow-2xs ${
-                          isItemWishlisted
-                            ? 'border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100'
-                            : 'border-slate-200 bg-white text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50/50'
-                        }`}
-                        title={isItemWishlisted ? t(ui.wishlist.removeItem) : t(ui.wishlist.title)}
-                        aria-label={isItemWishlisted ? t(ui.wishlist.removeItem) : t(ui.wishlist.title)}
-                      >
-                        <HeartIcon
-                          className="h-5 w-5"
-                          fill={isItemWishlisted ? 'currentColor' : 'none'}
-                          strokeWidth={isItemWishlisted ? 0 : 2}
-                        />
-                      </button>
+                      <WishlistButton
+                        productId={liveProduct.id}
+                        productName={liveProduct.name}
+                        size="lg"
+                        variant="action"
+                      />
                     )}
                   </div>
                 </div>

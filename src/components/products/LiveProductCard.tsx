@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBagIcon, CheckIcon, PlusIcon, MinusIcon, HeartIcon } from 'lucide-react';
+import { ShoppingBagIcon, CheckIcon, PlusIcon, MinusIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Product, ProductPackage } from '../../features/products/types';
 import { getProductPrimaryImage } from '../../features/products/types';
 import { useCart } from '../../features/cart/CartContext';
-import { useWishlist } from '../../features/wishlist/WishlistContext';
+import { WishlistButton } from '../../features/wishlist/WishlistButton';
 import { useAuth } from '../../features/auth/AuthContext';
 import { useLang } from '../../i18n/LanguageContext';
 import { ui } from '../../i18n/ui';
@@ -20,7 +20,6 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
   const navigate = useNavigate();
   const { t } = useLang();
   const { addItem } = useCart();
-  const { toggle: toggleWishlist, isWishlisted } = useWishlist();
   const { isAuthenticated, openAuthModal } = useAuth();
   const activePackages = product.packages?.filter((p) => p.isActive) || [];
   const [selectedPackage, setSelectedPackage] = useState<ProductPackage | null>(
@@ -30,8 +29,6 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
   const [inputValue, setInputValue] = useState<number | string>(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-
-  const wishlisted = isWishlisted(product.id);
 
   const bagsPerTon = selectedPackage?.weightKg ? Math.round(1000 / selectedPackage.weightKg) : 40;
 
@@ -77,44 +74,32 @@ export function LiveProductCard({ product, index = 0 }: LiveProductCardProps) {
       onClick={handleCardClick}
       className="group flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-card hover:shadow-lift transition-all hover:-translate-y-1 cursor-pointer"
     >
-      {/* Product Image & Badges */}
-      <Link
-        to={`/products/${product.id}`}
-        className="relative bg-gradient-to-b from-brand-50/60 via-brand-50/30 to-slate-50/80 p-4 pt-6 pb-5 flex items-center justify-center h-64 sm:h-72 overflow-hidden"
-      >
-        <img
-          src={primaryImage}
-          alt={product.name}
-          loading="lazy"
-          decoding="async"
-          className="h-full w-auto max-h-[230px] sm:max-h-[255px] object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = '/image.webp';
-          }}
-        />
+      {/* Product Image & Wishlist Button */}
+      <div className="relative bg-gradient-to-b from-brand-50/60 via-brand-50/30 to-slate-50/80 p-4 pt-6 pb-5 flex items-center justify-center h-64 sm:h-72 overflow-hidden">
+        <Link
+          to={`/products/${product.id}`}
+          className="w-full h-full flex items-center justify-center"
+        >
+          <img
+            src={primaryImage}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-auto max-h-[230px] sm:max-h-[255px] object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/image.webp';
+            }}
+          />
+        </Link>
 
         {/* Wishlist Button */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleWishlist(product.id, product.name);
-          }}
-          aria-label={wishlisted ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
-          className={`absolute top-3 ltr:right-3 rtl:left-3 z-10 flex h-8 w-8 items-center justify-center rounded-full shadow-md transition-all duration-200 active:scale-90 ${
-            wishlisted
-              ? 'bg-red-500 text-white hover:bg-red-600'
-              : 'bg-white/90 text-slate-400 hover:text-red-500 hover:bg-white'
-          }`}
-        >
-          <HeartIcon
-            className="h-4 w-4"
-            fill={wishlisted ? 'currentColor' : 'none'}
-            strokeWidth={wishlisted ? 0 : 2}
-          />
-        </button>
-      </Link>
+        <WishlistButton
+          productId={product.id}
+          productName={product.name}
+          size="sm"
+          className="absolute top-3.5 ltr:right-3.5 rtl:left-3.5 z-10"
+        />
+      </div>
 
       {/* Card Body */}
       <div className="flex flex-1 flex-col p-4 sm:p-5 justify-between">
