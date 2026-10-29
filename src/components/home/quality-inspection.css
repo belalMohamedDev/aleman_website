@@ -1,0 +1,499 @@
+/* ==========================================================================
+   "The bag under inspection" (QualityInspection.tsx)
+   Same dark stage palette as cinematic-stage.css, so the story carries on.
+   --qi-local    0..1 progress inside the current chapter (set from scroll)
+   --qi-progress 0..1 progress through the whole section
+   ========================================================================== */
+
+.qi {
+  --qi-cream: #efe6cf;
+  --qi-gold: #d8c48f;
+  --qi-ok: #9be15d;
+  --qi-ink: #b42318;
+  position: relative;
+  /* about a screen of scrolling per checkpoint */
+  height: 540vh;
+  background:
+    radial-gradient(ellipse 70% 55% at 30% 50%, rgba(216, 196, 143, 0.09), transparent 70%),
+    #14110d;
+  color: var(--qi-cream);
+}
+
+[dir='rtl'].qi {
+  background:
+    radial-gradient(ellipse 70% 55% at 70% 50%, rgba(216, 196, 143, 0.09), transparent 70%),
+    #14110d;
+}
+
+.qi-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  align-items: center;
+  gap: 56px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 110px 40px 56px;
+  overflow: hidden;
+}
+
+/* ---- The bag ------------------------------------------------------------ */
+.qi-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  min-height: 0;
+}
+
+.qi-glow {
+  position: absolute;
+  inset: 12% 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(216, 196, 143, 0.16), transparent);
+  filter: blur(10px);
+}
+
+/* absolutely centred in the stage so its height always comes from the stage
+   (a percentage height on a grid child fell back to the width × 5/4) */
+.qi-frame {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  height: min(100%, 560px);
+  width: auto;
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+}
+
+.qi-bag-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  filter: drop-shadow(0 34px 50px rgba(0, 0, 0, 0.5));
+  /* the frame is the 3D space the image leans in */
+  transition: transform 0.15s linear;
+}
+
+.qi-frame {
+  perspective: 1200px;
+}
+
+/* chapter 1: a scanning beam sweeps down the bag */
+.qi-scan {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: calc(10% + var(--qi-local, 0) * 74%);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--qi-ok) 20%, #e9ffd6 50%, var(--qi-ok) 80%, transparent);
+  box-shadow: 0 0 16px 3px rgba(155, 225, 93, 0.5);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.qi-scan::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 70px;
+  background: linear-gradient(to top, rgba(155, 225, 93, 0.16), transparent);
+}
+
+/* the lab chapter scans the bag... */
+.qi[data-chapter='1'] .qi-scan {
+  opacity: clamp(0, (0.9 - var(--qi-local, 0)) * 10, 1);
+}
+
+/* ...then the bag gets its approval stamp */
+.qi-stamp {
+  --qi-in: clamp(0, (var(--qi-local, 0) - 0.78) * 9, 1);
+  position: absolute;
+  inset-inline-end: -2%;
+  top: 34%;
+  padding: 6px 16px;
+  border: 3px solid var(--qi-ink);
+  border-radius: 10px;
+  outline: 1px solid rgba(180, 35, 24, 0.5);
+  outline-offset: 3px;
+  color: var(--qi-ink);
+  background: rgba(255, 248, 230, 0.86);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: rotate(-12deg) scale(1.6);
+  pointer-events: none;
+}
+
+/* ...and the product test stamps it */
+.qi[data-chapter='3'] .qi-stamp {
+  opacity: var(--qi-in);
+  transform: rotate(-12deg) scale(calc(1.6 - 0.6 * var(--qi-in)));
+}
+
+/* ---- The story panel ---------------------------------------------------- */
+.qi-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.qi-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--qi-gold);
+}
+
+.qi-title {
+  margin-top: 10px;
+  font-size: clamp(1.5rem, 2.6vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+.qi-rail {
+  display: flex;
+  gap: 10px;
+  margin: 26px 0 28px;
+  padding: 0;
+  list-style: none;
+}
+
+.qi-rail li {
+  flex: 1;
+}
+
+.qi-rail-step {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 2px solid rgba(239, 230, 207, 0.16);
+  background: none;
+  color: rgba(239, 230, 207, 0.45);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.qi-rail-step:hover {
+  color: rgba(239, 230, 207, 0.8);
+}
+
+.qi-rail-step.is-done {
+  border-top-color: rgba(216, 196, 143, 0.55);
+}
+
+.qi-rail-step.is-active {
+  border-top-color: var(--qi-gold);
+  color: var(--qi-cream);
+}
+
+.qi-rail-step:focus-visible {
+  outline: 2px solid var(--qi-gold);
+  outline-offset: 4px;
+}
+
+.qi-rail-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--qi-gold);
+}
+
+.qi-rail-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.qi-chapters {
+  display: grid;
+}
+
+.qi-chapter {
+  grid-area: 1 / 1;
+  opacity: 0;
+  translate: 0 18px;
+  visibility: hidden;
+  transition: opacity 0.45s ease, translate 0.45s ease, visibility 0s 0.45s;
+}
+
+.qi-chapter.is-active {
+  opacity: 1;
+  translate: 0 0;
+  visibility: visible;
+  transition: opacity 0.45s ease, translate 0.45s ease, visibility 0s;
+}
+
+.qi-num {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--qi-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.qi-chapter-title {
+  margin-top: 6px;
+  font-size: clamp(1.2rem, 1.9vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.qi-chapter-desc {
+  margin-top: 8px;
+  max-width: 34rem;
+  font-size: 0.98rem;
+  line-height: 1.9;
+  color: rgba(239, 230, 207, 0.72);
+}
+
+.qi-widget {
+  margin-top: 20px;
+  max-width: 26rem;
+  padding: 16px 18px;
+  border: 1px solid rgba(216, 196, 143, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.qi-widget-note {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(239, 230, 207, 0.55);
+}
+
+/* Each reading/milestone appears when the chapter passes its --qi-at mark */
+.qi-reading,
+.qi-milestones li {
+  --qi-on: clamp(0, (var(--qi-local, 0) - var(--qi-at, 0)) * 8, 1);
+}
+
+.qi-widget dl {
+  margin: 8px 0 0;
+}
+
+.qi-reading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dashed rgba(239, 230, 207, 0.14);
+  opacity: var(--qi-on);
+  translate: 0 calc((1 - var(--qi-on)) * 8px);
+}
+
+.qi-reading:last-child {
+  border-bottom: 0;
+}
+
+.qi-reading dt {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(239, 230, 207, 0.8);
+}
+
+.qi-reading dd {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--qi-ok);
+}
+
+.qi-reading dd::before {
+  content: '✓ ';
+}
+
+.qi-years-count {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: clamp(3rem, 6vw, 4.6rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--qi-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.qi-years-count small {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(239, 230, 207, 0.7);
+}
+
+.qi-milestones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qi-milestones li {
+  padding: 4px 11px;
+  border: 1px solid rgba(216, 196, 143, calc(0.15 + var(--qi-on) * 0.6));
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: calc(0.3 + var(--qi-on) * 0.7);
+}
+
+.qi-seam {
+  display: block;
+  width: 100%;
+  height: 44px;
+}
+
+.qi-seam rect {
+  fill: #c0392b;
+}
+
+.qi-stitch {
+  fill: none;
+  stroke: #fff8e6;
+  stroke-width: 3;
+  stroke-dasharray: 2.4 1.6;
+  stroke-linecap: round;
+}
+
+/* the stitches are sewn in as the chapter plays (the cover slides off them) */
+.qi-seam .qi-seam-cover {
+  fill: #c0392b;
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+  transform: scaleX(calc(1 - var(--qi-local, 0)));
+}
+
+[dir='ltr'] .qi-seam .qi-seam-cover {
+  transform-origin: 0% 50%;
+}
+
+.qi-seal-line {
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+.qi-seal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(155, 225, 93, 0.12);
+  color: var(--qi-ok);
+  font-size: 0.85rem;
+  font-weight: 800;
+  opacity: clamp(0, (var(--qi-local, 0) - 0.7) * 6, 1);
+}
+
+.qi-seal-badge::before {
+  content: '✓';
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--qi-ok);
+  color: #14110d;
+  font-size: 0.7rem;
+}
+
+/* ---- Small screens: bag on top, the story underneath -------------------- */
+@media (max-width: 900px) {
+  .qi {
+    height: 580vh;
+  }
+
+  /* the bag gets a smaller share on phones, so the whole chapter fits under it even with the browser bar */
+  .qi-sticky {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 26%) auto;
+    align-items: start;
+    gap: 4px;
+    padding: 72px 16px 12px;
+  }
+
+  .qi-stage {
+    height: 100%;
+  }
+
+  .qi-frame {
+    height: 100%;
+  }
+
+  .qi-label {
+    display: none;
+  }
+
+  /* the copy is centred under the centred bag */
+  .qi-title,
+  .qi-chapter {
+    text-align: center;
+  }
+
+  .qi-title {
+    margin-top: 0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .qi-chapter-desc {
+    margin-inline: auto;
+  }
+
+  .qi-rail {
+    gap: 6px;
+    margin: 10px 0 12px;
+  }
+
+  .qi-rail-text {
+    font-size: 0.78rem;
+  }
+
+  .qi-chapter-title {
+    font-size: 1.1rem;
+  }
+
+  .qi-chapter-desc {
+    font-size: 0.86rem;
+    line-height: 1.75;
+  }
+
+  .qi-widget {
+    max-width: none;
+    margin-top: 10px;
+    padding: 10px 14px;
+    text-align: start;
+  }
+
+  .qi-reading {
+    padding: 7px 0;
+  }
+
+  .qi-reading dt,
+  .qi-reading dd {
+    font-size: 0.86rem;
+  }
+
+  .qi-years-count {
+    font-size: 2.6rem;
+  }
+
+  .qi-stamp {
+    inset-inline-end: -6%;
+  }
+}

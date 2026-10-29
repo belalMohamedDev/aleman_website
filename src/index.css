@@ -72,7 +72,12 @@ body::-webkit-scrollbar {
 
 /* Maintain dark brand background on home page */
 html.is-home {
-  background-color: #042013;
+  background-color: #14110d;
+}
+
+/* Behind the home stage's rounded exit, show the cream of the section that follows */
+html.is-home .bg-canvas {
+  background-color: #f4eee0;
 }
 
 @media (prefers-reduced-motion: reduce) {

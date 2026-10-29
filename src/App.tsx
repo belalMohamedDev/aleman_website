@@ -49,7 +49,9 @@ function Shell() {
   }, [hasDarkHero]);
 
   return (
-    <div dir={dir} className="relative flex min-h-screen w-full flex-col bg-canvas overflow-x-hidden">
+    // overflow-x-clip (not hidden): hidden turns this into a scroll container, which breaks
+    // position: sticky in every page below it
+    <div dir={dir} className="relative flex min-h-screen w-full flex-col bg-canvas overflow-x-clip">
       <Navbar />
       <CartDrawer />
       <AuthModal />

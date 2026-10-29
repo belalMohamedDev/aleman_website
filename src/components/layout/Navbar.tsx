@@ -18,6 +18,7 @@ import { useCart } from '../../features/cart/CartContext';
 import { useWishlist } from '../../features/wishlist/WishlistContext';
 import { useAuth } from '../../features/auth/AuthContext';
 import { NotificationBell } from '../notifications/NotificationBell';
+import { NAV_OVER_DARK_EVENT, getNavOverDark } from './navTheme';
 
 export function Navbar() {
   const { t, lang, toggle } = useLang();
@@ -25,6 +26,8 @@ export function Navbar() {
   const { count: wishlistCount } = useWishlist();
   const { user, isAuthenticated, openAuthModal, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  // True while a dark full-screen section (the home cinematic stage) sits under the navbar
+  const [overDarkStage, setOverDarkStage] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -32,7 +35,7 @@ export function Navbar() {
 
   // Pages with a dark hero section where navbar needs white text/elements when at the top
   const isDarkHeroPage = location.pathname === '/' || location.pathname === '/about';
-  const isDarkHeroNav = isDarkHeroPage && !scrolled;
+  const isDarkHeroNav = isDarkHeroPage && (!scrolled || overDarkStage);
 
   // Exclude /contact from desktop navbar links since there is a prominent CTA button
   const desktopNav = useMemo(
@@ -55,6 +58,13 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
+    const onTheme = (e: Event) => setOverDarkStage((e as CustomEvent<boolean>).detail);
+    setOverDarkStage(getNavOverDark());
+    window.addEventListener(NAV_OVER_DARK_EVENT, onTheme);
+    return () => window.removeEventListener(NAV_OVER_DARK_EVENT, onTheme);
+  }, []);
+
+  useEffect(() => {
     setMenuOpen(false);
     setMoreOpen(false);
     setUserMenuOpen(false);
@@ -65,9 +75,14 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${scrolled
-        ? 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
-        : 'border-b border-transparent bg-transparent shadow-none'
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${!scrolled
+        ? 'border-b border-transparent bg-transparent shadow-none'
+        : isDarkHeroNav
+          ? 'border-b border-transparent bg-transparent shadow-none'
+          : isDarkHeroPage
+            ? // home + about: the cream "paper" of their light sections instead of plain white
+              'border-b border-[#e6dcc4] bg-[#f4eee0]/95 shadow-card backdrop-blur-xl'
+            : 'border-b border-brand-100/70 bg-white/95 shadow-card backdrop-blur-xl'
         }`}
     >
       <div className="w-full max-w-[1700px] mx-auto flex h-[72px] items-center justify-between gap-3 px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 2xl:px-28">
